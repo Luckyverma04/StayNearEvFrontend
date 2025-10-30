@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import ReviewForm from '../components/common/ReviewForm';
 import ReviewList from '../components/common/ReviewList';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import BookingModal from '../components/common/BookingModel';
 
 const StationDetailPage = () => {
   const { user } = useAuth();
@@ -20,6 +21,9 @@ const StationDetailPage = () => {
   const [editingReview, setEditingReview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  // Booking modal state
+  const [showBookingModal, setShowBookingModal] = useState(false);
 
   // Station editing states
   const [showEditForm, setShowEditForm] = useState(false);
@@ -42,9 +46,6 @@ const StationDetailPage = () => {
     try {
       setLoading(true);
       const response = await stationService.getStationById(stationId);
-      console.log('📡 Station API Response:', response); // Debug log
-      
-      // Handle different response structures
       const stationData = response.data?.station || response.station || response.data || response;
       setStation(stationData);
     } catch (err) {
@@ -65,7 +66,6 @@ const StationDetailPage = () => {
     }
   };
 
-  // Calculate average rating from reviews
   const calculateAverageRating = () => {
     if (!reviews || reviews.length === 0) return 0;
     const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
@@ -73,7 +73,6 @@ const StationDetailPage = () => {
     return Math.round(average * 10) / 10;
   };
 
-  // Get price
   const getPrice = () => {
     if (!station) return '₹16';
     if (station.pricePerUnit !== undefined && station.pricePerUnit !== null) {
@@ -82,31 +81,27 @@ const StationDetailPage = () => {
     return '₹16';
   };
 
-  // Get station host ID
   const getStationHostId = () => {
     if (!station) return undefined;
     const hostId = station.host?._id || station.host || station.hostId || station.hostID;
     return hostId;
   };
 
-  // Get host display name - IMPROVED VERSION
   const getHostDisplayName = () => {
     if (!station || !station.host) return 'Unknown Host';
     
     const host = station.host;
     
-    // Check various possible name fields
     if (host.name) return host.name;
     if (host.username) return host.username;
     if (host.fullName) return host.fullName;
     if (host.firstName && host.lastName) return `${host.firstName} ${host.lastName}`;
     if (host.email) return host.email;
-    if (typeof host === 'string') return host; // In case host is just an ID string
+    if (typeof host === 'string') return host;
     
     return 'Host';
   };
 
-  // Pre-fill station edit form data
   useEffect(() => {
     if (station) {
       setEditFormData({
@@ -184,6 +179,21 @@ const StationDetailPage = () => {
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to update station');
     }
+  };
+
+  const handleBookingSuccess = () => {
+    alert('Booking created successfully! Check "My Bookings" to view details.');
+    // Optionally refresh station data
+    fetchStationDetails();
+  };
+
+  const handleBookNow = () => {
+    if (!user) {
+      alert('Please login to book a charging slot');
+      navigate('/login');
+      return;
+    }
+    setShowBookingModal(true);
   };
 
   const canManageStation = user && (
@@ -285,20 +295,19 @@ const StationDetailPage = () => {
             </div>
           )}
 
-          {/* Host Info - FIXED VERSION */}
-         {station.host && (
-  <div className="mb-8 p-4 bg-gray-50 rounded-lg">
-    <h2 className="text-xl font-semibold mb-2">Managed by</h2>
-    <p className="text-gray-700 font-medium">{hostDisplayName}</p>
-  </div>
-)}
+          {/* Host Info */}
+          {station.host && (
+            <div className="mb-8 p-4 bg-gray-50 rounded-lg">
+              <h2 className="text-xl font-semibold mb-2">Managed by</h2>
+              <p className="text-gray-700 font-medium">{hostDisplayName}</p>
+            </div>
+          )}
 
           {/* Reviews Section */}
           <div className="mt-8">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Customer Reviews</h2>
               
-              {/* ADMIN: Can always add/edit reviews */}
               {user?.role === 'admin' && !showReviewForm && (
                 <button
                   onClick={() => setShowReviewForm(true)}
@@ -309,7 +318,6 @@ const StationDetailPage = () => {
                 </button>
               )}
 
-              {/* CUSTOMER: Can add review if no review exists */}
               {user?.role === 'customer' && !showReviewForm && !userReview && (
                 <button
                   onClick={() => setShowReviewForm(true)}
@@ -320,7 +328,6 @@ const StationDetailPage = () => {
                 </button>
               )}
 
-              {/* CUSTOMER: Can edit their existing review */}
               {user?.role === 'customer' && !showReviewForm && userReview && (
                 <button
                   onClick={() => handleEditReview(userReview)}
@@ -331,7 +338,6 @@ const StationDetailPage = () => {
                 </button>
               )}
 
-              {/* HOST: Can add review if no review exists */}
               {user?.role === 'host' && !showReviewForm && !userReview && (
                 <button
                   onClick={() => setShowReviewForm(true)}
@@ -342,7 +348,6 @@ const StationDetailPage = () => {
                 </button>
               )}
 
-              {/* HOST: Can edit their existing review */}
               {user?.role === 'host' && !showReviewForm && userReview && (
                 <button
                   onClick={() => handleEditReview(userReview)}
@@ -353,7 +358,6 @@ const StationDetailPage = () => {
                 </button>
               )}
 
-              {/* LOGIN PROMPT for non-logged in users */}
               {!user && (
                 <button
                   onClick={() => alert('Please login to write a review')}
@@ -366,7 +370,6 @@ const StationDetailPage = () => {
               )}
             </div>
 
-            {/* REVIEW FORM */}
             {showReviewForm && (
               <div className="mb-6">
                 <ReviewForm
@@ -379,7 +382,6 @@ const StationDetailPage = () => {
               </div>
             )}
 
-            {/* REVIEW LIST */}
             <ReviewList
               reviews={reviews}
               onEdit={handleEditReview}
@@ -403,7 +405,10 @@ const StationDetailPage = () => {
               <span className="text-gray-600">/kWh</span>
             </div>
 
-            <button className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors mb-4 flex items-center justify-center gap-2">
+            <button 
+              onClick={handleBookNow}
+              className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors mb-4 flex items-center justify-center gap-2"
+            >
               <Zap className="h-5 w-5" />
               Book Charging Slot
             </button>
@@ -455,6 +460,14 @@ const StationDetailPage = () => {
           </div>
         </div>
       )}
+
+      {/* Booking Modal */}
+      <BookingModal
+        station={station}
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        onSuccess={handleBookingSuccess}
+      />
     </div>
   );
 };

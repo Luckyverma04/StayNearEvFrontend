@@ -8,7 +8,8 @@ import EditStationPage from "./pages/EditStationPage";
 import StationDetailPage from "./pages/StationDetailPage"; // ✅ ADDED IMPORT
 import LoadingSpinner from "./components/common/LoadingSpinner";
 import CreateStationPage from "./pages/CreateStationPage";
-
+import MyBookingsPage from './pages/MyBookingPage';
+import HostBookingsPage from './pages/HostBookingPage';
 const AppContent = () => {
   const { user, loading } = useAuth();
 
@@ -36,6 +37,8 @@ const AppContent = () => {
             <Route path="/stations/:id" element={<StationDetailPage />} /> {/* ✅ ADDED ROUTE */}
             <Route path="/stations/edit/:id" element={<EditStationPage />} />
             <Route path="/stations/create" element={<CreateStationPage />} />
+            <Route path="/my-bookings" element={<MyBookingsPage />} />
+            <Route path="/host/bookings" element={<HostBookingsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         )}

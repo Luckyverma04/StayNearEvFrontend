@@ -24,6 +24,7 @@ const EditStationPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [accessDenied, setAccessDenied] = useState(false);
+  const [station, setStation] = useState(null);
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3002';
 
@@ -41,58 +42,64 @@ const EditStationPage = () => {
       const response = await stationService.getStationById(id);
       console.log("📦 Station API Response:", response);
       
-      // FIXED: Handle different API response structures
-      let station = null;
+      // Handle different API response structures
+      let stationData = null;
       
       if (response.data && response.data.station) {
-        station = response.data.station;
+        stationData = response.data.station;
       } else if (response.data) {
-        station = response.data;
+        stationData = response.data;
       } else if (response.station) {
-        station = response.station;
+        stationData = response.station;
       } else {
-        station = response;
+        stationData = response;
       }
 
-      console.log("✅ Final station data:", station);
+      console.log("✅ Final station data:", stationData);
+      setStation(stationData);
 
-      if (!station) {
+      if (!stationData) {
         setError("Station not found");
         return;
       }
 
-      // Check if user can edit this station
-      const canEdit = user && (
-        user.role === "admin" || 
-        (user.role === "host" && station.host?._id === user._id) ||
-        (user.role === "host" && station.host === user._id)
-      );
+      // ✅ FIXED: Improved access control with multiple comparison methods
+      const canEdit = checkEditPermission(stationData, user);
+
+      console.log("🔍 Access Control Debug:", {
+        userRole: user?.role,
+        userId: user?._id,
+        stationHost: stationData.host,
+        stationHostId: stationData.host?._id,
+        stationHostString: stationData.host?.toString(),
+        canEdit: canEdit
+      });
 
       if (!canEdit) {
         setAccessDenied(true);
         return;
       }
 
-      // FIXED: Pre-fill form data properly
+      // Pre-fill form data properly
       setFormData({
-        name: station.name || "",
-        location: station.location || "",
-        description: station.description || "",
-        pricePerUnit: station.pricePerUnit || station.pricePerKwh || "",
-        chargerTypes: Array.isArray(station.chargerTypes) 
-          ? station.chargerTypes.join(", ") 
-          : (station.chargerTypes || ""),
+        name: stationData.name || "",
+        location: stationData.location || "",
+        description: stationData.description || "",
+        pricePerUnit: stationData.pricePerUnit || stationData.pricePerKwh || "",
+        chargerTypes: Array.isArray(stationData.chargerTypes) 
+          ? stationData.chargerTypes.join(", ") 
+          : (stationData.chargerTypes || ""),
       });
       
-      // FIXED: Set existing images
-      setExistingImages(station.images || []);
+      // Set existing images
+      setExistingImages(stationData.images || []);
       
       console.log("✅ Form data set:", {
-        name: station.name,
-        location: station.location,
-        pricePerUnit: station.pricePerUnit,
-        chargerTypes: station.chargerTypes,
-        images: station.images
+        name: stationData.name,
+        location: stationData.location,
+        pricePerUnit: stationData.pricePerUnit,
+        chargerTypes: stationData.chargerTypes,
+        images: stationData.images
       });
 
     } catch (err) {
@@ -101,6 +108,34 @@ const EditStationPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ✅ FIXED: Comprehensive permission check
+  const checkEditPermission = (stationData, user) => {
+    if (!user) return false;
+    
+    // Admins can edit everything
+    if (user.role === "admin") return true;
+    
+    // Hosts can only edit their own stations
+    if (user.role === "host") {
+      if (!stationData.host) return false;
+      
+      const stationHostId = stationData.host._id?.toString() || stationData.host.toString();
+      const userId = user._id?.toString() || user.id?.toString();
+      
+      console.log("🔍 Ownership Check:", {
+        stationHostId,
+        userId,
+        match: stationHostId === userId,
+        stationHost: stationData.host,
+        user: user
+      });
+      
+      return stationHostId === userId;
+    }
+    
+    return false;
   };
 
   const handleChange = (e) => {
@@ -174,13 +209,38 @@ const EditStationPage = () => {
     return (
       <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md mt-8 text-center">
         <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
-        <p className="text-gray-600 mb-4">You don't have permission to edit this station.</p>
-        <button
-          onClick={() => navigate("/")}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          Back to Home
-        </button>
+        <p className="text-gray-600 mb-4">
+          You don't have permission to edit this station. 
+          {user?.role === 'host' && ' You can only edit stations that you created.'}
+        </p>
+        
+        {/* Debug Info */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4 text-left">
+          <h3 className="font-semibold text-yellow-800 mb-2">Debug Info:</h3>
+          <p className="text-sm text-yellow-700">
+            <strong>Your Role:</strong> {user?.role}<br/>
+            <strong>Your ID:</strong> {user?._id}<br/>
+            <strong>Station Host:</strong> {station?.host?._id || station?.host}<br/>
+            <strong>Station Name:</strong> {station?.name}
+          </p>
+        </div>
+
+        <div className="flex gap-2 justify-center">
+          <button
+            onClick={() => navigate("/")}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Back to Home
+          </button>
+          {user?.role === 'host' && (
+            <button
+              onClick={() => navigate("/stations/create")}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            >
+              Create New Station
+            </button>
+          )}
+        </div>
       </div>
     );
   }
@@ -195,6 +255,9 @@ const EditStationPage = () => {
       <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
         <p className="text-sm text-blue-700">
           <strong>Editing Station:</strong> {formData.name}
+        </p>
+        <p className="text-xs text-blue-600 mt-1">
+          <strong>Your Role:</strong> {user?.role} | <strong>Your ID:</strong> {user?._id}
         </p>
       </div>
 

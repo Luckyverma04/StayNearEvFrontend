@@ -35,10 +35,10 @@ const LoginPage = () => {
               <Hotel className="h-10 w-10 text-blue-600" />
             </div>
             <h1 className="text-5xl font-bold text-white mb-2 flex items-center justify-center gap-2">
-              StayNearBy
+              StayNearEv
               <Sparkles className="h-8 w-8 text-yellow-300" />
             </h1>
-            <p className="text-blue-100 text-lg">Your perfect stay, just nearby</p>
+            <p className="text-blue-100 text-lg">“Charge closer, drive farther.”</p>
           </div>
 
           {/* Card */}

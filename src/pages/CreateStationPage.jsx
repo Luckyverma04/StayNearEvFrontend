@@ -13,7 +13,7 @@ const CreateStationPage = () => {
     location: "",
     description: "",
     pricePerUnit: "",
-    chargerTypes: "",
+ chargerTypes: [],
   });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -51,15 +51,20 @@ const CreateStationPage = () => {
       setLoading(true);
 
       const form = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (key === "chargerTypes") {
-          // Convert comma-separated string to array
-          const typesArray = value.split(",").map((t) => t.trim()).filter(t => t !== "");
-          form.append(key, JSON.stringify(typesArray));
-        } else {
-          form.append(key, value);
-        }
-      });
+    Object.entries(formData).forEach(([key, value]) => {
+  if (key === "chargerTypes") {
+    // If it's already an array (from checkboxes), use it directly
+    if (Array.isArray(value)) {
+      form.append(key, JSON.stringify(value));
+    } else {
+      // If it's a string (from dropdown), convert to array
+      const typesArray = value.split(",").map((t) => t.trim()).filter(t => t !== "");
+      form.append(key, JSON.stringify(typesArray));
+    }
+  } else {
+    form.append(key, value);
+  }
+});
       
       // Append images
       images.forEach((img) => form.append("images", img));
@@ -182,22 +187,48 @@ const CreateStationPage = () => {
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Charger Types
-          </label>
-          <input
-            type="text"
-            name="chargerTypes"
-            placeholder="e.g., Type2, CCS, CHAdeMO (comma separated)"
-            value={formData.chargerTypes}
-            onChange={handleChange}
-            className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            Separate multiple charger types with commas
-          </p>
-        </div>
+      <div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Charger Types *
+  </label>
+  <div className="space-y-2 border border-gray-300 rounded-lg p-3">
+    {[
+      { value: "Type 2", label: "Type 2 (AC)" },
+      { value: "CCS2", label: "CCS2 (DC Fast)" },
+      { value: "CHAdeMO", label: "CHAdeMO" },
+      { value: "GB/T", label: "GB/T" },
+      { value: "Tesla Supercharger", label: "Tesla Supercharger" },
+      { value: "Bharat AC001", label: "Bharat AC001" },
+      { value: "Bharat DC001", label: "Bharat DC001" }
+    ].map((charger) => (
+      <label key={charger.value} className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          value={charger.value}
+          checked={formData.chargerTypes.includes(charger.value)}
+          onChange={(e) => {
+            const { value, checked } = e.target;
+            let updatedTypes = [...formData.chargerTypes];
+            if (checked) {
+              updatedTypes.push(value);
+            } else {
+              updatedTypes = updatedTypes.filter(type => type !== value);
+            }
+            setFormData({
+              ...formData,
+              chargerTypes: updatedTypes
+            });
+          }}
+          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+        />
+        <span className="text-sm text-gray-700">{charger.label}</span>
+      </label>
+    ))}
+  </div>
+  <p className="text-xs text-gray-500 mt-1">
+    Select all available charger types at this station
+  </p>
+</div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
