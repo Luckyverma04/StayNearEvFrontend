@@ -19,6 +19,7 @@ export const stationService = {
       const response = await axios.post(`${API_URL}/stations`, formData, {
         headers: {
           ...getAuthHeader(),
+          'Content-Type': 'multipart/form-data',
         },
       });
       return response.data;
@@ -59,7 +60,7 @@ export const stationService = {
       const response = await axios.put(`${API_URL}/stations/${id}`, formData, {
         headers: {
           ...getAuthHeader(),
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
       return response.data;
@@ -156,3 +157,5 @@ export const stationService = {
     }
   },
 };
+
+export default stationService;
