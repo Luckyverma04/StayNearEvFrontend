@@ -6,7 +6,7 @@ const API_BASE_URL =
 
 // ✅ Create axios instance
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`, // ensures all routes go through /api
+  baseURL: `${API_BASE_URL}`, // ensures all routes go through /api
 });
 
 // ✅ Automatically attach Bearer token
