@@ -10,6 +10,7 @@ import LoadingSpinner from "./components/common/LoadingSpinner";
 import CreateStationPage from "./pages/CreateStationPage";
 import MyBookingsPage from './pages/MyBookingPage';
 import HostBookingsPage from './pages/HostBookingPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
 const AppContent = () => {
   const { user, loading } = useAuth();
 
@@ -39,6 +40,8 @@ const AppContent = () => {
             <Route path="/stations/create" element={<CreateStationPage />} />
             <Route path="/my-bookings" element={<MyBookingsPage />} />
             <Route path="/host/bookings" element={<HostBookingsPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         )}

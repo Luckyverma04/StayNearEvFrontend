@@ -1,4 +1,5 @@
 import api from './api';
+
 export const authService = {
   // ✅ Login user
   async login(email, password) {
@@ -9,6 +10,12 @@ export const authService = {
   // ✅ Signup user
   async signup(userData) {
     const response = await api.post('/users/signup', userData);
+    return response.data;
+  },
+
+  // ✅ Verify email
+  async verifyEmail(token) {
+    const response = await api.post('/auth/verify-email', { token });
     return response.data;
   },
 
