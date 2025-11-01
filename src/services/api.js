@@ -6,7 +6,7 @@ const API_BASE_URL =
 
 // ✅ Correct: Do NOT add /api twice
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
+  baseURL: `${API_BASE_URL}`,
   withCredentials: true,
 });
 
