@@ -4,9 +4,9 @@ import axios from 'axios';
 const API_BASE_URL =
   import.meta.env.VITE_API_URL?.replace(/\/$/, '') || 'http://localhost:3002';
 
-// ✅ Always include /api here (important)
+// ❌ Remove extra /api (we’ll add it in service files like authService)
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
