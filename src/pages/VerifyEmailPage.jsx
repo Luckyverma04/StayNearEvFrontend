@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
+import api from '../services/api'; // ✅ Import api directly instead of authService
 import { CheckCircle, XCircle, Mail } from 'lucide-react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
@@ -41,13 +41,14 @@ const VerifyEmailPage = () => {
       setLoading(true);
       console.log('🔐 Verifying email with token:', token);
       
-      const response = await authService.verifyEmail(token);
-      console.log('✅ Email verification response:', response);
+      // ✅ DIRECT API CALL - No double /api issue
+      const response = await api.post('/users/verify-email', { token });
+      console.log('✅ Email verification response:', response.data);
       
-      if (response.success) {
+      if (response.data.success) {
         setSuccess(true);
       } else {
-        setError(response.message || 'Email verification failed');
+        setError(response.data.message || 'Email verification failed');
       }
     } catch (err) {
       console.error('❌ Email verification error:', err);
