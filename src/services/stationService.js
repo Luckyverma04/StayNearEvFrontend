@@ -1,10 +1,11 @@
 import api from './api';
+
 export const stationService = {
-  // ✅ Create Station
+  // ✅ Create Station - FIXED
   async createStation(formData) {
     try {
       console.log("🚀 Creating station with FormData");
-      const response = await api.post('/stations', formData, {
+      const response = await api.post('/api/stations', formData, { // Added /api
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -14,10 +15,10 @@ export const stationService = {
     }
   },
 
-  // ✅ Get all Stations
+  // ✅ Get all Stations - FIXED
   async getAllStations() {
     try {
-      const response = await api.get('/stations');
+      const response = await api.get('/api/stations'); // Added /api
       return response.data;
     } catch (error) {
       console.error('Get stations error:', error.response?.data || error);
@@ -25,10 +26,10 @@ export const stationService = {
     }
   },
 
-  // ✅ Get single Station
+  // ✅ Get single Station - FIXED
   async getStationById(id) {
     try {
-      const response = await api.get(`/stations/${id}`);
+      const response = await api.get(`/api/stations/${id}`); // Added /api
       return response.data;
     } catch (error) {
       console.error('Get station error:', error.response?.data || error);
@@ -36,11 +37,11 @@ export const stationService = {
     }
   },
 
-  // ✅ Update Station
+  // ✅ Update Station - FIXED
   async updateStation(id, formData) {
     try {
       console.log("🔄 Updating station:", id);
-      const response = await api.put(`/stations/${id}`, formData, {
+      const response = await api.put(`/api/stations/${id}`, formData, { // Added /api
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -50,10 +51,10 @@ export const stationService = {
     }
   },
 
-  // ✅ Delete Station
+  // ✅ Delete Station - FIXED
   async deleteStation(id) {
     try {
-      const response = await api.delete(`/stations/${id}`);
+      const response = await api.delete(`/api/stations/${id}`); // Added /api
       return response.data;
     } catch (error) {
       console.error('Delete station error:', error.response?.data || error);
@@ -61,11 +62,11 @@ export const stationService = {
     }
   },
 
-  // ✅ Add Review
+  // ✅ Add Review - FIXED
   async addReview(stationId, reviewData) {
     try {
       const response = await api.post(
-        `/stations/${stationId}/reviews`,
+        `/api/stations/${stationId}/reviews`, // Added /api
         reviewData
       );
       return response.data;
@@ -75,10 +76,10 @@ export const stationService = {
     }
   },
 
-  // ✅ Get Station Reviews
+  // ✅ Get Station Reviews - FIXED
   async getStationReviews(stationId) {
     try {
-      const response = await api.get(`/stations/${stationId}/reviews`);
+      const response = await api.get(`/api/stations/${stationId}/reviews`); // Added /api
       return response.data;
     } catch (error) {
       console.error('Get reviews error:', error.response?.data || error);
@@ -86,11 +87,11 @@ export const stationService = {
     }
   },
 
-  // ✅ Update Review
+  // ✅ Update Review - FIXED
   async updateReview(stationId, reviewId, reviewData) {
     try {
       const response = await api.put(
-        `/stations/${stationId}/reviews/${reviewId}`,
+        `/api/stations/${stationId}/reviews/${reviewId}`, // Added /api
         reviewData
       );
       return response.data;
@@ -100,11 +101,11 @@ export const stationService = {
     }
   },
 
-  // ✅ Delete Review
+  // ✅ Delete Review - FIXED
   async deleteReview(stationId, reviewId) {
     try {
       const response = await api.delete(
-        `/stations/${stationId}/reviews/${reviewId}`
+        `/api/stations/${stationId}/reviews/${reviewId}` // Added /api
       );
       return response.data;
     } catch (error) {
