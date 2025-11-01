@@ -1,29 +1,35 @@
-import axios from "axios";
+import axios from 'axios';
 
+// ✅ Use .env variable or fallback to localhost
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL?.replace(/\/$/, "") ||
-  "http://localhost:3002";
+  import.meta.env.VITE_API_URL?.replace(/\/$/, '') || 'http://localhost:3002';
 
+// ✅ DO NOT append another /api
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
+// ✅ Attach token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
+// ✅ Handle expired token
 api.interceptors.response.use(
-  (res) => res,
+  (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+      console.warn('⚠️ Unauthorized! Redirecting to login...');
+      localStorage.removeItem('token');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
