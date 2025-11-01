@@ -4,9 +4,9 @@ import axios from 'axios';
 const API_BASE_URL =
   import.meta.env.VITE_API_URL?.replace(/\/$/, '') || 'http://localhost:3002';
 
-// ❌ Remove extra /api (we’ll add it in service files like authService)
+// ✅ Correct: Do NOT add /api twice
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/api`,
   withCredentials: true,
 });
 
@@ -22,7 +22,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Optional: handle expired token globally
+// ✅ Handle expired token globally
 api.interceptors.response.use(
   (response) => response,
   (error) => {

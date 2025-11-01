@@ -2,51 +2,51 @@ import api from './api';
 
 export const stationService = {
   async createStation(formData) {
-    const response = await api.post('/api/stations', formData, {
+    const response = await api.post('/stations', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;
   },
 
   async getAllStations() {
-    const response = await api.get('/api/stations');
+    const response = await api.get('/stations');
     return response.data;
   },
 
   async getStationById(id) {
-    const response = await api.get(`/api/stations/${id}`);
+    const response = await api.get(`/stations/${id}`);
     return response.data;
   },
 
   async updateStation(id, formData) {
-    const response = await api.put(`/api/stations/${id}`, formData, {
+    const response = await api.put(`/stations/${id}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;
   },
 
   async deleteStation(id) {
-    const response = await api.delete(`/api/stations/${id}`);
+    const response = await api.delete(`/stations/${id}`);
     return response.data;
   },
 
   async addReview(stationId, reviewData) {
-    const response = await api.post(`/api/stations/${stationId}/reviews`, reviewData);
+    const response = await api.post(`/stations/${stationId}/reviews`, reviewData);
     return response.data;
   },
 
   async getStationReviews(stationId) {
-    const response = await api.get(`/api/stations/${stationId}/reviews`);
+    const response = await api.get(`/stations/${stationId}/reviews`);
     return response.data;
   },
 
   async updateReview(stationId, reviewId, reviewData) {
-    const response = await api.put(`/api/stations/${stationId}/reviews/${reviewId}`, reviewData);
+    const response = await api.put(`/stations/${stationId}/reviews/${reviewId}`, reviewData);
     return response.data;
   },
 
   async deleteReview(stationId, reviewId) {
-    const response = await api.delete(`/api/stations/${stationId}/reviews/${reviewId}`);
+    const response = await api.delete(`/stations/${stationId}/reviews/${reviewId}`);
     return response.data;
   },
 };
