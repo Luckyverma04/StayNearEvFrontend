@@ -17,17 +17,18 @@ const LoginForm = () => {
 
     try {
       const result = await login(formData.email, formData.password);
+      console.log("🔐 Login response:", result);
 
       if (result.success) {
-        console.log("✅ Login success:", result);
-        // ✅ Redirect to home page
-        navigate("/");
+        console.log("✅ Login successful, redirecting...");
+        // ✅ Use navigate instead of reload
+        navigate("/", { replace: true });
       } else {
         setError(result.message || "Login failed");
       }
     } catch (err) {
       console.error("❌ Login error:", err);
-      setError("Network error. Please try again.");
+      setError(err.response?.data?.message || "Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -57,9 +58,7 @@ const LoginForm = () => {
           type="password"
           required
           value={formData.password}
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="Enter password"
         />

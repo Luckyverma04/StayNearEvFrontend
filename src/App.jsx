@@ -10,8 +10,7 @@ import LoadingSpinner from "./components/common/LoadingSpinner";
 import CreateStationPage from "./pages/CreateStationPage";
 import MyBookingsPage from './pages/MyBookingPage';
 import HostBookingsPage from './pages/HostBookingPage';
-import VerifyEmailPage from './pages/VerifyEmailPage';
-
+import EmailVerification from './components/auth/EmailVerification';
 const AppContent = () => {
   const { user, loading } = useAuth();
 
@@ -25,11 +24,13 @@ const AppContent = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      {/* Don't show navbar on login and email verification pages */}
+      {user && <Navbar />}
+      
       <Routes>
         {/* ✅ PUBLIC ROUTES - Available to everyone */}
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/verify-email" element={<VerifyEmailPage />} /> {/* MOVED HERE */}
+        <Route path="/verify-email" element={<EmailVerification />} />
         
         {!user ? (
           /* If not logged in, redirect to login */
