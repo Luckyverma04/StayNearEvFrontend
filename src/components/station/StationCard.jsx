@@ -4,18 +4,40 @@ import { MapPin, DollarSign, Edit, Trash2, Zap, Star } from 'lucide-react';
 const StationCard = ({ station, canManage, onEdit, onDelete, onViewDetails }) => {
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3002';
 
-  // ✅ Correctly build image URL
+  // ✅ FIXED: Handle both Cloudinary URLs and old local paths
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
-    // If image path already has 'uploads/', use as-is
-    const pathWithUploads = imagePath.startsWith('uploads/') ? imagePath : `uploads/${imagePath}`;
-    return `${API_BASE.replace(/\/$/, '')}/${pathWithUploads}`;
+    
+    // If it's already a full Cloudinary URL, use it directly
+    if (imagePath.startsWith('http')) return imagePath;
+    
+    // If it's an old local path (starts with /uploads/), try to construct URL
+    // but note: these won't work in production due to ephemeral storage
+    if (imagePath.startsWith('/uploads/')) {
+      const filename = imagePath.replace('/uploads/', '');
+      return `${API_BASE}/uploads/${filename}`;
+    }
+    
+    // If it's just a filename, construct URL
+    return `${API_BASE}/uploads/${imagePath}`;
   };
 
   const imageUrl = station.images?.[0] ? getImageUrl(station.images[0]) : null;
 
+  // ✅ Debug: Check what URLs are being generated
+  React.useEffect(() => {
+    if (station.images?.[0]) {
+      console.log('🖼️ Image Debug:', {
+        stationName: station.name,
+        imagePath: station.images[0],
+        generatedUrl: getImageUrl(station.images[0]),
+        isCloudinary: station.images[0]?.includes('cloudinary')
+      });
+    }
+  }, [station]);
+
   const averageRating = station.averageRating || 0;
-  const totalReviews = station.totalReviews || 0;
+  const totalReviews = station.reviews?.length || 0;
 
   const renderStars = (rating) => {
     const stars = [];
@@ -41,13 +63,22 @@ const StationCard = ({ station, canManage, onEdit, onDelete, onViewDetails }) =>
             src={imageUrl}
             alt={station.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={(e) => { e.target.onerror = null; e.target.src = ''; }}
+            onError={(e) => { 
+              e.target.onerror = null; 
+              e.target.style.display = 'none';
+              // Show placeholder when image fails to load
+              const placeholder = e.target.parentElement.querySelector('.image-placeholder');
+              if (placeholder) placeholder.style.display = 'flex';
+            }}
           />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-            No Image
-          </div>
-        )}
+        ) : null}
+        
+        {/* Always render placeholder, show when no image or image fails */}
+        <div 
+          className={`image-placeholder w-full h-full flex items-center justify-center text-gray-400 text-sm ${imageUrl ? 'hidden' : 'flex'}`}
+        >
+          No Image Available
+        </div>
       </div>
 
       <div className="p-4">
