@@ -4,17 +4,15 @@ import { MapPin, DollarSign, Edit, Trash2, Zap, Star } from 'lucide-react';
 const StationCard = ({ station, canManage, onEdit, onDelete, onViewDetails }) => {
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3002';
 
-  // ✅ Get correct image URL
+  // ✅ Correctly build image URL
   const getImageUrl = (imagePath) => {
-    if (!imagePath) return '/placeholder-station.jpg'; // fallback for missing images
-    if (imagePath.startsWith('http')) return imagePath; // full URL
-    if (imagePath.startsWith('uploads/')) return `${API_BASE.replace(/\/$/, '')}/${imagePath}`;
-    return '/placeholder-station.jpg';
+    if (!imagePath) return null;
+    // If image path already has 'uploads/', use as-is
+    const pathWithUploads = imagePath.startsWith('uploads/') ? imagePath : `uploads/${imagePath}`;
+    return `${API_BASE.replace(/\/$/, '')}/${pathWithUploads}`;
   };
 
-  const imageUrl = station.images?.[0] 
-    ? getImageUrl(station.images[0])
-    : '/placeholder-station.jpg';
+  const imageUrl = station.images?.[0] ? getImageUrl(station.images[0]) : null;
 
   const averageRating = station.averageRating || 0;
   const totalReviews = station.totalReviews || 0;
@@ -38,12 +36,18 @@ const StationCard = ({ station, canManage, onEdit, onDelete, onViewDetails }) =>
         className="relative h-40 overflow-hidden cursor-pointer bg-gradient-to-br from-blue-50 to-indigo-50" 
         onClick={() => onViewDetails && onViewDetails(station._id)}
       >
-        <img
-          src={imageUrl}
-          alt={station.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder-station.jpg'; }}
-        />
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={station.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => { e.target.onerror = null; e.target.src = ''; }}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+            No Image
+          </div>
+        )}
       </div>
 
       <div className="p-4">
