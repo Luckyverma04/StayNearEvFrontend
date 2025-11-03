@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Zap, LogOut, Menu, X, Home, Plus, Crown, Shield, Battery, Calendar, Settings } from 'lucide-react';
+import { Zap, LogOut, Menu, X, Home, Plus, Crown, Shield, Battery, Calendar, Settings, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
@@ -84,6 +84,21 @@ const Navbar = () => {
                   <Home className="h-4 w-4" />
                   <span>Home</span>
                 </button>
+
+                {/* Admin Dashboard Button - Only for Admin */}
+                {userRole === 'admin' && (
+                  <button
+                    onClick={() => navigate('/admin/dashboard')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                      isActiveRoute('/admin/dashboard')
+                        ? 'bg-purple-600 text-white'
+                        : 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200'
+                    }`}
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span>Dashboard</span>
+                  </button>
+                )}
 
                 {/* My Bookings - For Customers */}
                 {userRole === 'customer' && (
@@ -206,6 +221,24 @@ const Navbar = () => {
                   <Home className="h-5 w-5" />
                   Home
                 </button>
+
+                {/* Admin Dashboard Button - Mobile - Only for Admin */}
+                {userRole === 'admin' && (
+                  <button
+                    onClick={() => {
+                      navigate('/admin/dashboard');
+                      setShowMenu(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg font-medium transition-colors ${
+                      isActiveRoute('/admin/dashboard')
+                        ? 'bg-purple-600 text-white'
+                        : 'text-purple-700 bg-purple-50 border border-purple-200'
+                    }`}
+                  >
+                    <LayoutDashboard className="h-5 w-5" />
+                    Admin Dashboard
+                  </button>
+                )}
 
                 {/* My Bookings - For Customers */}
                 {userRole === 'customer' && (

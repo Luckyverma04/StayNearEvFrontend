@@ -11,6 +11,7 @@ import CreateStationPage from "./pages/CreateStationPage";
 import MyBookingsPage from './pages/MyBookingPage';
 import HostBookingsPage from './pages/HostBookingPage';
 import EmailVerification from './components/auth/EmailVerification';
+import AdminDashboard from './pages/admin/AdminDashboard';
 const AppContent = () => {
   const { user, loading } = useAuth();
 
@@ -44,6 +45,7 @@ const AppContent = () => {
             <Route path="/stations/create" element={<CreateStationPage />} />
             <Route path="/my-bookings" element={<MyBookingsPage />} />
             <Route path="/host/bookings" element={<HostBookingsPage />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         )}
