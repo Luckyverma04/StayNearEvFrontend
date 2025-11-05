@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Zap, LogOut, Menu, X, Home, Plus, Crown, Shield, Battery, Calendar, Settings, LayoutDashboard } from 'lucide-react';
+import { Zap, LogOut, Menu, X, Home, Plus, Crown, Shield, Battery, Calendar, Settings, LayoutDashboard, BookOpen } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
@@ -14,14 +14,6 @@ const Navbar = () => {
   
   // ✅ Get current page from location
   const currentPage = location.pathname;
-
-  // ✅ Debug log
-  console.log('🔍 Navbar Debug:', {
-    user: user,
-    role: user?.role,
-    userRole: userRole,
-    currentPage: currentPage
-  });
 
   const getRoleBadge = (role) => {
     const badges = {
@@ -115,30 +107,45 @@ const Navbar = () => {
                   </button>
                 )}
 
-                {/* Manage Bookings - For Hosts/Admins */}
-                {(userRole === 'host' || userRole === 'admin') && (
-                  <>
-                    <button
-                      onClick={() => navigate('/host/bookings')}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                        isActiveRoute('/host/bookings')
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      <Settings className="h-4 w-4" />
-                      <span>Manage Bookings</span>
-                    </button>
+                {/* ✅ FIXED: Manage Bookings - For Hosts Only */}
+                {userRole === 'host' && (
+                  <button
+                    onClick={() => navigate('/host/bookings')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                      isActiveRoute('/host/bookings')
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Settings className="h-4 w-4" />
+                    <span>Manage Bookings</span>
+                  </button>
+                )}
 
-                    {/* Add Station Button */}
-                    <button
-                      onClick={() => navigate('/stations/create')}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                    >
-                      <Plus className="h-4 w-4" />
-                      <span>Add Station</span>
-                    </button>
-                  </>
+                {/* ✅ ADDED: All Bookings - For Admin Only */}
+                {userRole === 'admin' && (
+                  <button
+                    onClick={() => navigate('/admin/bookings')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                      isActiveRoute('/admin/bookings')
+                        ? 'bg-purple-600 text-white'
+                        : 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200'
+                    }`}
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    <span>All Bookings</span>
+                  </button>
+                )}
+
+                {/* Add Station Button - For Hosts & Admin */}
+                {(userRole === 'host' || userRole === 'admin') && (
+                  <button
+                    onClick={() => navigate('/stations/create')}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Add Station</span>
+                  </button>
                 )}
 
                 {/* User Profile */}
@@ -258,35 +265,54 @@ const Navbar = () => {
                   </button>
                 )}
 
-                {/* Manage Bookings - For Hosts/Admins */}
-                {(userRole === 'host' || userRole === 'admin') && (
-                  <>
-                    <button
-                      onClick={() => {
-                        navigate('/host/bookings');
-                        setShowMenu(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg font-medium transition-colors ${
-                        isActiveRoute('/host/bookings')
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      <Settings className="h-5 w-5" />
-                      Manage Bookings
-                    </button>
+                {/* ✅ FIXED: Manage Bookings - For Hosts Only (Mobile) */}
+                {userRole === 'host' && (
+                  <button
+                    onClick={() => {
+                      navigate('/host/bookings');
+                      setShowMenu(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg font-medium transition-colors ${
+                      isActiveRoute('/host/bookings')
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Settings className="h-5 w-5" />
+                    Manage Bookings
+                  </button>
+                )}
 
-                    <button
-                      onClick={() => {
-                        navigate('/stations/create');
-                        setShowMenu(false);
-                      }}
-                      className="w-full flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium"
-                    >
-                      <Plus className="h-5 w-5" />
-                      Add Charging Station
-                    </button>
-                  </>
+                {/* ✅ ADDED: All Bookings - For Admin Only (Mobile) */}
+                {userRole === 'admin' && (
+                  <button
+                    onClick={() => {
+                      navigate('/admin/bookings');
+                      setShowMenu(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg font-medium transition-colors ${
+                      isActiveRoute('/admin/bookings')
+                        ? 'bg-purple-600 text-white'
+                        : 'text-purple-700 bg-purple-50 border border-purple-200'
+                    }`}
+                  >
+                    <BookOpen className="h-5 w-5" />
+                    All Bookings
+                  </button>
+                )}
+
+                {/* Add Station Button - For Hosts & Admin (Mobile) */}
+                {(userRole === 'host' || userRole === 'admin') && (
+                  <button
+                    onClick={() => {
+                      navigate('/stations/create');
+                      setShowMenu(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium"
+                  >
+                    <Plus className="h-5 w-5" />
+                    Add Charging Station
+                  </button>
                 )}
 
                 {/* Logout Button */}
