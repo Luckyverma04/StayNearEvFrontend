@@ -110,7 +110,7 @@ const LoginPage = () => {
 
           {/* Bottom Text */}
           <p className="text-center text-white/80 text-sm mt-6">
-            © 2025 StayNearBy. Find your perfect stay.
+            © 2025 StayNearBy.Charge closer, drive farther.
           </p>
         </div>
       </div>

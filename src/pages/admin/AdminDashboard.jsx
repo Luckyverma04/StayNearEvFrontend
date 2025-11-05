@@ -13,8 +13,7 @@ const AdminDashboard = () => {
   const [verifyingHost, setVerifyingHost] = useState(null);
 
   // Backend URL - Change if needed
-  const API_URL = 'http://localhost:3002/api';
-
+const API_URL = 'https://staynearevbackend.onrender.com/api';
   // Check if user is admin
   if (user?.role?.toLowerCase() !== 'admin') {
     return (
