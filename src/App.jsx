@@ -12,6 +12,7 @@ import MyBookingsPage from './pages/MyBookingPage';
 import HostBookingsPage from './pages/HostBookingPage';
 import EmailVerification from './components/auth/EmailVerification';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminBookingsPage from './pages/admin/AdminBookingsPage'; 
 const AppContent = () => {
   const { user, loading } = useAuth();
 
@@ -46,6 +47,7 @@ const AppContent = () => {
             <Route path="/my-bookings" element={<MyBookingsPage />} />
             <Route path="/host/bookings" element={<HostBookingsPage />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/bookings" element={<AdminBookingsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         )}
