@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Zap, LogOut, Menu, X, Home, Plus, Crown, Shield, Battery, Calendar, Settings, LayoutDashboard } from 'lucide-react';
+import { Zap, LogOut, Menu, X, Home, Plus, Crown, Shield, Battery, Calendar, Settings, LayoutDashboard, Users, BookOpen } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
@@ -87,17 +87,45 @@ const Navbar = () => {
 
                 {/* Admin Dashboard Button - Only for Admin */}
                 {userRole === 'admin' && (
-                  <button
-                    onClick={() => navigate('/admin/dashboard')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                      isActiveRoute('/admin/dashboard')
-                        ? 'bg-purple-600 text-white'
-                        : 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200'
-                    }`}
-                  >
-                    <LayoutDashboard className="h-4 w-4" />
-                    <span>Dashboard</span>
-                  </button>
+                  <>
+                    <button
+                      onClick={() => navigate('/admin/dashboard')}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                        isActiveRoute('/admin/dashboard')
+                          ? 'bg-purple-600 text-white'
+                          : 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200'
+                      }`}
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      <span>Dashboard</span>
+                    </button>
+
+                    {/* ✅ NEW: All Bookings Button - Only for Admin */}
+                    <button
+                      onClick={() => navigate('/admin/all-bookings')}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                        isActiveRoute('/admin/all-bookings')
+                          ? 'bg-purple-600 text-white'
+                          : 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200'
+                      }`}
+                    >
+                      <BookOpen className="h-4 w-4" />
+                      <span>All Bookings</span>
+                    </button>
+
+                    {/* ✅ NEW: Manage Hosts Button - Only for Admin */}
+                    <button
+                      onClick={() => navigate('/admin/hosts')}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                        isActiveRoute('/admin/hosts')
+                          ? 'bg-purple-600 text-white'
+                          : 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200'
+                      }`}
+                    >
+                      <Users className="h-4 w-4" />
+                      <span>Manage Hosts</span>
+                    </button>
+                  </>
                 )}
 
                 {/* My Bookings - For Customers */}
@@ -115,8 +143,8 @@ const Navbar = () => {
                   </button>
                 )}
 
-                {/* Manage Bookings - For Hosts/Admins */}
-                {(userRole === 'host' || userRole === 'admin') && (
+                {/* Manage Bookings - For Hosts */}
+                {userRole === 'host' && (
                   <>
                     <button
                       onClick={() => navigate('/host/bookings')}
@@ -224,20 +252,54 @@ const Navbar = () => {
 
                 {/* Admin Dashboard Button - Mobile - Only for Admin */}
                 {userRole === 'admin' && (
-                  <button
-                    onClick={() => {
-                      navigate('/admin/dashboard');
-                      setShowMenu(false);
-                    }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg font-medium transition-colors ${
-                      isActiveRoute('/admin/dashboard')
-                        ? 'bg-purple-600 text-white'
-                        : 'text-purple-700 bg-purple-50 border border-purple-200'
-                    }`}
-                  >
-                    <LayoutDashboard className="h-5 w-5" />
-                    Admin Dashboard
-                  </button>
+                  <>
+                    <button
+                      onClick={() => {
+                        navigate('/admin/dashboard');
+                        setShowMenu(false);
+                      }}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg font-medium transition-colors ${
+                        isActiveRoute('/admin/dashboard')
+                          ? 'bg-purple-600 text-white'
+                          : 'text-purple-700 bg-purple-50 border border-purple-200'
+                      }`}
+                    >
+                      <LayoutDashboard className="h-5 w-5" />
+                      Admin Dashboard
+                    </button>
+
+                    {/* ✅ NEW: All Bookings Button - Mobile - Only for Admin */}
+                    <button
+                      onClick={() => {
+                        navigate('/admin/all-bookings');
+                        setShowMenu(false);
+                      }}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg font-medium transition-colors ${
+                        isActiveRoute('/admin/all-bookings')
+                          ? 'bg-purple-600 text-white'
+                          : 'text-purple-700 bg-purple-50 border border-purple-200'
+                      }`}
+                    >
+                      <BookOpen className="h-5 w-5" />
+                      All Bookings
+                    </button>
+
+                    {/* ✅ NEW: Manage Hosts Button - Mobile - Only for Admin */}
+                    <button
+                      onClick={() => {
+                        navigate('/admin/hosts');
+                        setShowMenu(false);
+                      }}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg font-medium transition-colors ${
+                        isActiveRoute('/admin/hosts')
+                          ? 'bg-purple-600 text-white'
+                          : 'text-purple-700 bg-purple-50 border border-purple-200'
+                      }`}
+                    >
+                      <Users className="h-5 w-5" />
+                      Manage Hosts
+                    </button>
+                  </>
                 )}
 
                 {/* My Bookings - For Customers */}
@@ -258,8 +320,8 @@ const Navbar = () => {
                   </button>
                 )}
 
-                {/* Manage Bookings - For Hosts/Admins */}
-                {(userRole === 'host' || userRole === 'admin') && (
+                {/* Manage Bookings - For Hosts */}
+                {userRole === 'host' && (
                   <>
                     <button
                       onClick={() => {
