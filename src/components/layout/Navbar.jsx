@@ -123,19 +123,24 @@ const Navbar = () => {
                 )}
 
                 {/* ✅ ADDED: All Bookings - For Admin Only */}
-                {userRole === 'admin' && (
-                  <button
-                    onClick={() => navigate('/admin/bookings')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                      isActiveRoute('/admin/bookings')
-                        ? 'bg-purple-600 text-white'
-                        : 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200'
-                    }`}
-                  >
-                    <BookOpen className="h-4 w-4" />
-                    <span>All Bookings</span>
-                  </button>
-                )}
+               {/* ✅ ADDED: All Bookings - For Admin Only */}
+{userRole === 'admin' && (
+  <button
+    onClick={() => {
+      console.log('🎯 All Bookings Button CLICKED');
+      console.log('🎯 Navigating to /admin/bookings');
+      navigate('/admin/bookings');
+    }}
+    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+      isActiveRoute('/admin/bookings')
+        ? 'bg-purple-600 text-white'
+        : 'text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200'
+    }`}
+  >
+    <BookOpen className="h-4 w-4" />
+    <span>All Bookings</span>
+  </button>
+)}
 
                 {/* Add Station Button - For Hosts & Admin */}
                 {(userRole === 'host' || userRole === 'admin') && (

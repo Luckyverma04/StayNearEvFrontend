@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, MapPin, User, Zap, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { bookingService } from '../../services/bookingService';
 import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
@@ -13,17 +12,28 @@ const AdminBookingsPage = () => {
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
 
+  // ✅ ADD THESE CONSOLE LOGS
+  console.log('🔍 AdminBookingsPage RENDERED - User:', user);
+  console.log('🔍 Current URL:', window.location.href);
+
   useEffect(() => {
+    console.log('🔍 AdminBookingsPage USEEFFECT TRIGGERED');
+    console.log('🔍 User role:', user?.role);
+    
     if (user && user.role === 'admin') {
+      console.log('🔍 ✅ User is admin, fetching bookings...');
       fetchAllBookings();
+    } else {
+      console.log('🔍 ❌ User is not admin or not logged in');
     }
   }, [user]);
 
-  // ✅ YEH IMPORTANT: Admin ke liye saari bookings
   const fetchAllBookings = async () => {
     try {
+      console.log('🔍 Starting fetchAllBookings...');
       setLoading(true);
       const token = localStorage.getItem('token');
+      console.log('🔍 Token exists:', !!token);
       
       const response = await fetch('https://staynearevbackend.onrender.com/api/bookings/admin/bookings', {
         headers: {
@@ -32,21 +42,26 @@ const AdminBookingsPage = () => {
         }
       });
 
+      console.log('🔍 API Response status:', response.status);
       const data = await response.json();
       console.log('📦 ADMIN All Bookings API Response:', data);
       
       if (data.success) {
+        console.log('🔍 ✅ Bookings fetched successfully:', data.data?.length);
         setBookings(data.data || []);
       } else {
+        console.log('🔍 ❌ API Error:', data.message);
         setError(data.message || 'Failed to load bookings');
       }
     } catch (err) {
-      console.error('Error fetching all bookings:', err);
+      console.error('❌ Error fetching all bookings:', err);
       setError('Failed to load bookings');
     } finally {
+      console.log('🔍 Fetch completed, setting loading to false');
       setLoading(false);
     }
   };
+
 
   const getStatusBadge = (status) => {
     const statusConfig = {
