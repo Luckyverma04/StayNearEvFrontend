@@ -92,11 +92,14 @@ const BookingModal = ({ station, isOpen, onClose, onSuccess }) => {
       
       if (startTimeValue && endTimeValue) {
         const duration = calculateDuration(startTimeValue, endTimeValue);
-        const startDateTime = `${selectedDate}T${startTimeValue}:00.000Z`;
+        
+        // ✅ FIXED: Convert local time to proper ISO string
+        const localDateTimeString = `${selectedDate}T${startTimeValue}`;
+        const utcDateTime = new Date(localDateTimeString).toISOString();
         
         setBookingData(prev => ({
           ...prev,
-          startTime: startDateTime,
+          startTime: utcDateTime, // ✅ Now correctly converted to UTC
           duration: duration
         }));
       }
@@ -154,10 +157,19 @@ const BookingModal = ({ station, isOpen, onClose, onSuccess }) => {
         ? parseFloat(bookingData.vehicleInfo.batteryCapacity) 
         : undefined;
 
+      // ✅ FIXED: Convert local time to proper ISO string
+      const localDateTimeString = `${selectedDate}T${selectedStartTime}`;
+      const utcDateTime = new Date(localDateTimeString).toISOString();
+      
+      console.log('🕒 TIME DEBUGGING:');
+      console.log('Local time selected:', localDateTimeString);
+      console.log('Converted to UTC:', utcDateTime);
+      console.log('Back to local for display:', new Date(utcDateTime).toString());
+
       // Final booking data (matches backend API EXACTLY)
       const finalBookingData = {
         stationId: station._id,
-        startTime: `${selectedDate}T${selectedStartTime}:00.000Z`,
+        startTime: utcDateTime, // ✅ Now correctly converted to UTC
         duration: bookingData.duration,
         vehicleInfo: {
           licensePlate: bookingData.vehicleInfo.licensePlate, // ✅ Required by backend
