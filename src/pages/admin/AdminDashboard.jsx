@@ -28,30 +28,30 @@ const API_URL = 'https://staynearevbackend.onrender.com/api';
   }
 
   // Fetch all hosts
-  const fetchHosts = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/users/hosts`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+ const fetchHosts = async () => {
+  try {
+    setLoading(true);
+    setError('');
 
-      if (response.data.success) {
-        // Handle both response formats
-setHosts(response.data.hosts || []);
-        setHosts(hostsData);
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/users/hosts`, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    } catch (err) {
-      console.error('Error fetching hosts:', err);
-      setError(err.response?.data?.message || 'Failed to fetch hosts');
-    } finally {
-      setLoading(false);
+    });
+
+    if (response.data.success) {
+      setHosts(response.data.hosts || []);
     }
-  };
+
+  } catch (err) {
+    console.error('Error fetching hosts:', err);
+    setError(err.response?.data?.message || 'Failed to fetch hosts');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // Verify host
   const handleVerifyHost = async (hostId) => {
