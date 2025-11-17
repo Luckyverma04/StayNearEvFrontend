@@ -42,7 +42,7 @@ const API_URL = 'https://staynearevbackend.onrender.com/api';
 
       if (response.data.success) {
         // Handle both response formats
-        const hostsData = response.data.data?.hosts || response.data.data || [];
+setHosts(response.data.hosts || []);
         setHosts(hostsData);
       }
     } catch (err) {
