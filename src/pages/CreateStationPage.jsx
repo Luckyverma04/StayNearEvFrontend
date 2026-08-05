@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { stationService } from "../services/stationService";
 import { useAuth } from "../context/AuthContext";
 import LoadingSpinner from "../components/common/LoadingSpinner";
-import { Zap, MapPin, FileText, IndianRupee, ImagePlus, Lock } from "lucide-react";
+import { Zap, MapPin, IndianRupee, ImagePlus, Lock } from "lucide-react";
 
 /* Same clearance as the other pages — your navbar is fixed */
 const NAVBAR_CLEARANCE = "pt-32";
@@ -32,16 +32,6 @@ const CreateStationPage = () => {
   });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [accessDenied, setAccessDenied] = useState(false);
-
-  // ✅ Check if user has permission to create stations
-  useEffect(() => {
-    if (!authLoading && user) {
-      if (user.role !== "host" && user.role !== "admin") {
-        setAccessDenied(true);
-      }
-    }
-  }, [user, authLoading]);
 
   // ✅ Handle text input changes
   const handleChange = (e) => {
@@ -53,12 +43,12 @@ const CreateStationPage = () => {
     setImages(Array.from(e.target.files));
   };
 
-  // ✅ Submit form
+  // ✅ Submit form — koi bhi logged-in user station bana sakta hai
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!user || (user.role !== "host" && user.role !== "admin")) {
-      alert("Access denied. Only hosts and admins can create stations.");
+    if (!user) {
+      alert("Please login to create a station.");
       return;
     }
 
@@ -109,8 +99,8 @@ const CreateStationPage = () => {
     );
   }
 
-  // ✅ Show access denied message
-  if (accessDenied || !user) {
+  // ✅ Sirf logged out user ko roko
+  if (!user) {
     return (
       <div
         className={`min-h-screen bg-slate-950 flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`}
@@ -120,21 +110,17 @@ const CreateStationPage = () => {
           <div className="bg-red-500/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock className="h-8 w-8 text-red-400" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-3">Access denied</h1>
+          <h1 className="text-2xl font-bold text-white mb-3">Login required</h1>
           <p className="text-slate-400 mb-6">
-            {!user
-              ? "Please login to create charging stations."
-              : "You need to be a host or admin to create charging stations."}
+            Please login to add a charging station.
           </p>
           <div className="flex gap-3 justify-center">
-            {!user && (
-              <button
-                onClick={() => navigate("/login")}
-                className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-xl transition-colors"
-              >
-                Login
-              </button>
-            )}
+            <button
+              onClick={() => navigate("/login")}
+              className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-xl transition-colors"
+            >
+              Login
+            </button>
             <button
               onClick={() => navigate("/")}
               className="px-5 py-2.5 border border-slate-700 text-slate-300 hover:bg-slate-800 rounded-xl transition-colors font-medium"

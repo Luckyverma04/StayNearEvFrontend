@@ -173,11 +173,7 @@ const HomePage = () => {
   const goNext = () =>
     setActiveIndex((i) => Math.min(filteredStations.length - 1, i + 1));
 
-  const canManageStation = (station) =>
-    user &&
-    (user.role === "admin" ||
-      (user.role === "host" && station.host?._id === user._id) ||
-      (user.role === "host" && station.host === user._id));
+  const canManageStation = () => user?.role === "admin";
 
   const filterChips = [
     { key: "fast", label: "Fast chargers", emoji: "⚡" },

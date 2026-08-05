@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  Zap, LogOut, Menu, X, Home, Plus, Crown, Shield, Battery,
-  Calendar, Settings, LayoutDashboard, BookOpen,
+  Zap, LogOut, Menu, X, Home, Plus, Crown, Battery,
+  Calendar, LayoutDashboard, BookOpen,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -26,8 +26,6 @@ const Navbar = () => {
   const [indicator, setIndicator] = useState({ left: 0, width: 0, opacity: 0 });
   const [hoveredPath, setHoveredPath] = useState(null);
 
-  /* How long the pill must rest on a link before that page auto-opens.
-     Matches the pill's slide duration so it feels like "pill lands → page opens". */
   const HOVER_OPEN_DELAY = 450;
 
   const getRoleBadge = (role) => {
@@ -36,11 +34,6 @@ const Navbar = () => {
         icon: <Crown className="h-3 w-3" />,
         gradient: 'linear-gradient(135deg, #a855f7, #6366f1)',
         label: 'ADMIN',
-      },
-      host: {
-        icon: <Shield className="h-3 w-3" />,
-        gradient: 'linear-gradient(135deg, #3b82f6, #06b6d4)',
-        label: 'HOST',
       },
       customer: {
         icon: <Battery className="h-3 w-3" />,
@@ -56,7 +49,7 @@ const Navbar = () => {
   const isActiveRoute = (path) =>
     currentPage === path || currentPage.startsWith(path + '/');
 
-  /* Build nav links for the current role — same logic, one place */
+  /* Build nav links for the current role */
   const navLinks = [];
   if (user) {
     navLinks.push({ path: '/', label: 'Home', icon: Home, active: currentPage === '/' });
@@ -76,23 +69,21 @@ const Navbar = () => {
       });
     }
 
-    if (userRole === 'customer') {
-      navLinks.push({
-        path: '/my-bookings',
-        label: 'My Bookings',
-        icon: Calendar,
-        active: isActiveRoute('/my-bookings'),
-      });
-    }
+    // My Bookings sabko — admin bhi book kar sakta hai
+    navLinks.push({
+      path: '/my-bookings',
+      label: 'My Bookings',
+      icon: Calendar,
+      active: isActiveRoute('/my-bookings'),
+    });
 
-    if (userRole === 'host') {
-      navLinks.push({
-        path: '/host/bookings',
-        label: 'Manage Bookings',
-        icon: Settings,
-        active: isActiveRoute('/host/bookings'),
-      });
-    }
+    // Apni stations par aayi bookings
+    navLinks.push({
+      path: '/my-station-bookings',
+      label: 'Station Bookings',
+      icon: BookOpen,
+      active: isActiveRoute('/my-station-bookings'),
+    });
   }
 
   /* Move the pill to a given link's position */
@@ -109,7 +100,6 @@ const Navbar = () => {
     });
   }, []);
 
-  /* The pill follows hover; when nothing is hovered it rests on the active link */
   const targetPath =
     hoveredPath || navLinks.find((l) => l.active)?.path || null;
 
@@ -121,7 +111,6 @@ const Navbar = () => {
     }
   }, [targetPath, moveIndicatorTo, user, userRole, currentPage]);
 
-  /* Recalculate on window resize so the pill stays aligned */
   useEffect(() => {
     const onResize = () => targetPath && moveIndicatorTo(targetPath);
     window.addEventListener('resize', onResize);
@@ -133,8 +122,6 @@ const Navbar = () => {
     setShowMenu(false);
   };
 
-  /* Hover a link → pill slides there → after it settles, the page opens
-     automatically. Moving to another link cancels and restarts the timer. */
   const handleLinkEnter = (link) => {
     setHoveredPath(link.path);
     clearTimeout(hoverTimerRef.current);
@@ -145,13 +132,11 @@ const Navbar = () => {
     }
   };
 
-  /* Leaving the nav cancels any pending auto-open */
   const handleNavLeave = () => {
     setHoveredPath(null);
     clearTimeout(hoverTimerRef.current);
   };
 
-  /* Safety: clear pending timer if the navbar unmounts */
   useEffect(() => {
     return () => clearTimeout(hoverTimerRef.current);
   }, []);
@@ -191,7 +176,6 @@ const Navbar = () => {
               onMouseLeave={handleNavLeave}
               className="hidden md:flex relative items-center gap-1 bg-white/[0.04] border border-white/[0.08] rounded-full p-1"
             >
-              {/* The sliding pill — glides smoothly behind whichever link is hovered/active */}
               <span
                 aria-hidden="true"
                 className="absolute top-1 bottom-1 rounded-full pointer-events-none"
@@ -230,19 +214,18 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-3">
             {user ? (
               <>
-                {(userRole === 'host' || userRole === 'admin') && (
-                  <button
-                    onClick={() => go('/stations/create')}
-                    className="flex items-center gap-1.5 px-4 py-2 text-slate-950 rounded-xl font-semibold text-sm transition-all duration-200 hover:scale-[1.05] hover:shadow-xl"
-                    style={{
-                      background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
-                      boxShadow: `0 8px 24px -8px ${ACCENT}70`,
-                    }}
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span>Add Station</span>
-                  </button>
-                )}
+                {/* Ab har logged-in user station add kar sakta hai */}
+                <button
+                  onClick={() => go('/stations/create')}
+                  className="flex items-center gap-1.5 px-4 py-2 text-slate-950 rounded-xl font-semibold text-sm transition-all duration-200 hover:scale-[1.05] hover:shadow-xl"
+                  style={{
+                    background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                    boxShadow: `0 8px 24px -8px ${ACCENT}70`,
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Add Station</span>
+                </button>
 
                 <div className="flex items-center gap-2.5 pl-3 pr-2 py-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04]">
                   <div
@@ -291,7 +274,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu — slides down smoothly */}
+      {/* Mobile menu */}
       <div
         className="md:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-out bg-[#020617]/95 backdrop-blur-xl border-t border-white/[0.08]"
         style={{ maxHeight: showMenu ? 520 : 0, opacity: showMenu ? 1 : 0 }}
@@ -337,19 +320,17 @@ const Navbar = () => {
                 </button>
               ))}
 
-              {(userRole === 'host' || userRole === 'admin') && (
-                <button
-                  onClick={() => go('/stations/create')}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-slate-950 rounded-xl font-semibold"
-                  style={{
-                    background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
-                    boxShadow: `0 8px 24px -8px ${ACCENT}70`,
-                  }}
-                >
-                  <Plus className="h-5 w-5" />
-                  Add Charging Station
-                </button>
-              )}
+              <button
+                onClick={() => go('/stations/create')}
+                className="w-full flex items-center gap-3 px-4 py-3 text-slate-950 rounded-xl font-semibold"
+                style={{
+                  background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                  boxShadow: `0 8px 24px -8px ${ACCENT}70`,
+                }}
+              >
+                <Plus className="h-5 w-5" />
+                Add Charging Station
+              </button>
 
               <button
                 onClick={() => {

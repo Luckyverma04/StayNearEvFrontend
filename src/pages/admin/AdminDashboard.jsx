@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Shield, CheckCircle, Clock, Mail, User, AlertCircle, Search,
-  RefreshCw, X, CheckCircle2, AlertTriangle,
+  RefreshCw, X, CheckCircle2, AlertTriangle, Crown,
 } from 'lucide-react';
-import axios from 'axios';
+import authService from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
 
 /* ─── Design tokens (same as the rest of the site) ─── */
@@ -85,17 +85,14 @@ const SlidingTabs = ({ tabs, active, onChange }) => {
 
 const AdminDashboard = () => {
   const { user } = useAuth();
-  const [hosts, setHosts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all'); // all, verified, unverified
   const [searchQuery, setSearchQuery] = useState('');
-  const [verifyingHost, setVerifyingHost] = useState(null);
-  const [verifyTarget, setVerifyTarget] = useState(null); // host pending confirm
+  const [verifyingId, setVerifyingId] = useState(null);
+  const [verifyTarget, setVerifyTarget] = useState(null); // user pending confirm
   const [toast, setToast] = useState(null);
-
-  // Backend URL - Change if needed
-  const API_URL = 'https://staynearevbackend.onrender.com/api';
 
   useEffect(() => {
     if (!toast) return;
@@ -105,101 +102,88 @@ const AdminDashboard = () => {
 
   const showToast = (type, message) => setToast({ type, message });
 
-  // Fetch all hosts
-  const fetchHosts = async () => {
+  // Fetch all users
+  const fetchUsers = async () => {
     try {
       setLoading(true);
       setError('');
 
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/users/hosts`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const result = await authService.getAllUsers();
 
-      if (response.data.success) {
-        setHosts(response.data.hosts || []);
+      if (result.success) {
+        setUsers(result.data || []);
+      } else {
+        setError(result.message || 'Failed to fetch users');
       }
     } catch (err) {
-      console.error('Error fetching hosts:', err);
-      setError(err.response?.data?.message || 'Failed to fetch hosts');
+      console.error('Error fetching users:', err);
+      setError(err.response?.data?.message || 'Failed to fetch users');
     } finally {
       setLoading(false);
     }
   };
 
-  // Verify host — confirmed from the modal (replaces window.confirm)
-  const confirmVerifyHost = async () => {
+  // Verify user — confirmed from the modal
+  const confirmVerifyUser = async () => {
     if (!verifyTarget) return;
-    const hostId = verifyTarget._id;
+    const userId = verifyTarget._id;
+
     try {
-      setVerifyingHost(hostId);
+      setVerifyingId(userId);
       setVerifyTarget(null);
-      const token = localStorage.getItem('token');
 
-      const response = await axios.put(
-        `${API_URL}/users/verify-host/${hostId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const result = await authService.verifyUserByAdmin(userId);
 
-      if (response.data.success) {
-        setHosts(
-          hosts.map((host) =>
-            host._id === hostId
-              ? {
-                  ...host,
-                  hostInfo: { ...host.hostInfo, isVerified: true },
-                  isEmailVerified: true,
-                }
-              : host
+      if (result.success) {
+        setUsers((prev) =>
+          prev.map((u) =>
+            u._id === userId
+              ? { ...u, isEmailVerified: true, verifiedByAdmin: true }
+              : u
           )
         );
-        showToast('success', 'Host verified successfully.');
+        showToast('success', 'User verified successfully.');
+      } else {
+        showToast('error', result.message || 'Failed to verify user.');
       }
     } catch (err) {
-      console.error('Error verifying host:', err);
-      showToast('error', err.response?.data?.message || 'Failed to verify host.');
+      console.error('Error verifying user:', err);
+      showToast('error', err.response?.data?.message || 'Failed to verify user.');
     } finally {
-      setVerifyingHost(null);
+      setVerifyingId(null);
     }
   };
 
   useEffect(() => {
-    fetchHosts();
+    fetchUsers();
   }, []);
 
-  // Filter hosts
-  const filteredHosts = hosts.filter((host) => {
+  // Filter users
+  const filteredUsers = users.filter((u) => {
     const matchesFilter =
       filter === 'all'
         ? true
         : filter === 'verified'
-        ? host.hostInfo?.isVerified
+        ? u.isEmailVerified
         : filter === 'unverified'
-        ? !host.hostInfo?.isVerified
+        ? !u.isEmailVerified
         : true;
 
     const matchesSearch =
       searchQuery === ''
         ? true
-        : host.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          host.email?.toLowerCase().includes(searchQuery.toLowerCase());
+        : u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          u.email?.toLowerCase().includes(searchQuery.toLowerCase());
 
     return matchesFilter && matchesSearch;
   });
 
   // Stats
   const stats = {
-    total: hosts.length,
-    verified: hosts.filter((h) => h.hostInfo?.isVerified).length,
-    unverified: hosts.filter((h) => !h.hostInfo?.isVerified).length,
-    emailVerified: hosts.filter((h) => h.isEmailVerified).length,
+    total: users.length,
+    verified: users.filter((u) => u.isEmailVerified).length,
+    unverified: users.filter((u) => !u.isEmailVerified).length,
+    admins: users.filter((u) => u.role === 'admin').length,
   };
 
   const filterTabs = [
@@ -253,34 +237,44 @@ const AdminDashboard = () => {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#F8FAFC] tracking-tight flex items-center gap-3">
-            <span
-              className="p-2.5 rounded-xl inline-flex"
-              style={{
-                background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
-                boxShadow: `0 8px 20px -8px ${ACCENT}60`,
-              }}
-            >
-              <Shield className="h-7 w-7 text-slate-950" />
-            </span>
-            Admin dashboard
-          </h1>
-          <p className="text-[#94A3B8] mt-2">Manage and verify hosts</p>
+        <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#F8FAFC] tracking-tight flex items-center gap-3">
+              <span
+                className="p-2.5 rounded-xl inline-flex"
+                style={{
+                  background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                  boxShadow: `0 8px 20px -8px ${ACCENT}60`,
+                }}
+              >
+                <Shield className="h-7 w-7 text-slate-950" />
+              </span>
+              Admin dashboard
+            </h1>
+            <p className="text-[#94A3B8] mt-2">Manage users and email verification</p>
+          </div>
+
+          <button
+            onClick={fetchUsers}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/[0.08] bg-white/[0.04] text-[#94A3B8] text-sm font-medium hover:text-[#F8FAFC] hover:bg-white/[0.06] transition-colors"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </button>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <StatCard label="Total hosts" value={stats.total} icon={<User className="h-6 w-6 text-blue-400" />} iconBg="bg-blue-500/10" />
+          <StatCard label="Total users" value={stats.total} icon={<User className="h-6 w-6 text-blue-400" />} iconBg="bg-blue-500/10" />
           <StatCard
-            label="Verified hosts"
+            label="Email verified"
             value={stats.verified}
             icon={<CheckCircle className="h-6 w-6" style={{ color: ACCENT }} />}
             iconBg="bg-[#00E5A8]/10"
             accent
           />
           <StatCard label="Pending verification" value={stats.unverified} icon={<Clock className="h-6 w-6 text-yellow-400" />} iconBg="bg-yellow-500/10" />
-          <StatCard label="Email verified" value={stats.emailVerified} icon={<Mail className="h-6 w-6 text-violet-400" />} iconBg="bg-violet-500/10" />
+          <StatCard label="Admins" value={stats.admins} icon={<Crown className="h-6 w-6 text-violet-400" />} iconBg="bg-violet-500/10" />
         </div>
 
         {/* Search + sliding pill filters */}
@@ -320,7 +314,7 @@ const AdminDashboard = () => {
               {error}
             </span>
             <button
-              onClick={fetchHosts}
+              onClick={fetchUsers}
               className="inline-flex items-center gap-1.5 text-sm font-medium hover:underline underline-offset-4"
             >
               <RefreshCw className="h-3.5 w-3.5" />
@@ -329,16 +323,16 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* Hosts Table */}
+        {/* Users Table */}
         <div className="bg-[#0F172A]/80 backdrop-blur rounded-2xl shadow-xl border border-white/[0.08] overflow-hidden">
-          {filteredHosts.length === 0 ? (
+          {filteredUsers.length === 0 ? (
             <div className="text-center py-14">
               <div className="bg-white/[0.04] h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <User className="h-8 w-8 text-slate-600" />
               </div>
-              <h3 className="text-lg font-semibold text-[#F8FAFC] mb-2">No hosts found</h3>
+              <h3 className="text-lg font-semibold text-[#F8FAFC] mb-2">No users found</h3>
               <p className="text-[#94A3B8] text-sm">
-                {searchQuery ? 'Try adjusting your search' : 'No hosts registered yet'}
+                {searchQuery ? 'Try adjusting your search' : 'No users registered yet'}
               </p>
             </div>
           ) : (
@@ -346,7 +340,7 @@ const AdminDashboard = () => {
               <table className="w-full">
                 <thead className="bg-white/[0.03] border-b border-white/[0.06]">
                   <tr>
-                    {['Host info', 'Contact', 'Email status', 'Verification status', 'Actions'].map((h) => (
+                    {['User', 'Email', 'Role', 'Email status', 'Joined', 'Actions'].map((h) => (
                       <th
                         key={h}
                         className="px-6 py-3.5 text-left text-xs font-semibold text-[#94A3B8] uppercase tracking-wider"
@@ -357,65 +351,86 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.05]">
-                  {filteredHosts.map((host) => (
-                    <tr key={host._id} className="hover:bg-white/[0.03] transition-colors">
+                  {filteredUsers.map((u) => (
+                    <tr key={u._id} className="hover:bg-white/[0.03] transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div
                             className="h-10 w-10 rounded-full flex items-center justify-center text-slate-950 font-bold"
                             style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
                           >
-                            {host.name?.charAt(0).toUpperCase()}
+                            {u.name?.charAt(0).toUpperCase()}
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-semibold text-[#F8FAFC]">{host.name}</div>
-                            <div className="text-xs text-slate-500">ID: {host._id.slice(-6)}</div>
+                            <div className="text-sm font-semibold text-[#F8FAFC]">{u.name}</div>
+                            <div className="text-xs text-slate-500">ID: {u._id.slice(-6)}</div>
                           </div>
                         </div>
                       </td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-[#F8FAFC]">{host.email}</div>
-                        {host.phone && <div className="text-xs text-[#94A3B8]">{host.phone}</div>}
+                        <div className="text-sm text-[#F8FAFC]">{u.email}</div>
                       </td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {host.isEmailVerified ? (
-                          <StatusPill accent icon={<CheckCircle className="h-3 w-3" />} label="Verified" />
+                        {u.role === 'admin' ? (
+                          <span
+                            className="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-full text-white"
+                            style={{ background: 'linear-gradient(135deg, #a855f7, #6366f1)' }}
+                          >
+                            <Crown className="h-3 w-3" />
+                            ADMIN
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full border border-white/[0.08] bg-white/[0.04] text-[#94A3B8]">
+                            CUSTOMER
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {u.isEmailVerified ? (
+                          <StatusPill
+                            accent
+                            icon={<CheckCircle className="h-3 w-3" />}
+                            label={u.verifiedByAdmin ? 'Verified by admin' : 'Verified'}
+                          />
                         ) : (
                           <StatusPill tone="yellow" icon={<Clock className="h-3 w-3" />} label="Pending" />
                         )}
                       </td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {host.hostInfo?.isVerified ? (
-                          <StatusPill accent icon={<CheckCircle className="h-3 w-3" />} label="Verified host" />
-                        ) : (
-                          <StatusPill tone="orange" icon={<Clock className="h-3 w-3" />} label="Not verified" />
-                        )}
+                        <span className="text-sm text-[#94A3B8]">
+                          {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}
+                        </span>
                       </td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {!host.hostInfo?.isVerified ? (
+                        {!u.isEmailVerified ? (
                           <button
-                            onClick={() => setVerifyTarget(host)}
-                            disabled={verifyingHost === host._id}
+                            onClick={() => setVerifyTarget(u)}
+                            disabled={verifyingId === u._id}
                             className="inline-flex items-center gap-2 px-4 py-2 text-slate-950 text-sm font-semibold rounded-xl transition-all hover:scale-[1.03] disabled:opacity-50 disabled:cursor-not-allowed"
                             style={{
                               background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
                               boxShadow: `0 8px 20px -8px ${ACCENT}70`,
                             }}
                           >
-                            {verifyingHost === host._id ? (
+                            {verifyingId === u._id ? (
                               <>
                                 <RefreshCw className="h-4 w-4 animate-spin" />
                                 Verifying…
                               </>
                             ) : (
                               <>
-                                <CheckCircle className="h-4 w-4" />
-                                Verify host
+                                <Mail className="h-4 w-4" />
+                                Verify email
                               </>
                             )}
                           </button>
                         ) : (
-                          <span className="text-sm text-[#94A3B8] font-medium">Already verified</span>
+                          <span className="text-sm text-[#94A3B8] font-medium">No action needed</span>
                         )}
                       </td>
                     </tr>
@@ -428,12 +443,12 @@ const AdminDashboard = () => {
 
         {/* Footer Info */}
         <div className="mt-6 text-center text-sm text-[#94A3B8]">
-          Showing <span className="font-semibold text-[#F8FAFC]">{filteredHosts.length}</span> of{' '}
-          <span className="font-semibold text-[#F8FAFC]">{hosts.length}</span> hosts
+          Showing <span className="font-semibold text-[#F8FAFC]">{filteredUsers.length}</span> of{' '}
+          <span className="font-semibold text-[#F8FAFC]">{users.length}</span> users
         </div>
       </div>
 
-      {/* ══════ VERIFY CONFIRMATION MODAL (replaces window.confirm) ══════ */}
+      {/* ══════ VERIFY CONFIRMATION MODAL ══════ */}
       {verifyTarget && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm"
@@ -445,12 +460,12 @@ const AdminDashboard = () => {
         >
           <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 shadow-2xl">
             <div className="bg-[#00E5A8]/10 h-12 w-12 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="h-6 w-6" style={{ color: ACCENT }} />
+              <Mail className="h-6 w-6" style={{ color: ACCENT }} />
             </div>
-            <h2 className="text-lg font-bold text-[#F8FAFC] mb-1">Verify this host?</h2>
+            <h2 className="text-lg font-bold text-[#F8FAFC] mb-1">Verify this user?</h2>
             <p className="text-[#94A3B8] text-sm mb-6">
-              <span className="font-medium text-[#F8FAFC]">{verifyTarget.name}</span> will be marked
-              as a verified host and can list stations.
+              <span className="font-medium text-[#F8FAFC]">{verifyTarget.name}</span> ({verifyTarget.email})
+              will be marked as email verified and can log in without an OTP.
             </p>
             <div className="flex gap-3">
               <button
@@ -460,7 +475,7 @@ const AdminDashboard = () => {
                 Cancel
               </button>
               <button
-                onClick={confirmVerifyHost}
+                onClick={confirmVerifyUser}
                 className="flex-1 px-4 py-2.5 rounded-xl text-slate-950 font-semibold transition-all hover:scale-[1.02]"
                 style={{
                   background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
@@ -474,7 +489,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* ══════ TOAST (replaces every alert) ══════ */}
+      {/* ══════ TOAST ══════ */}
       {toast && (
         <div className="fixed top-24 right-4 z-[60] max-w-sm w-full">
           <div

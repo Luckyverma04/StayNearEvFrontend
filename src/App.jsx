@@ -9,10 +9,11 @@ import StationDetailPage from "./pages/StationDetailPage";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 import CreateStationPage from "./pages/CreateStationPage";
 import MyBookingsPage from './pages/MyBookingPage';
-import HostBookingsPage from './pages/HostBookingPage';
-import EmailVerification from './components/auth/EmailVerification';
+import MyStationBookingsPage from './pages/MyStationBookingsPage';
+import VerifyOtpPage from './pages/VerifyOtpPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminBookingsPage from './pages/admin/AdminBookingsPage'; 
+import AdminBookingsPage from './pages/admin/AdminBookingsPage';
+
 const AppContent = () => {
   const { user, loading } = useAuth();
 
@@ -26,14 +27,14 @@ const AppContent = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Don't show navbar on login and email verification pages */}
+      {/* Don't show navbar on login and OTP verification pages */}
       {user && <Navbar />}
-      
+
       <Routes>
         {/* ✅ PUBLIC ROUTES - Available to everyone */}
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/verify-email" element={<EmailVerification />} />
-        
+        <Route path="/verify-otp" element={<VerifyOtpPage />} />
+
         {!user ? (
           /* If not logged in, redirect to login */
           <Route path="*" element={<Navigate to="/login" replace />} />
@@ -45,7 +46,7 @@ const AppContent = () => {
             <Route path="/stations/edit/:id" element={<EditStationPage />} />
             <Route path="/stations/create" element={<CreateStationPage />} />
             <Route path="/my-bookings" element={<MyBookingsPage />} />
-            <Route path="/host/bookings" element={<HostBookingsPage />} />
+            <Route path="/my-station-bookings" element={<MyStationBookingsPage />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/bookings" element={<AdminBookingsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />

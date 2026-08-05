@@ -17,7 +17,24 @@ const gridStyle = {
   backgroundSize: '48px 48px',
 };
 
-const FILTERS = ['all', 'pending', 'confirmed', 'completed', 'cancelled'];
+const FILTERS = ['all', 'pending', 'confirmed', 'active', 'completed', 'cancelled'];
+
+/* Response ka shape kuch bhi ho — array dhoond ke nikaal lo.
+   axios pura response de sakta hai, ya sirf response.data,
+   aur backend {success, data:[...]} bhejta hai. */
+const extractBookings = (res) => {
+  const candidates = [
+    res,
+    res?.data,
+    res?.data?.data,
+    res?.bookings,
+    res?.data?.bookings,
+  ];
+  for (const c of candidates) {
+    if (Array.isArray(c)) return c;
+  }
+  return [];
+};
 
 /* ── Sliding pill tabs — same interaction as the navbar ── */
 const SlidingTabs = ({ tabs, active, onChange }) => {
@@ -121,9 +138,10 @@ const MyBookingsPage = () => {
       setError('');
       const response = await bookingService.getUserBookings();
 
-      // Handle different response structures
-      const bookingsData = response.data || response.bookings || response || [];
-      setBookings(Array.isArray(bookingsData) ? bookingsData : []);
+      console.log('📦 My bookings response:', response);
+
+      const bookingsData = extractBookings(response);
+      setBookings(bookingsData);
     } catch (err) {
       console.error('Error fetching bookings:', err);
       setError(err.response?.data?.message || 'Failed to load bookings');
@@ -173,6 +191,11 @@ const MyBookingsPage = () => {
       confirmed: {
         classes: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
         icon: CheckCircle,
+      },
+      active: {
+        classes: 'bg-[#00E5A8]/10 border-[#00E5A8]/30',
+        style: { color: ACCENT },
+        icon: Zap,
       },
       completed: {
         classes: 'bg-[#00E5A8]/10 border-[#00E5A8]/30',
@@ -320,9 +343,18 @@ const MyBookingsPage = () => {
       />
 
       <div className="relative max-w-6xl mx-auto px-4 py-8 pb-20">
-        <h1 className="text-3xl md:text-4xl font-bold text-[#F8FAFC] tracking-tight mb-6">
-          My bookings
-        </h1>
+        <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#F8FAFC] tracking-tight">
+            My bookings
+          </h1>
+          <button
+            onClick={fetchBookings}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/[0.08] bg-white/[0.04] text-[#94A3B8] text-sm font-medium hover:text-[#F8FAFC] hover:bg-white/[0.06] transition-colors"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </button>
+        </div>
 
         {/* Sliding pill filters — same feel as the navbar */}
         <div className="mb-8">
@@ -379,7 +411,7 @@ const MyBookingsPage = () => {
                       {getStatusBadge(booking.status)}
                       {booking.totalCost && (
                         <p className="text-lg font-bold" style={{ color: ACCENT }}>
-                          ₹{booking.totalCost}
+                          ₹{Number(booking.totalCost).toFixed(2)}
                         </p>
                       )}
                     </div>
@@ -418,7 +450,7 @@ const MyBookingsPage = () => {
                   {/* Vehicle Information */}
                   {(booking.vehicleInfo?.licensePlate ||
                     booking.vehicleInfo?.vehicleType ||
-                    booking.vehicleInfo?.vehicleModel ||
+                    booking.vehicleInfo?.model ||
                     booking.vehicleInfo?.batteryCapacity) && (
                     <div className="mb-4">
                       <h4 className="font-medium text-[#F8FAFC] mb-2 text-sm">Vehicle information</h4>
@@ -435,10 +467,10 @@ const MyBookingsPage = () => {
                             {booking.vehicleInfo.vehicleType}
                           </p>
                         )}
-                        {booking.vehicleInfo?.vehicleModel && (
+                        {booking.vehicleInfo?.model && (
                           <p>
                             <span className="font-medium text-[#F8FAFC]">Model:</span>{' '}
-                            {booking.vehicleInfo.vehicleModel}
+                            {booking.vehicleInfo.model}
                           </p>
                         )}
                         {booking.vehicleInfo?.batteryCapacity && (
@@ -462,7 +494,7 @@ const MyBookingsPage = () => {
                       </button>
                     )}
 
-                    {booking.status === 'pending' && (
+                    {['pending', 'confirmed'].includes(booking.status) && (
                       <button
                         onClick={() => setCancelTarget(booking)}
                         disabled={cancellingId === booking._id}
@@ -475,7 +507,7 @@ const MyBookingsPage = () => {
                       </button>
                     )}
 
-                    {booking.status === 'completed' && !booking.reviewed && (
+                    {booking.status === 'completed' && !booking.rating && (
                       <button
                         onClick={() => setReviewingBooking(booking)}
                         className="px-4 py-2 text-slate-950 rounded-xl transition-all hover:scale-[1.03] text-sm font-semibold"
@@ -495,7 +527,7 @@ const MyBookingsPage = () => {
         )}
       </div>
 
-      {/* ══════ CANCEL CONFIRMATION MODAL (replaces window.confirm) ══════ */}
+      {/* ══════ CANCEL CONFIRMATION MODAL ══════ */}
       {cancelTarget && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm"
@@ -612,7 +644,7 @@ const MyBookingsPage = () => {
         </div>
       )}
 
-      {/* ══════ TOAST (replaces every alert) ══════ */}
+      {/* ══════ TOAST ══════ */}
       {toast && (
         <div className="fixed top-24 right-4 z-[60] max-w-sm w-full">
           <div

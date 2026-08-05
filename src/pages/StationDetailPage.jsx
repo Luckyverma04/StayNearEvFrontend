@@ -10,10 +10,7 @@ import ReviewForm from '../components/common/ReviewForm';
 import ReviewList from '../components/common/ReviewList';
 import BookingModal from '../components/common/BookingModel';
 
-/* ─── Design tokens ───────────────────────────────────────────────
-   bg #020617 · cards #0F172A · borders rgba(255,255,255,.08)
-   accent #00E5A8 · hover #06D6A0 · text #F8FAFC · secondary #94A3B8
-────────────────────────────────────────────────────────────────── */
+/* ─── Design tokens ─── */
 const ACCENT = '#00E5A8';
 const NAVBAR_CLEARANCE = 'pt-28';
 
@@ -38,10 +35,8 @@ const StationDetailPage = () => {
   const [editingReview, setEditingReview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Toast replaces every alert() — auto-dismisses after 3.5s
   const [toast, setToast] = useState(null);
 
-  // Review delete confirmation (replaces window.confirm)
   const [reviewToDelete, setReviewToDelete] = useState(null);
   const [deletingReview, setDeletingReview] = useState(false);
 
@@ -121,21 +116,17 @@ const StationDetailPage = () => {
     return '₹16';
   };
 
-  const getStationHostId = () => {
-    if (!station) return undefined;
-    return station.host?._id || station.host || station.hostId || station.hostID;
+  /* Station kisne banaya — id nikalo (populate hua ho ya na hua ho) */
+  const getStationOwnerId = () => {
+    if (!station || !station.createdBy) return undefined;
+    return station.createdBy._id || station.createdBy;
   };
 
-  const getHostDisplayName = () => {
-    if (!station || !station.host) return 'Unknown Host';
-    const host = station.host;
-    if (host.name) return host.name;
-    if (host.username) return host.username;
-    if (host.fullName) return host.fullName;
-    if (host.firstName && host.lastName) return `${host.firstName} ${host.lastName}`;
-    if (host.email) return host.email;
-    if (typeof host === 'string') return host;
-    return 'Host';
+  const getOwnerDisplayName = () => {
+    const owner = station?.createdBy;
+    if (!owner) return null;
+    if (typeof owner === 'string') return null; // sirf id hai, naam nahi
+    return owner.name || owner.email || 'Station owner';
   };
 
   useEffect(() => {
@@ -234,13 +225,22 @@ const StationDetailPage = () => {
       navigate('/login');
       return;
     }
+    if (isOwnStation) {
+      showToast('error', "You can't book your own station.");
+      return;
+    }
     setShowBookingModal(true);
   };
 
-  const canManageStation =
-    user &&
-    (user.role === 'admin' ||
-      (user.role === 'host' && station?.host?._id === user._id));
+  const ownerId = getStationOwnerId();
+  const currentUserId = user?._id || user?.id;
+
+  /* Apna khud ka station? */
+  const isOwnStation =
+    !!user && !!ownerId && ownerId.toString() === String(currentUserId);
+
+  /* Edit kaun kar sakta hai — admin ya jisne banaya */
+  const canManageStation = !!user && (user.role === 'admin' || isOwnStation);
 
   const userReview = reviews.find((review) => review.user?._id === user?._id);
 
@@ -296,12 +296,10 @@ const StationDetailPage = () => {
 
   const averageRating = calculateAverageRating();
   const totalReviews = reviews.length;
-  const stationHostId = getStationHostId();
-  const hostDisplayName = getHostDisplayName();
+  const ownerDisplayName = getOwnerDisplayName();
 
   return (
     <div className={`min-h-screen bg-[#020617] relative ${NAVBAR_CLEARANCE}`}>
-      {/* keyframes for the hero background fade + zoom */}
       <style>{`
         @keyframes heroBgIn {
           from { opacity: 0; transform: scale(1.15); }
@@ -312,7 +310,6 @@ const StationDetailPage = () => {
       {/* ══════ STATION IMAGE AS BLURRED HERO BACKGROUND ══════ */}
       {heroImage && (
         <div className="absolute inset-x-0 top-0 h-[560px] overflow-hidden pointer-events-none" aria-hidden="true">
-          {/* the image: fades in with a slight zoom */}
           <div
             className="absolute inset-0"
             style={{
@@ -323,7 +320,6 @@ const StationDetailPage = () => {
               filter: 'blur(8px)',
             }}
           />
-          {/* dark gradient overlay — readable text, blends into page bg */}
           <div
             className="absolute inset-0"
             style={{
@@ -337,7 +333,6 @@ const StationDetailPage = () => {
 
       <div className="absolute inset-0" style={gridStyle} aria-hidden="true" />
 
-      {/* accent glow (only when no image, to avoid clutter) */}
       {!heroImage && (
         <div
           className="absolute top-0 left-1/2 -translate-x-1/2 h-[360px] w-[700px] rounded-full opacity-[0.14] blur-[100px] pointer-events-none"
@@ -356,12 +351,22 @@ const StationDetailPage = () => {
           Back to stations
         </button>
 
-        {/* Header — sits on top of the blurred image */}
+        {/* Header */}
         <div className="mb-10">
           <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
-            <h1 className="text-3xl md:text-5xl font-bold text-[#F8FAFC] tracking-tight drop-shadow-lg">
-              {station.name}
-            </h1>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-3xl md:text-5xl font-bold text-[#F8FAFC] tracking-tight drop-shadow-lg">
+                {station.name}
+              </h1>
+              {isOwnStation && (
+                <span
+                  className="px-3 py-1 rounded-full text-xs font-bold text-slate-950"
+                  style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+                >
+                  Your station
+                </span>
+              )}
+            </div>
             {canManageStation && (
               <button
                 onClick={() => setShowEditForm(true)}
@@ -429,11 +434,11 @@ const StationDetailPage = () => {
               </div>
             )}
 
-            {/* Host */}
-            {station.host && (
+            {/* Owner */}
+            {ownerDisplayName && (
               <div className="mb-10 p-5 bg-[#0F172A]/70 backdrop-blur border border-white/[0.08] rounded-2xl shadow-xl">
                 <h2 className="text-sm font-medium text-[#94A3B8] mb-1">Managed by</h2>
-                <p className="text-[#F8FAFC] font-semibold">{hostDisplayName}</p>
+                <p className="text-[#F8FAFC] font-semibold">{ownerDisplayName}</p>
               </div>
             )}
 
@@ -442,7 +447,8 @@ const StationDetailPage = () => {
               <div className="flex justify-between items-center mb-6 flex-wrap gap-3">
                 <h2 className="text-2xl font-bold text-[#F8FAFC]">Customer reviews</h2>
 
-                {user && !showReviewForm && (
+                {/* Apne station par review nahi likh sakte */}
+                {user && !isOwnStation && !showReviewForm && (
                   <button
                     onClick={() =>
                       userReview ? handleEditReview(userReview) : setShowReviewForm(true)
@@ -457,6 +463,13 @@ const StationDetailPage = () => {
                     {userReview ? 'Edit your review' : 'Add review'}
                   </button>
                 )}
+
+                {user && isOwnStation && (
+                  <span className="text-sm text-[#94A3B8]">
+                    You can't review your own station
+                  </span>
+                )}
+
                 {!user && (
                   <button
                     onClick={() => navigate('/login')}
@@ -468,7 +481,7 @@ const StationDetailPage = () => {
                 )}
               </div>
 
-              {showReviewForm && (
+              {showReviewForm && !isOwnStation && (
                 <div className="mb-6">
                   <ReviewForm
                     stationId={stationId}
@@ -484,9 +497,9 @@ const StationDetailPage = () => {
                 reviews={reviews}
                 onEdit={handleEditReview}
                 onDelete={(reviewId) => setReviewToDelete(reviewId)}
-                currentUserId={user?._id || user?.id}
+                currentUserId={currentUserId}
                 currentUserRole={user?.role}
-                stationHostId={stationHostId}
+                stationHostId={ownerId}
                 user={user}
               />
             </div>
@@ -501,21 +514,46 @@ const StationDetailPage = () => {
                 <span className="text-[#94A3B8]">/kWh</span>
               </div>
 
-              <button
-                onClick={handleBookNow}
-                className="w-full text-slate-950 py-3 rounded-xl font-semibold transition-all hover:scale-[1.02] mb-4 flex items-center justify-center gap-2"
-                style={{
-                  background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
-                  boxShadow: `0 10px 28px -10px ${ACCENT}80`,
-                }}
-              >
-                <Zap className="h-5 w-5" />
-                Book charging slot
-              </button>
+              {isOwnStation ? (
+                <>
+                  <button
+                    disabled
+                    className="w-full py-3 rounded-xl font-semibold mb-4 flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] text-slate-500 cursor-not-allowed"
+                  >
+                    <Zap className="h-5 w-5" />
+                    Your own station
+                  </button>
+                  <p className="text-center text-sm text-[#94A3B8] mb-4">
+                    You can't book a station you added. Check{' '}
+                    <button
+                      onClick={() => navigate('/my-station-bookings')}
+                      className="font-medium hover:underline underline-offset-4"
+                      style={{ color: ACCENT }}
+                    >
+                      Station Bookings
+                    </button>{' '}
+                    to manage requests.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={handleBookNow}
+                    className="w-full text-slate-950 py-3 rounded-xl font-semibold transition-all hover:scale-[1.02] mb-4 flex items-center justify-center gap-2"
+                    style={{
+                      background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                      boxShadow: `0 10px 28px -10px ${ACCENT}80`,
+                    }}
+                  >
+                    <Zap className="h-5 w-5" />
+                    Book charging slot
+                  </button>
 
-              <p className="text-center text-sm text-[#94A3B8] mb-4">
-                Reserve your charging time slot
-              </p>
+                  <p className="text-center text-sm text-[#94A3B8] mb-4">
+                    Reserve your charging time slot
+                  </p>
+                </>
+              )}
 
               <div className="space-y-3 mt-6 pt-6 border-t border-white/[0.06]">
                 <div className="flex items-center gap-3 text-sm text-[#94A3B8]">
@@ -649,7 +687,7 @@ const StationDetailPage = () => {
         </div>
       )}
 
-      {/* ══════ TOAST (replaces every alert) ══════ */}
+      {/* ══════ TOAST ══════ */}
       {toast && (
         <div className="fixed top-24 right-4 z-[60] max-w-sm w-full">
           <div

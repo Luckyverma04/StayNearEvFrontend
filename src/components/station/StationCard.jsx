@@ -3,7 +3,7 @@ import { MapPin, Edit, Trash2, Zap, Star } from 'lucide-react';
 
 const ACCENT = '#00E5A8';
 
-const StationCard = ({ station, canManage, onEdit, onDelete, onViewDetails }) => {
+const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetails }) => {
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3002';
 
   // Handles both Cloudinary URLs and old local paths
@@ -21,6 +21,12 @@ const StationCard = ({ station, canManage, onEdit, onDelete, onViewDetails }) =>
   const averageRating = station.averageRating || 0;
   const totalReviews = station.reviews?.length || 0;
   const price = station.pricePerUnit || station.pricePerKwh;
+
+  // Station kisne banaya — populate hua ho to object, warna sirf id
+  const ownerName =
+    typeof station.createdBy === 'object' && station.createdBy !== null
+      ? station.createdBy.name || station.createdBy.email
+      : null;
 
   const renderStars = (rating) => {
     const stars = [];
@@ -67,6 +73,16 @@ const StationCard = ({ station, canManage, onEdit, onDelete, onViewDetails }) =>
         >
           <Zap className="h-10 w-10" />
         </div>
+
+        {/* Apna station hone par badge */}
+        {isOwn && (
+          <span
+            className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold text-slate-950"
+            style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+          >
+            Your station
+          </span>
+        )}
       </div>
 
       {/* ── Body: name → stars → address → price → buttons ── */}
@@ -118,9 +134,9 @@ const StationCard = ({ station, canManage, onEdit, onDelete, onViewDetails }) =>
         <div className="flex items-baseline gap-1 mb-3.5 pb-3.5 border-b border-white/[0.06]">
           <span className="text-lg font-bold text-[#F8FAFC]">₹{price}</span>
           <span className="text-xs text-[#94A3B8]">/kWh</span>
-          {station.host && (
+          {ownerName && (
             <span className="ml-auto text-[11px] text-slate-500 line-clamp-1">
-              by {station.host.name || station.host.email}
+              by {ownerName}
             </span>
           )}
         </div>

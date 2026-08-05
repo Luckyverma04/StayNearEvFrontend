@@ -11,13 +11,39 @@ export const authService = {
     return response.data;
   },
 
-  async verifyEmail(token) {
-    const response = await api.post('/users/verify-email', { token });
+  async verifyOtp(email, otp) {
+    const response = await api.post('/users/verify-otp', { email, otp });
+    return response.data;
+  },
+
+  async resendOtp(email) {
+    const response = await api.post('/users/resend-otp', { email });
     return response.data;
   },
 
   async getProfile() {
     const response = await api.get('/users/profile');
+    return response.data;
+  },
+
+  // ---- Admin ----
+  async getAllUsers() {
+    const response = await api.get('/users/all');
+    return response.data;
+  },
+
+  async getPendingUsers() {
+    const response = await api.get('/users/pending');
+    return response.data;
+  },
+
+  async verifyUserByAdmin(userId) {
+    const response = await api.patch(`/users/verify/${userId}`);
+    return response.data;
+  },
+
+  async deleteUser(userId) {
+    const response = await api.delete(`/users/delete/${userId}`);
     return response.data;
   },
 

@@ -37,14 +37,12 @@ const EditStationPage = () => {
   const fetchStation = async () => {
     try {
       setLoading(true);
-      console.log("🔄 Fetching station for edit:", id);
-      
+
       const response = await stationService.getStationById(id);
-      console.log("📦 Station API Response:", response);
-      
+
       // Handle different API response structures
       let stationData = null;
-      
+
       if (response.data && response.data.station) {
         stationData = response.data.station;
       } else if (response.data) {
@@ -55,7 +53,6 @@ const EditStationPage = () => {
         stationData = response;
       }
 
-      console.log("✅ Final station data:", stationData);
       setStation(stationData);
 
       if (!stationData) {
@@ -63,17 +60,7 @@ const EditStationPage = () => {
         return;
       }
 
-      // ✅ FIXED: Improved access control with multiple comparison methods
       const canEdit = checkEditPermission(stationData, user);
-
-      console.log("🔍 Access Control Debug:", {
-        userRole: user?.role,
-        userId: user?._id,
-        stationHost: stationData.host,
-        stationHostId: stationData.host?._id,
-        stationHostString: stationData.host?.toString(),
-        canEdit: canEdit
-      });
 
       if (!canEdit) {
         setAccessDenied(true);
@@ -86,21 +73,12 @@ const EditStationPage = () => {
         location: stationData.location || "",
         description: stationData.description || "",
         pricePerUnit: stationData.pricePerUnit || stationData.pricePerKwh || "",
-        chargerTypes: Array.isArray(stationData.chargerTypes) 
-          ? stationData.chargerTypes.join(", ") 
+        chargerTypes: Array.isArray(stationData.chargerTypes)
+          ? stationData.chargerTypes.join(", ")
           : (stationData.chargerTypes || ""),
       });
-      
-      // Set existing images
+
       setExistingImages(stationData.images || []);
-      
-      console.log("✅ Form data set:", {
-        name: stationData.name,
-        location: stationData.location,
-        pricePerUnit: stationData.pricePerUnit,
-        chargerTypes: stationData.chargerTypes,
-        images: stationData.images
-      });
 
     } catch (err) {
       console.error("❌ Error fetching station:", err);
@@ -110,32 +88,19 @@ const EditStationPage = () => {
     }
   };
 
-  // ✅ FIXED: Comprehensive permission check
+  // ✅ Admin sab edit kar sakta hai, baaki sirf apna banaya hua station
   const checkEditPermission = (stationData, user) => {
     if (!user) return false;
-    
-    // Admins can edit everything
+
     if (user.role === "admin") return true;
-    
-    // Hosts can only edit their own stations
-    if (user.role === "host") {
-      if (!stationData.host) return false;
-      
-      const stationHostId = stationData.host._id?.toString() || stationData.host.toString();
-      const userId = user._id?.toString() || user.id?.toString();
-      
-      console.log("🔍 Ownership Check:", {
-        stationHostId,
-        userId,
-        match: stationHostId === userId,
-        stationHost: stationData.host,
-        user: user
-      });
-      
-      return stationHostId === userId;
-    }
-    
-    return false;
+
+    if (!stationData.createdBy) return false;
+
+    const ownerId =
+      stationData.createdBy._id?.toString() || stationData.createdBy.toString();
+    const userId = user._id?.toString() || user.id?.toString();
+
+    return ownerId === userId;
   };
 
   const handleChange = (e) => {
@@ -161,13 +126,12 @@ const EditStationPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setSubmitting(true);
 
       const form = new FormData();
-      
-      // Append form data
+
       Object.entries(formData).forEach(([key, value]) => {
         if (key === "chargerTypes") {
           const typesArray = value.split(",").map((t) => t.trim()).filter(t => t !== "");
@@ -176,21 +140,12 @@ const EditStationPage = () => {
           form.append(key, value);
         }
       });
-      
-      // Append images to delete
+
       if (imagesToDelete.length > 0) {
         form.append("imagesToDelete", JSON.stringify(imagesToDelete));
       }
-      
-      // Append new images
-      images.forEach((img) => form.append("images", img));
 
-      console.log("🔄 Updating station with data:", {
-        ...formData,
-        imagesCount: images.length,
-        imagesToDelete: imagesToDelete.length,
-        existingImages: existingImages.length
-      });
+      images.forEach((img) => form.append("images", img));
 
       await stationService.updateStation(id, form);
       alert("✅ Station updated successfully!");
@@ -205,25 +160,14 @@ const EditStationPage = () => {
 
   if (loading) return <LoadingSpinner message="Loading station details..." />;
   if (error) return <div className="text-center text-red-600 py-8">{error}</div>;
+
   if (accessDenied) {
     return (
       <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md mt-8 text-center">
         <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
-        <p className="text-gray-600 mb-4">
-          You don't have permission to edit this station. 
-          {user?.role === 'host' && ' You can only edit stations that you created.'}
+        <p className="text-gray-600 mb-6">
+          You can only edit stations that you created.
         </p>
-        
-        {/* Debug Info */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4 text-left">
-          <h3 className="font-semibold text-yellow-800 mb-2">Debug Info:</h3>
-          <p className="text-sm text-yellow-700">
-            <strong>Your Role:</strong> {user?.role}<br/>
-            <strong>Your ID:</strong> {user?._id}<br/>
-            <strong>Station Host:</strong> {station?.host?._id || station?.host}<br/>
-            <strong>Station Name:</strong> {station?.name}
-          </p>
-        </div>
 
         <div className="flex gap-2 justify-center">
           <button
@@ -232,14 +176,12 @@ const EditStationPage = () => {
           >
             Back to Home
           </button>
-          {user?.role === 'host' && (
-            <button
-              onClick={() => navigate("/stations/create")}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            >
-              Create New Station
-            </button>
-          )}
+          <button
+            onClick={() => navigate("/stations/create")}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          >
+            Create New Station
+          </button>
         </div>
       </div>
     );
@@ -250,16 +192,6 @@ const EditStationPage = () => {
       <h1 className="text-2xl font-bold mb-6 text-center">
         Edit Charging Station ⚡
       </h1>
-
-      {/* Debug Info */}
-      <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-        <p className="text-sm text-blue-700">
-          <strong>Editing Station:</strong> {formData.name}
-        </p>
-        <p className="text-xs text-blue-600 mt-1">
-          <strong>Your Role:</strong> {user?.role} | <strong>Your ID:</strong> {user?._id}
-        </p>
-      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
