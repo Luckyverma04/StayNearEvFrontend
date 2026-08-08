@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import StationCard from "../components/station/StationCard";
 import {
   Zap, MapPin, Search, X, RefreshCw, AlertTriangle, PlugZap,
-  ChevronLeft, ChevronRight, TrendingUp,
+  ChevronLeft, ChevronRight, TrendingUp, Plus, SlidersHorizontal,
 } from "lucide-react";
 
 /* ─── Design tokens ───────────────────────────────────────────────
@@ -13,7 +13,10 @@ import {
    accent #00E5A8 · hover #06D6A0 · text #F8FAFC · secondary #94A3B8
 ────────────────────────────────────────────────────────────────── */
 const ACCENT = "#00E5A8";
-const NAVBAR_CLEARANCE = "pt-28";
+const NAVBAR_CLEARANCE = "pt-24 sm:pt-28";
+
+/* Change this if your router uses a different path */
+const ADD_STATION_PATH = "/stations/create";
 
 const gridStyle = {
   backgroundImage:
@@ -41,6 +44,7 @@ const HomePage = () => {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const [filters, setFilters] = useState({
     fast: false,
     available: false,
@@ -55,6 +59,15 @@ const HomePage = () => {
   useEffect(() => {
     setActiveIndex(0);
   }, [searchTerm, filters]);
+
+  /* Track viewport so the carousel spacing works on small screens */
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = (e) => setIsMobile(e.matches);
+    apply(mq);
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   /* Ctrl+K / Cmd+K focuses the search */
   useEffect(() => {
@@ -97,6 +110,7 @@ const HomePage = () => {
   /* Card click → straight to the station's detail/booking page */
   const handleViewDetails = (stationId) => navigate(`/stations/${stationId}`);
   const handleEdit = (station) => navigate(`/stations/edit/${station._id}`);
+  const handleAddStation = () => navigate(ADD_STATION_PATH);
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
@@ -115,6 +129,11 @@ const HomePage = () => {
   };
 
   const toggleFilter = (key) => setFilters((f) => ({ ...f, [key]: !f[key] }));
+
+  const clearAll = () => {
+    setSearchTerm("");
+    setFilters({ fast: false, available: false, topRated: false, nearby: false });
+  };
 
   const filteredStations = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
@@ -166,14 +185,17 @@ const HomePage = () => {
   }, [stations]);
 
   const isAdmin = user?.role === "admin";
+  /* Har logged-in user apna station list kar sakta hai */
+  const canAddStation = Boolean(user);
   const isSearching = searchTerm.trim().length > 0;
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
   const safeIndex = Math.min(activeIndex, Math.max(0, filteredStations.length - 1));
 
   const goPrev = () => setActiveIndex((i) => Math.max(0, i - 1));
   const goNext = () =>
     setActiveIndex((i) => Math.min(filteredStations.length - 1, i + 1));
 
-  const canManageStation = () => user?.role === "admin";
+  const canManageStation = () => isAdmin;
 
   const filterChips = [
     { key: "fast", label: "Fast chargers", emoji: "⚡" },
@@ -187,26 +209,26 @@ const HomePage = () => {
     return (
       <div className={`min-h-screen bg-[#020617] ${NAVBAR_CLEARANCE}`} style={gridStyle}>
         <div className="max-w-7xl mx-auto px-4 pb-16">
-          <div className="grid lg:grid-cols-2 gap-10 items-center mb-14 pt-6">
+          <div className="grid lg:grid-cols-2 gap-10 items-center mb-10 sm:mb-14 pt-6">
             <div>
-              <div className="h-7 w-44 bg-slate-800 rounded-full animate-pulse mb-6" />
-              <div className="h-12 w-full max-w-md bg-slate-800 rounded-lg animate-pulse mb-4" />
-              <div className="h-5 w-3/4 bg-slate-800/70 rounded animate-pulse mb-8" />
+              <div className="h-7 w-44 bg-slate-800 rounded-full animate-pulse mb-5" />
+              <div className="h-10 sm:h-12 w-full max-w-md bg-slate-800 rounded-lg animate-pulse mb-4" />
+              <div className="h-5 w-3/4 bg-slate-800/70 rounded animate-pulse mb-7" />
               <div className="h-14 w-full max-w-lg bg-slate-800/70 rounded-2xl animate-pulse mb-4" />
-              <div className="flex gap-2">
+              <div className="flex gap-2 overflow-hidden">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-9 w-28 bg-slate-800/70 rounded-full animate-pulse" />
+                  <div key={i} className="h-9 w-28 shrink-0 bg-slate-800/70 rounded-full animate-pulse" />
                 ))}
               </div>
             </div>
             <div className="hidden lg:block h-64 bg-slate-900/50 rounded-3xl animate-pulse" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12 max-w-4xl">
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-4 mb-10 sm:mb-12 max-w-4xl">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-28 bg-[#0F172A] rounded-2xl border border-white/[0.08] animate-pulse" />
+              <div key={i} className="h-24 sm:h-28 bg-[#0F172A] rounded-2xl border border-white/[0.08] animate-pulse" />
             ))}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="bg-[#0F172A] rounded-2xl border border-white/[0.08] p-5 animate-pulse">
                 <div className="h-32 w-full bg-slate-800 rounded-xl mb-4" />
@@ -225,7 +247,7 @@ const HomePage = () => {
   if (error && stations.length === 0) {
     return (
       <div className={`min-h-screen bg-[#020617] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`} style={gridStyle}>
-        <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl shadow-xl p-10 text-center max-w-md w-full">
+        <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl shadow-xl p-8 sm:p-10 text-center max-w-md w-full">
           <div className="bg-red-500/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="h-8 w-8 text-red-400" />
           </div>
@@ -233,7 +255,7 @@ const HomePage = () => {
           <p className="text-[#94A3B8] mb-6">{error}</p>
           <button
             onClick={fetchStations}
-            className="inline-flex items-center gap-2 text-slate-950 font-semibold px-6 py-3 rounded-xl transition-all hover:scale-[1.03]"
+            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto text-slate-950 font-semibold px-6 py-3 rounded-xl transition-all active:scale-95 sm:hover:scale-[1.03]"
             style={{ background: ACCENT, boxShadow: `0 8px 24px -8px ${ACCENT}66` }}
           >
             <RefreshCw className="h-4 w-4" />
@@ -260,12 +282,12 @@ const HomePage = () => {
         aria-hidden="true"
       />
 
-      <div className={`relative max-w-7xl mx-auto px-4 ${NAVBAR_CLEARANCE} pb-20`}>
+      <div className={`relative max-w-7xl mx-auto px-4 ${NAVBAR_CLEARANCE} pb-28 sm:pb-20`}>
         {/* ══════════════ HERO ══════════════ */}
-        <div className="grid lg:grid-cols-2 gap-10 items-center mb-16 pt-4">
+        <div className="grid lg:grid-cols-2 gap-10 items-center mb-10 sm:mb-16 pt-2 sm:pt-4">
           <div className="text-center lg:text-left">
             <span
-              className="inline-flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] text-sm font-medium px-4 py-1.5 rounded-full mb-6 backdrop-blur-sm"
+              className="inline-flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] text-xs sm:text-sm font-medium px-3.5 py-1.5 rounded-full mb-4 sm:mb-6 backdrop-blur-sm"
               style={{ color: ACCENT }}
             >
               <span className="relative flex h-2 w-2">
@@ -275,7 +297,7 @@ const HomePage = () => {
               {isAdmin ? "Admin dashboard" : "Live charging network"}
             </span>
 
-            <h1 className="text-4xl md:text-5xl xl:text-6xl font-bold text-[#F8FAFC] tracking-tight mb-5 leading-[1.1]">
+            <h1 className="text-[2rem] leading-[1.15] sm:text-5xl xl:text-6xl font-bold text-[#F8FAFC] tracking-tight mb-3 sm:mb-5 sm:leading-[1.1]">
               {isAdmin ? (
                 <>All charging stations</>
               ) : (
@@ -291,30 +313,46 @@ const HomePage = () => {
               )}
             </h1>
 
-            <p className="text-lg text-[#94A3B8] max-w-xl mx-auto lg:mx-0 mb-8">
+            <p className="text-[15px] sm:text-lg text-[#94A3B8] max-w-xl mx-auto lg:mx-0 mb-6 sm:mb-8">
               {isAdmin
                 ? "Monitor and manage every station in the network from one place."
-                : "Discover and book electric vehicle charging points near you — fast, reliable, always on."}
+                : "Find and book EV charging points near you — fast, reliable, always on."}
             </p>
 
+            {/* Primary add button (full width on mobile) */}
+            {canAddStation && (
+              <div className="mb-5">
+                <button
+                  onClick={handleAddStation}
+                  className="inline-flex w-full sm:w-auto items-center justify-center gap-2 text-slate-950 font-semibold px-6 py-3.5 rounded-2xl transition-all active:scale-[0.97] sm:hover:scale-[1.03]"
+                  style={{ background: ACCENT, boxShadow: `0 8px 24px -8px ${ACCENT}66` }}
+                >
+                  <Plus className="h-5 w-5" />
+                  Add station
+                </button>
+              </div>
+            )}
+
             {/* Search with Ctrl+K */}
-            <div className="max-w-xl mx-auto lg:mx-0 mb-5">
+            <div className="max-w-xl mx-auto lg:mx-0 mb-4 sm:mb-5">
               <div className="relative group">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 h-5 w-5 pointer-events-none" />
+                <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 text-slate-500 h-5 w-5 pointer-events-none" />
                 <input
                   ref={searchRef}
                   type="search"
+                  inputMode="search"
+                  enterKeyHint="search"
                   aria-label="Search charging stations"
-                  placeholder="Search by station name or location…"
+                  placeholder="Search station or location…"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-14 pr-24 py-4 bg-[#0F172A]/80 backdrop-blur-xl border border-white/[0.08] rounded-2xl outline-none transition-all shadow-xl shadow-black/40 text-[#F8FAFC] placeholder:text-slate-500 focus:border-[#00E5A8]/60 focus:ring-2 focus:ring-[#00E5A8]/30"
+                  className="w-full pl-12 sm:pl-14 pr-12 sm:pr-24 py-3.5 sm:py-4 text-base bg-[#0F172A]/80 backdrop-blur-xl border border-white/[0.08] rounded-2xl outline-none transition-all shadow-xl shadow-black/40 text-[#F8FAFC] placeholder:text-slate-500 focus:border-[#00E5A8]/60 focus:ring-2 focus:ring-[#00E5A8]/30"
                 />
                 {searchTerm ? (
                   <button
                     onClick={() => setSearchTerm("")}
                     aria-label="Clear search"
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-slate-300 hover:bg-white/[0.06] rounded-full transition-colors"
+                    className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 p-2 text-slate-500 hover:text-slate-300 hover:bg-white/[0.06] rounded-full transition-colors"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -326,28 +364,46 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Quick filters */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-2">
-              {filterChips.map((chip) => (
-                <button
-                  key={chip.key}
-                  onClick={() => toggleFilter(chip.key)}
-                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition-all hover:scale-[1.04] ${
-                    filters[chip.key]
-                      ? "text-slate-950 border-transparent shadow-lg"
-                      : "text-[#94A3B8] bg-white/[0.03] border-white/[0.08] hover:text-[#F8FAFC] hover:border-white/20"
-                  }`}
-                  style={
-                    filters[chip.key]
-                      ? { background: ACCENT, boxShadow: `0 8px 20px -8px ${ACCENT}80` }
-                      : undefined
-                  }
-                >
-                  <span>{chip.emoji}</span>
-                  {chip.label}
-                </button>
-              ))}
+            {/* Quick filters — horizontal scroll on mobile, wrap on desktop */}
+            <div className="-mx-4 px-4 sm:mx-0 sm:px-0">
+              <div className="flex sm:flex-wrap justify-start lg:justify-start gap-2 overflow-x-auto sm:overflow-visible pb-1 no-scrollbar snap-x">
+                {filterChips.map((chip) => (
+                  <button
+                    key={chip.key}
+                    onClick={() => toggleFilter(chip.key)}
+                    aria-pressed={filters[chip.key]}
+                    className={`shrink-0 snap-start inline-flex items-center gap-1.5 px-4 py-2.5 sm:py-2 rounded-full text-sm font-medium border transition-all active:scale-95 sm:hover:scale-[1.04] ${
+                      filters[chip.key]
+                        ? "text-slate-950 border-transparent shadow-lg"
+                        : "text-[#94A3B8] bg-white/[0.03] border-white/[0.08] hover:text-[#F8FAFC] hover:border-white/20"
+                    }`}
+                    style={
+                      filters[chip.key]
+                        ? { background: ACCENT, boxShadow: `0 8px 20px -8px ${ACCENT}80` }
+                        : undefined
+                    }
+                  >
+                    <span>{chip.emoji}</span>
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* Active filter summary (mobile-friendly reset) */}
+            {(activeFilterCount > 0 || isSearching) && (
+              <button
+                onClick={clearAll}
+                className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-[#94A3B8] hover:text-[#F8FAFC] transition-colors"
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+                {activeFilterCount > 0
+                  ? `${activeFilterCount} filter${activeFilterCount > 1 ? "s" : ""} on`
+                  : "Search on"}
+                <span className="mx-1 text-slate-600">·</span>
+                <span style={{ color: ACCENT }}>Clear</span>
+              </button>
+            )}
           </div>
 
           {/* Right: EV illustration */}
@@ -362,29 +418,32 @@ const HomePage = () => {
         </div>
 
         {/* ══════════════ STATS ══════════════ */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-14 max-w-5xl">
+        <div className="grid grid-cols-3 gap-2.5 sm:gap-4 mb-10 sm:mb-14 max-w-5xl">
           <StatCard
-            icon={<Zap className="h-6 w-6 text-blue-400" />}
+            icon={<Zap className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />}
             iconBg="bg-blue-500/10"
-            label="Total stations"
+            label="Stations"
+            fullLabel="Total stations"
             value={stations.length}
             trend="in network"
           />
           <StatCard
-            icon={<PlugZap className="h-6 w-6" style={{ color: ACCENT }} />}
+            icon={<PlugZap className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: ACCENT }} />}
             iconBg="bg-[#00E5A8]/10"
-            label="Available now"
+            label="Available"
+            fullLabel="Available now"
             value={availableCount}
             trend={`▲ ${availablePct}% uptime`}
             trendAccent
             accent
           />
           <StatCard
-            icon={<MapPin className="h-6 w-6 text-violet-400" />}
+            icon={<MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-violet-400" />}
             iconBg="bg-violet-500/10"
             label="Locations"
+            fullLabel="Locations"
             value={uniqueLocations}
-            trend={avgNetworkRating > 0 ? `★ ${avgNetworkRating} avg rating` : "cities covered"}
+            trend={avgNetworkRating > 0 ? `★ ${avgNetworkRating} avg` : "cities covered"}
           />
         </div>
 
@@ -395,7 +454,7 @@ const HomePage = () => {
             <button
               onClick={() => setError(null)}
               aria-label="Dismiss error"
-              className="p-1 hover:bg-red-500/10 rounded-full transition-colors"
+              className="p-1 hover:bg-red-500/10 rounded-full transition-colors shrink-0"
             >
               <X className="h-4 w-4" />
             </button>
@@ -404,76 +463,95 @@ const HomePage = () => {
 
         {/* ══════════════ RESULTS ══════════════ */}
         {filteredStations.length === 0 ? (
-          <div className="text-center py-20 bg-[#0F172A]/70 backdrop-blur rounded-2xl border border-white/[0.08] max-w-2xl mx-auto shadow-xl">
-            <div className="bg-white/[0.04] h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-5">
-              <Zap className="h-10 w-10 text-slate-600" />
+          <div className="text-center py-14 sm:py-20 px-5 bg-[#0F172A]/70 backdrop-blur rounded-2xl border border-white/[0.08] max-w-2xl mx-auto shadow-xl">
+            <div className="bg-white/[0.04] h-16 w-16 sm:h-20 sm:w-20 rounded-full flex items-center justify-center mx-auto mb-5">
+              <Zap className="h-8 w-8 sm:h-10 sm:w-10 text-slate-600" />
             </div>
-            <p className="text-[#F8FAFC] text-xl font-semibold mb-2">
-              {isSearching || Object.values(filters).some(Boolean)
+            <p className="text-[#F8FAFC] text-lg sm:text-xl font-semibold mb-2">
+              {isSearching || activeFilterCount > 0
                 ? "No stations match"
                 : "No charging stations yet"}
             </p>
             <p className="text-[#94A3B8] text-sm mb-6">
               {isSearching
                 ? `Nothing found for “${searchTerm}”. Try a different name or location.`
-                : Object.values(filters).some(Boolean)
+                : activeFilterCount > 0
                 ? "Try removing some filters."
+                : canAddStation
+                ? "List your charging station and start taking bookings."
                 : "New stations will appear here as soon as they're added."}
             </p>
-            {(isSearching || Object.values(filters).some(Boolean)) && (
+
+            {isSearching || activeFilterCount > 0 ? (
               <button
-                onClick={() => {
-                  setSearchTerm("");
-                  setFilters({ fast: false, available: false, topRated: false, nearby: false });
-                }}
+                onClick={clearAll}
                 className="inline-flex items-center gap-2 font-medium hover:underline underline-offset-4"
                 style={{ color: ACCENT }}
               >
                 Clear search & filters
               </button>
+            ) : (
+              canAddStation && (
+                <button
+                  onClick={handleAddStation}
+                  className="inline-flex w-full sm:w-auto items-center justify-center gap-2 text-slate-950 font-semibold px-6 py-3.5 rounded-2xl transition-all active:scale-[0.97] sm:hover:scale-[1.03]"
+                  style={{ background: ACCENT, boxShadow: `0 8px 24px -8px ${ACCENT}66` }}
+                >
+                  <Plus className="h-5 w-5" />
+                  Add station
+                </button>
+              )
             )}
           </div>
         ) : isSearching ? (
           /* ───────── SEARCH MODE: centered carousel queue ───────── */
           <div>
-            <div className="text-center mb-2">
-              <p className="text-[#94A3B8] text-sm">
+            <div className="text-center mb-2 px-2">
+              <p className="text-[#94A3B8] text-xs sm:text-sm">
                 <span className="font-semibold text-[#F8FAFC]">{filteredStations.length}</span>{" "}
                 {filteredStations.length === 1 ? "match" : "matches"} for “
-                <span className="font-medium" style={{ color: ACCENT }}>{searchTerm}</span>” — result{" "}
+                <span className="font-medium" style={{ color: ACCENT }}>{searchTerm}</span>” —{" "}
                 <span className="font-semibold text-[#F8FAFC]">{safeIndex + 1}</span> of{" "}
                 <span className="font-semibold text-[#F8FAFC]">{filteredStations.length}</span>
               </p>
             </div>
 
-            <div className="relative flex items-center justify-center" style={{ minHeight: 500 }}>
+            <div
+              className="relative flex items-center justify-center"
+              style={{ minHeight: isMobile ? 440 : 500 }}
+            >
               <button
                 onClick={goPrev}
                 disabled={safeIndex === 0}
                 aria-label="Previous station"
-                className="absolute left-0 md:left-8 z-30 p-3 rounded-full bg-[#0F172A]/90 border border-white/[0.08] text-[#F8FAFC] transition-all hover:scale-110 hover:border-[#00E5A8]/60 disabled:opacity-30 disabled:pointer-events-none backdrop-blur shadow-xl"
+                className="absolute left-0 md:left-8 z-30 p-2.5 sm:p-3 rounded-full bg-[#0F172A]/90 border border-white/[0.08] text-[#F8FAFC] transition-all active:scale-95 sm:hover:scale-110 hover:border-[#00E5A8]/60 disabled:opacity-30 disabled:pointer-events-none backdrop-blur shadow-xl"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
 
-              <div className="relative w-full flex items-center justify-center overflow-hidden" style={{ minHeight: 500 }}>
+              <div
+                className="relative w-full flex items-center justify-center overflow-hidden"
+                style={{ minHeight: isMobile ? 440 : 500 }}
+              >
                 {filteredStations.map((station, i) => {
                   const offset = i - safeIndex;
-                  if (Math.abs(offset) > 2) return null;
+                  const maxVisible = isMobile ? 1 : 2;
+                  if (Math.abs(offset) > maxVisible) return null;
 
                   const scale = offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.85 : 0.72;
-                  const opacity = offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.45 : 0.2;
+                  const opacity = offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.4 : 0.2;
                   const zIndex = 20 - Math.abs(offset);
+                  const shift = isMobile ? 150 : 240;
 
                   return (
                     <div
                       key={station._id}
                       onClick={() => offset !== 0 && setActiveIndex(i)}
-                      className={`absolute w-[320px] max-w-[85vw] transition-all duration-500 ease-out ${
+                      className={`absolute w-[300px] sm:w-[320px] max-w-[80vw] transition-all duration-500 ease-out ${
                         offset !== 0 ? "cursor-pointer" : ""
                       }`}
                       style={{
-                        transform: `translateX(${offset * 240}px) scale(${scale})`,
+                        transform: `translateX(${offset * shift}px) scale(${scale})`,
                         opacity,
                         zIndex,
                         pointerEvents: Math.abs(offset) > 1 ? "none" : "auto",
@@ -505,15 +583,15 @@ const HomePage = () => {
                 onClick={goNext}
                 disabled={safeIndex >= filteredStations.length - 1}
                 aria-label="Next station"
-                className="absolute right-0 md:right-8 z-30 p-3 rounded-full bg-[#0F172A]/90 border border-white/[0.08] text-[#F8FAFC] transition-all hover:scale-110 hover:border-[#00E5A8]/60 disabled:opacity-30 disabled:pointer-events-none backdrop-blur shadow-xl"
+                className="absolute right-0 md:right-8 z-30 p-2.5 sm:p-3 rounded-full bg-[#0F172A]/90 border border-white/[0.08] text-[#F8FAFC] transition-all active:scale-95 sm:hover:scale-110 hover:border-[#00E5A8]/60 disabled:opacity-30 disabled:pointer-events-none backdrop-blur shadow-xl"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
             </div>
 
             {filteredStations.length > 1 && (
-              <div className="flex justify-center gap-2 mt-2">
-                {filteredStations.map((_, i) => (
+              <div className="flex justify-center flex-wrap gap-2 mt-2 px-4">
+                {filteredStations.slice(0, 12).map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setActiveIndex(i)}
@@ -531,17 +609,16 @@ const HomePage = () => {
         ) : (
           /* ───────── BROWSE MODE: grid ───────── */
           <>
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[#F8FAFC]">
+            <div className="mb-5 sm:mb-6 flex items-center justify-between gap-3">
+              <h2 className="text-base sm:text-lg font-semibold text-[#F8FAFC]">
                 {isAdmin ? "Stations" : "Nearby stations"}
               </h2>
-              <p className="text-[#94A3B8] text-sm">
-                Showing{" "}
+              <p className="text-[#94A3B8] text-xs sm:text-sm shrink-0">
                 <span className="font-semibold text-[#F8FAFC]">{filteredStations.length}</span>{" "}
                 {filteredStations.length === 1 ? "station" : "stations"}
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
               {filteredStations.map((station) => (
                 <StationCard
                   key={station._id}
@@ -558,10 +635,26 @@ const HomePage = () => {
         )}
       </div>
 
+      {/* ══════════════ MOBILE FLOATING ADD BUTTON ══════════════ */}
+      {canAddStation && (
+        <button
+          onClick={handleAddStation}
+          aria-label="Add station"
+          className="sm:hidden fixed right-5 z-40 h-14 w-14 rounded-full flex items-center justify-center text-slate-950 transition-transform active:scale-90"
+          style={{
+            bottom: "calc(1.5rem + env(safe-area-inset-bottom))",
+            background: ACCENT,
+            boxShadow: `0 12px 32px -6px ${ACCENT}99`,
+          }}
+        >
+          <Plus className="h-7 w-7" strokeWidth={2.5} />
+        </button>
+      )}
+
       {/* ══════════════ DELETE CONFIRMATION MODAL ══════════════ */}
       {deleteTarget && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:px-4 bg-black/60 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-dialog-title"
@@ -569,7 +662,11 @@ const HomePage = () => {
             if (e.target === e.currentTarget && !deleting) setDeleteTarget(null);
           }}
         >
-          <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl shadow-2xl max-w-sm w-full p-6">
+          <div
+            className="bg-[#0F172A] border border-white/[0.08] rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:max-w-sm p-6"
+            style={{ paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
+          >
+            <div className="sm:hidden mx-auto mb-5 h-1 w-10 rounded-full bg-white/15" />
             <div className="bg-red-500/10 h-12 w-12 rounded-full flex items-center justify-center mb-4">
               <AlertTriangle className="h-6 w-6 text-red-400" />
             </div>
@@ -580,18 +677,18 @@ const HomePage = () => {
               <span className="font-medium text-[#F8FAFC]">{deleteTarget.name}</span> will be
               permanently removed. This can't be undone.
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-col-reverse sm:flex-row gap-3">
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleting}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-white/[0.08] text-[#94A3B8] font-medium hover:bg-white/[0.04] hover:text-[#F8FAFC] transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-3 rounded-xl border border-white/[0.08] text-[#94A3B8] font-medium hover:bg-white/[0.04] hover:text-[#F8FAFC] transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
                 disabled={deleting}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-medium transition-all hover:scale-[1.02] disabled:opacity-50 inline-flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-medium transition-all active:scale-[0.98] disabled:opacity-50 inline-flex items-center justify-center gap-2"
               >
                 {deleting && <RefreshCw className="h-4 w-4 animate-spin" />}
                 {deleting ? "Deleting…" : "Delete"}
@@ -604,22 +701,25 @@ const HomePage = () => {
   );
 };
 
-/* ── Stat card with real trend line ── */
-const StatCard = ({ icon, iconBg, label, value, trend, trendAccent = false, accent = false }) => (
+/* ── Stat card: stacked on mobile, horizontal on desktop ── */
+const StatCard = ({ icon, iconBg, label, fullLabel, value, trend, trendAccent = false, accent = false }) => (
   <div
-    className={`bg-[#0F172A]/80 backdrop-blur rounded-2xl p-5 border shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${
+    className={`bg-[#0F172A]/80 backdrop-blur rounded-2xl p-3.5 sm:p-5 border shadow-xl transition-all duration-300 sm:hover:-translate-y-1 sm:hover:shadow-2xl ${
       accent ? "border-[#00E5A8]/30 hover:border-[#00E5A8]/50" : "border-white/[0.08] hover:border-white/[0.15]"
     }`}
   >
-    <div className="flex items-center gap-4">
-      <div className={`${iconBg} p-3 rounded-xl shrink-0`}>{icon}</div>
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+      <div className={`${iconBg} p-2 sm:p-3 rounded-xl w-fit shrink-0`}>{icon}</div>
       <div className="min-w-0">
-        <p className="text-sm text-[#94A3B8]">{label}</p>
+        <p className="text-xs sm:text-sm text-[#94A3B8] truncate">
+          <span className="sm:hidden">{label}</span>
+          <span className="hidden sm:inline">{fullLabel || label}</span>
+        </p>
         <div className="flex items-baseline gap-2 flex-wrap">
-          <p className="text-2xl font-bold text-[#F8FAFC] tabular-nums">{value}</p>
+          <p className="text-xl sm:text-2xl font-bold text-[#F8FAFC] tabular-nums">{value}</p>
           {trend && (
             <span
-              className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${trendAccent ? "" : "text-slate-500"}`}
+              className={`hidden sm:inline-flex items-center gap-0.5 text-[11px] font-medium ${trendAccent ? "" : "text-slate-500"}`}
               style={trendAccent ? { color: ACCENT } : undefined}
             >
               {trendAccent && <TrendingUp className="h-3 w-3" />}
@@ -627,6 +727,14 @@ const StatCard = ({ icon, iconBg, label, value, trend, trendAccent = false, acce
             </span>
           )}
         </div>
+        {trend && (
+          <span
+            className={`sm:hidden block text-[10px] font-medium truncate ${trendAccent ? "" : "text-slate-500"}`}
+            style={trendAccent ? { color: ACCENT } : undefined}
+          >
+            {trend}
+          </span>
+        )}
       </div>
     </div>
   </div>
