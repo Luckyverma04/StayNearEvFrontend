@@ -279,25 +279,27 @@ const HomePage = () => {
   }
 
   return (
-    <div className="min-h-screen w-full max-w-full bg-[#020617] relative overflow-x-hidden overflow-y-visible">
-      <div className="absolute inset-0" style={gridStyle} aria-hidden="true" />
-
-      {/* Soft ambient blobs */}
-      <div
-        className="absolute -top-24 left-[15%] h-[420px] w-[560px] rounded-full opacity-[0.14] blur-[100px] pointer-events-none"
-        style={{ background: `radial-gradient(closest-side, ${ACCENT}, transparent)` }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute top-[45%] -right-40 h-96 w-96 rounded-full opacity-[0.08] blur-[100px] pointer-events-none"
-        style={{ background: "radial-gradient(closest-side, #3b82f6, transparent)" }}
-        aria-hidden="true"
-      />
+    <div className="min-h-screen w-full bg-[#020617] relative">
+      {/* Background layer — apne andar clip hota hai, isliye blobs
+          page ki width kabhi nahi badha sakte. Pehle ye root par
+          overflow-x-hidden se handle ho raha tha, jo overflow-y
+          visible ke saath invalid tha aur clipping tod deta tha. */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div className="absolute inset-0" style={gridStyle} />
+        <div
+          className="absolute -top-24 left-[10%] h-[420px] w-[70vw] max-w-[560px] rounded-full opacity-[0.14] blur-[100px]"
+          style={{ background: `radial-gradient(closest-side, ${ACCENT}, transparent)` }}
+        />
+        <div
+          className="absolute top-[45%] right-0 h-96 w-[60vw] max-w-96 rounded-full opacity-[0.08] blur-[100px]"
+          style={{ background: "radial-gradient(closest-side, #3b82f6, transparent)" }}
+        />
+      </div>
 
       <div className={`relative w-full max-w-7xl mx-auto px-4 ${NAVBAR_CLEARANCE} pb-36 sm:pb-24`}>
         {/* ══════════════ HERO ══════════════ */}
-        <div className="grid lg:grid-cols-2 gap-10 items-center mb-12 sm:mb-16 pt-2 sm:pt-4">
-          <div className="text-center lg:text-left">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-center mb-12 sm:mb-16 pt-2 sm:pt-4">
+          <div className="text-center lg:text-left min-w-0 order-last lg:order-first">
             <span
               className="inline-flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] text-xs sm:text-sm font-medium px-3.5 py-1.5 rounded-full mb-4 sm:mb-6 backdrop-blur-sm"
               style={{ color: ACCENT }}
@@ -418,10 +420,10 @@ const HomePage = () => {
             )}
           </div>
 
-          {/* Right: EV illustration */}
-          <div className="hidden lg:flex items-center justify-center relative">
+          {/* EV illustration — mobile par hero ke upar, desktop par right side */}
+          <div className="flex items-center justify-center relative order-first lg:order-last mb-2 lg:mb-0">
             <div
-              className="absolute inset-8 rounded-full opacity-25 blur-[80px]"
+              className="absolute inset-6 sm:inset-8 rounded-full opacity-25 blur-[80px]"
               style={{ background: `radial-gradient(closest-side, ${ACCENT}, transparent)` }}
               aria-hidden="true"
             />
@@ -756,7 +758,7 @@ const StatCard = ({ icon, iconBg, label, fullLabel, value, trend, trendAccent = 
 const EvIllustration = () => (
   <svg
     viewBox="0 0 460 300"
-    className="relative w-full max-w-md"
+    className="relative w-full max-w-[300px] sm:max-w-sm lg:max-w-md"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     aria-hidden="true"
