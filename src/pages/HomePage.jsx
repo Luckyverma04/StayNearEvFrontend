@@ -195,7 +195,19 @@ const HomePage = () => {
   const goNext = () =>
     setActiveIndex((i) => Math.min(filteredStations.length - 1, i + 1));
 
-  const canManageStation = () => isAdmin;
+  /* Station ka owner id nikalo — createdBy populate hua ho to object,
+     warna seedha id string hoti hai */
+  const getOwnerId = (station) => {
+    const c = station?.createdBy;
+    if (!c) return null;
+    return typeof c === "object" ? c._id || c.id || null : c;
+  };
+
+  const myId = user?._id || user?.id || null;
+  const isOwnStation = (station) => Boolean(myId && getOwnerId(station) === myId);
+
+  /* Admin sab manage kare, baaki sirf apna station */
+  const canManageStation = (station) => isAdmin || isOwnStation(station);
 
   const filterChips = [
     { key: "fast", label: "Fast chargers", emoji: "⚡" },
@@ -267,7 +279,7 @@ const HomePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#020617] relative overflow-hidden">
+    <div className="min-h-screen w-full max-w-full bg-[#020617] relative overflow-x-hidden overflow-y-visible">
       <div className="absolute inset-0" style={gridStyle} aria-hidden="true" />
 
       {/* Soft ambient blobs */}
@@ -282,9 +294,9 @@ const HomePage = () => {
         aria-hidden="true"
       />
 
-      <div className={`relative max-w-7xl mx-auto px-4 ${NAVBAR_CLEARANCE} pb-28 sm:pb-20`}>
+      <div className={`relative w-full max-w-7xl mx-auto px-4 ${NAVBAR_CLEARANCE} pb-36 sm:pb-24`}>
         {/* ══════════════ HERO ══════════════ */}
-        <div className="grid lg:grid-cols-2 gap-10 items-center mb-10 sm:mb-16 pt-2 sm:pt-4">
+        <div className="grid lg:grid-cols-2 gap-10 items-center mb-12 sm:mb-16 pt-2 sm:pt-4">
           <div className="text-center lg:text-left">
             <span
               className="inline-flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] text-xs sm:text-sm font-medium px-3.5 py-1.5 rounded-full mb-4 sm:mb-6 backdrop-blur-sm"
@@ -297,7 +309,7 @@ const HomePage = () => {
               {isAdmin ? "Admin dashboard" : "Live charging network"}
             </span>
 
-            <h1 className="text-[2rem] leading-[1.15] sm:text-5xl xl:text-6xl font-bold text-[#F8FAFC] tracking-tight mb-3 sm:mb-5 sm:leading-[1.1]">
+            <h1 className="text-[1.9rem] leading-[1.2] sm:text-5xl xl:text-6xl font-bold text-[#F8FAFC] tracking-tight mb-4 sm:mb-5 sm:leading-[1.1] break-words hyphens-none">
               {isAdmin ? (
                 <>All charging stations</>
               ) : (
@@ -313,7 +325,7 @@ const HomePage = () => {
               )}
             </h1>
 
-            <p className="text-[15px] sm:text-lg text-[#94A3B8] max-w-xl mx-auto lg:mx-0 mb-6 sm:mb-8">
+            <p className="text-[15px] sm:text-lg text-[#94A3B8] max-w-xl mx-auto lg:mx-0 mb-7 sm:mb-8 break-words">
               {isAdmin
                 ? "Monitor and manage every station in the network from one place."
                 : "Find and book EV charging points near you — fast, reliable, always on."}
@@ -365,7 +377,7 @@ const HomePage = () => {
             </div>
 
             {/* Quick filters — horizontal scroll on mobile, wrap on desktop */}
-            <div className="-mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="w-full max-w-full overflow-hidden">
               <div className="flex sm:flex-wrap justify-start lg:justify-start gap-2 overflow-x-auto sm:overflow-visible pb-1 no-scrollbar snap-x">
                 {filterChips.map((chip) => (
                   <button
@@ -418,7 +430,7 @@ const HomePage = () => {
         </div>
 
         {/* ══════════════ STATS ══════════════ */}
-        <div className="grid grid-cols-3 gap-2.5 sm:gap-4 mb-10 sm:mb-14 max-w-5xl">
+        <div className="grid grid-cols-3 gap-2.5 sm:gap-4 mb-12 sm:mb-14 max-w-5xl">
           <StatCard
             icon={<Zap className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />}
             iconBg="bg-blue-500/10"
@@ -568,7 +580,7 @@ const HomePage = () => {
                         <StationCard
                           station={station}
                           canManage={canManageStation(station)}
-                          userRole={user?.role}
+                          isOwn={isOwnStation(station)}
                           onEdit={handleEdit}
                           onDelete={() => setDeleteTarget(station)}
                           onViewDetails={handleViewDetails}
@@ -624,7 +636,7 @@ const HomePage = () => {
                   key={station._id}
                   station={station}
                   canManage={canManageStation(station)}
-                  userRole={user?.role}
+                  isOwn={isOwnStation(station)}
                   onEdit={handleEdit}
                   onDelete={() => setDeleteTarget(station)}
                   onViewDetails={handleViewDetails}

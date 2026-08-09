@@ -36,8 +36,23 @@ const Navbar = () => {
      active link and glides to whichever link you hover.        */
   const navRef = useRef(null);
   const linkRefs = useRef({});
+  const hoverTimerRef = useRef(null); // hover-dwell → auto navigate
   const [indicator, setIndicator] = useState({ left: 0, width: 0, opacity: 0 });
   const [hoveredPath, setHoveredPath] = useState(null);
+  /* Sirf asli mouse wale device pe hover-open chalega.
+     Touch screen pe tap se bhi mouseenter fire hota hai, jisse
+     galat page khul jata tha — isliye ye check zaroori hai. */
+  const [hasRealMouse, setHasRealMouse] = useState(false);
+
+  const HOVER_OPEN_DELAY = 450;
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const apply = (e) => setHasRealMouse(e.matches);
+    apply(mq);
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
 
   const getRoleBadge = (role) => {
     const badges = {
@@ -140,6 +155,11 @@ const Navbar = () => {
     setShowMenu(false);
   }, [currentPage]);
 
+  /* Pending hover timer clear on unmount */
+  useEffect(() => {
+    return () => clearTimeout(hoverTimerRef.current);
+  }, []);
+
   /* Login / signup jaise pages par navbar hi mat dikhao.
      Ye hooks ke BAAD hona chahiye, warna React hook order tootega. */
   if (AUTH_ROUTES.includes(currentPage)) return null;
@@ -149,10 +169,21 @@ const Navbar = () => {
     setShowMenu(false);
   };
 
-  /* Hover ab sirf pill move karta hai — auto-navigate hata diya,
-     mobile pe tap se mouseenter fire hoke galat page khul raha tha */
-  const handleLinkEnter = (link) => setHoveredPath(link.path);
-  const handleNavLeave = () => setHoveredPath(null);
+  /* Hover-dwell wapas — par sirf mouse wale device pe */
+  const handleLinkEnter = (link) => {
+    setHoveredPath(link.path);
+    clearTimeout(hoverTimerRef.current);
+    if (hasRealMouse && !link.active) {
+      hoverTimerRef.current = setTimeout(() => {
+        navigate(link.path);
+      }, HOVER_OPEN_DELAY);
+    }
+  };
+
+  const handleNavLeave = () => {
+    setHoveredPath(null);
+    clearTimeout(hoverTimerRef.current);
+  };
 
   return (
     <nav className="fixed top-0 inset-x-0 z-50 bg-[#020617]/85 backdrop-blur-xl border-b border-white/[0.08]">

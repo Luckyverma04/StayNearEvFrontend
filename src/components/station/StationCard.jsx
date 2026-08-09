@@ -1,10 +1,15 @@
-import React from 'react';
-import { MapPin, Edit, Trash2, Zap, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, Edit, Trash2, Zap, Star, ImageOff } from 'lucide-react';
 
 const ACCENT = '#00E5A8';
 
 const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetails }) => {
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+
+  /* Image fail hone par state se fallback — pehle DOM ko direct
+     chhed rahe the, jo React re-render pe reset ho jata tha aur
+     browser ka broken-image icon dikhne lagta tha. */
+  const [imgFailed, setImgFailed] = useState(false);
 
   // Handles both Cloudinary URLs and old local paths
   const getImageUrl = (imagePath) => {
@@ -17,7 +22,10 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
     return `${API_BASE}/uploads/${imagePath}`;
   };
 
-  const imageUrl = station.images?.[0] ? getImageUrl(station.images[0]) : null;
+  const rawImage = station.images?.[0];
+  const imageUrl = rawImage ? getImageUrl(rawImage) : null;
+  const showImage = Boolean(imageUrl) && !imgFailed;
+
   const averageRating = station.averageRating || 0;
   const totalReviews = station.reviews?.length || 0;
   const price = station.pricePerUnit || station.pricePerKwh;
@@ -46,33 +54,32 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
   };
 
   return (
-    <div className="bg-[#0F172A] rounded-2xl overflow-hidden border border-white/[0.08] shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-[#00E5A8]/40 hover:shadow-[#00E5A8]/10 group">
+    <div className="bg-[#0F172A] rounded-2xl overflow-hidden border border-white/[0.08] shadow-xl transition-all duration-300 sm:hover:-translate-y-1.5 sm:hover:shadow-2xl hover:border-[#00E5A8]/40 hover:shadow-[#00E5A8]/10 group">
       {/* ── Image — full preview, no cut ── */}
       <div
         className="relative aspect-[16/9] overflow-hidden cursor-pointer bg-[#020617]"
         onClick={() => onViewDetails && onViewDetails(station._id)}
       >
-        {imageUrl ? (
+        {showImage ? (
           <img
             src={imageUrl}
             alt={station.name}
-            className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-500"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.style.display = 'none';
-              const placeholder = e.target.parentElement.querySelector('.image-placeholder');
-              if (placeholder) placeholder.style.display = 'flex';
-            }}
+            loading="lazy"
+            className="w-full h-full object-cover sm:group-hover:scale-[1.06] transition-transform duration-500"
+            onError={() => setImgFailed(true)}
           />
-        ) : null}
-
-        <div
-          className={`image-placeholder w-full h-full items-center justify-center text-slate-700 ${
-            imageUrl ? 'hidden' : 'flex'
-          }`}
-        >
-          <Zap className="h-10 w-10" />
-        </div>
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 text-slate-700">
+            {imgFailed ? (
+              <>
+                <ImageOff className="h-8 w-8" />
+                <span className="text-[10px] text-slate-600">Image unavailable</span>
+              </>
+            ) : (
+              <Zap className="h-10 w-10" />
+            )}
+          </div>
+        )}
 
         {/* Apna station hone par badge */}
         {isOwn && (
@@ -132,10 +139,12 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
 
         {/* Price row */}
         <div className="flex items-baseline gap-1 mb-3.5 pb-3.5 border-b border-white/[0.06]">
-          <span className="text-lg font-bold text-[#F8FAFC]">₹{price}</span>
-          <span className="text-xs text-[#94A3B8]">/kWh</span>
-          {ownerName && (
-            <span className="ml-auto text-[11px] text-slate-500 line-clamp-1">
+          <span className="text-lg font-bold text-[#F8FAFC]">
+            {price != null ? `₹${price}` : 'Price on request'}
+          </span>
+          {price != null && <span className="text-xs text-[#94A3B8]">/kWh</span>}
+          {ownerName && !isOwn && (
+            <span className="ml-auto text-[11px] text-slate-500 line-clamp-1 max-w-[45%]">
               by {ownerName}
             </span>
           )}
@@ -145,7 +154,7 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
         {!canManage ? (
           <button
             onClick={() => onViewDetails(station._id)}
-            className="w-full px-3 py-2.5 text-slate-950 rounded-xl font-semibold text-sm transition-all duration-200 hover:scale-[1.02]"
+            className="w-full px-3 py-2.5 text-slate-950 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-[0.98] sm:hover:scale-[1.02]"
             style={{
               background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
               boxShadow: `0 8px 20px -8px ${ACCENT}70`,
@@ -154,19 +163,32 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
             View & Book
           </button>
         ) : (
-          <div className="flex gap-2">
+          <div className="space-y-2">
+            {/* Owner ko bhi booking page ka rasta chahiye */}
             <button
-              onClick={() => onEdit(station)}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.1] text-[#F8FAFC] border border-white/[0.08] rounded-xl transition-all duration-200 hover:scale-[1.03] text-sm font-medium"
+              onClick={() => onViewDetails(station._id)}
+              className="w-full px-3 py-2.5 text-slate-950 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-[0.98] sm:hover:scale-[1.02]"
+              style={{
+                background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                boxShadow: `0 8px 20px -8px ${ACCENT}70`,
+              }}
             >
-              <Edit className="h-3.5 w-3.5" /> Edit
+              View details
             </button>
-            <button
-              onClick={() => onDelete(station._id)}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl transition-all duration-200 hover:scale-[1.03] text-sm font-medium"
-            >
-              <Trash2 className="h-3.5 w-3.5" /> Delete
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => onEdit(station)}
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.1] text-[#F8FAFC] border border-white/[0.08] rounded-xl transition-all duration-200 active:scale-95 sm:hover:scale-[1.03] text-sm font-medium"
+              >
+                <Edit className="h-3.5 w-3.5" /> Edit
+              </button>
+              <button
+                onClick={() => onDelete(station._id)}
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl transition-all duration-200 active:scale-95 sm:hover:scale-[1.03] text-sm font-medium"
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Delete
+              </button>
+            </div>
           </div>
         )}
       </div>
