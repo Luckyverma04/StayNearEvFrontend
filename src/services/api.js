@@ -1,16 +1,21 @@
 import axios from "axios";
 
-// ✅ Use .env variable or fallback to localhost
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL?.replace(/\/$/, "") ||
-  "http://localhost:3002";
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:3002/api"
+).replace(/\/+$/, "");
+
+console.log("🌐 API BASE URL:", API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// ✅ Attach token
+// Attach JWT
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -24,19 +29,25 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Handle expired token (FIXED)
+// Global response handling
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    console.error("❌ API Error:", error.response?.status);
-    console.error("❌ URL:", error.config?.baseURL + error.config?.url);
 
-    // ❌ Login request fail ho to redirect mat karo
+  (error) => {
+    console.error("❌ API ERROR:", error.response?.status);
+
+    console.error(
+      "❌ REQUEST:",
+      `${error.config?.baseURL || ""}${error.config?.url || ""}`
+    );
+
     const isLoginRequest =
       error.config?.url?.includes("/users/login");
 
-    if (error.response?.status === 401 && !isLoginRequest) {
-      console.warn("⚠️ Session expired. Redirecting to login...");
+    if (
+      error.response?.status === 401 &&
+      !isLoginRequest
+    ) {
       localStorage.removeItem("token");
       window.location.href = "/login";
     }
