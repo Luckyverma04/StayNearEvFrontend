@@ -6,6 +6,12 @@ export const authService = {
     return response.data;
   },
 
+  // Google se mila ID token backend ko bhejo
+  async googleLogin(credential) {
+    const response = await api.post('/users/google', { credential });
+    return response.data;
+  },
+
   async signup(userData) {
     const response = await api.post('/users/signup', userData);
     return response.data;
