@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { MapPin, Edit, Trash2, Zap, Star, ImageOff } from 'lucide-react';
+import { MapPin, Edit, Trash2, Zap, Star, ImageOff, Navigation } from 'lucide-react';
+import { formatDistance } from '../../utils/geo';
 
 const ACCENT = '#00E5A8';
 
-const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetails }) => {
+const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetails, distanceKm }) => {
   // Uploads server root par hain (/uploads), /api ke andar nahi — isliye /api hata do
   const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3002').replace(/\/+$/, '').replace(/\/api$/, '');
 
@@ -116,6 +117,12 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
         <div className="flex items-center text-[#94A3B8] mb-2.5">
           <MapPin className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" style={{ color: ACCENT }} />
           <span className="text-xs line-clamp-1">{station.location}</span>
+          {distanceKm != null && (
+            <span className="ml-auto pl-2 inline-flex items-center gap-1 text-[11px] font-semibold text-sky-300 shrink-0">
+              <Navigation className="h-3 w-3" />
+              {formatDistance(distanceKm)}
+            </span>
+          )}
         </div>
 
         {/* Charger type chips */}

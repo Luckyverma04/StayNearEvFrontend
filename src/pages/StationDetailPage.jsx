@@ -9,6 +9,8 @@ import { useAuth } from '../context/AuthContext';
 import ReviewForm from '../components/common/ReviewForm';
 import ReviewList from '../components/common/ReviewList';
 import BookingModal from '../components/common/BookingModel';
+import StationsMap from '../components/map/StationsMap';
+import { hasCoords, directionsUrl } from '../utils/geo';
 
 /* ─── Design tokens ─── */
 const ACCENT = '#00E5A8';
@@ -380,9 +382,21 @@ const StationDetailPage = () => {
             )}
           </div>
 
-          <div className="flex items-center text-[#94A3B8] mb-3">
-            <MapPin className="h-5 w-5 mr-2" style={{ color: ACCENT }} />
-            <span className="text-lg">{station.location}</span>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[#94A3B8] mb-3">
+            <span className="inline-flex items-center">
+              <MapPin className="h-5 w-5 mr-2 shrink-0" style={{ color: ACCENT }} />
+              <span className="text-lg">{station.location}</span>
+            </span>
+            {hasCoords(station) && (
+              <a
+                href={directionsUrl(station.latitude, station.longitude)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-sky-300 bg-sky-500/10 border border-sky-500/20 hover:bg-sky-500/20 transition-colors"
+              >
+                🧭 Get directions
+              </a>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
@@ -415,6 +429,14 @@ const StationDetailPage = () => {
                   About this charging station
                 </h2>
                 <p className="text-[#94A3B8] leading-relaxed">{station.description}</p>
+              </div>
+            )}
+
+            {/* Map */}
+            {hasCoords(station) && (
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold text-[#F8FAFC] mb-3">Where to find it</h2>
+                <StationsMap stations={[station]} height={300} />
               </div>
             )}
 

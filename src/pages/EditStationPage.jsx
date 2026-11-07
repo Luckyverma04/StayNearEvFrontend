@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { stationService } from "../services/stationService";
 import { useAuth } from "../context/AuthContext";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import LocationPicker from "../components/map/LocationPicker";
+import { hasCoords } from "../utils/geo";
 import { Trash2 } from "lucide-react";
 
 const EditStationPage = () => {
@@ -25,6 +27,8 @@ const EditStationPage = () => {
   const [error, setError] = useState(null);
   const [accessDenied, setAccessDenied] = useState(false);
   const [station, setStation] = useState(null);
+  const [pin, setPin] = useState(null); // { lat, lng }
+  const [hadPin, setHadPin] = useState(false);
 
   // Uploads server root par hain (/uploads), /api ke andar nahi — isliye /api hata do
   const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3002').replace(/\/+$/, '').replace(/\/api$/, '');
@@ -78,6 +82,11 @@ const EditStationPage = () => {
           ? stationData.chargerTypes.join(", ")
           : (stationData.chargerTypes || ""),
       });
+
+      if (hasCoords(stationData)) {
+        setPin({ lat: Number(stationData.latitude), lng: Number(stationData.longitude) });
+        setHadPin(true);
+      }
 
       setExistingImages(stationData.images || []);
 
@@ -144,6 +153,14 @@ const EditStationPage = () => {
 
       if (imagesToDelete.length > 0) {
         form.append("imagesToDelete", JSON.stringify(imagesToDelete));
+      }
+
+      // Map pin — naya/badla hua bhejo, ya hataya ho to clear karo
+      if (pin) {
+        form.append("latitude", String(pin.lat));
+        form.append("longitude", String(pin.lng));
+      } else if (hadPin) {
+        form.append("clearLocation", "true");
       }
 
       images.forEach((img) => form.append("images", img));
@@ -221,6 +238,15 @@ const EditStationPage = () => {
             required
             className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Pin on map
+          </label>
+          <div className="rounded-xl bg-[#0F172A] p-3">
+            <LocationPicker value={pin} onChange={setPin} height={280} />
+          </div>
         </div>
 
         <div>

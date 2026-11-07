@@ -3,9 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { stationService } from "../services/stationService";
 import { useAuth } from "../context/AuthContext";
 import StationCard from "../components/station/StationCard";
+import StationsMap from "../components/map/StationsMap";
+import { hasCoords, distanceKm, getCurrentPosition } from "../utils/geo";
 import {
   Zap, MapPin, Search, X, RefreshCw, AlertTriangle, PlugZap,
   ChevronLeft, ChevronRight, TrendingUp, Plus, SlidersHorizontal,
+  Map as MapIcon, LayoutGrid,
 } from "lucide-react";
 
 /* ─── Design tokens ───────────────────────────────────────────────
@@ -51,6 +54,25 @@ const HomePage = () => {
     topRated: false,
     nearby: false,
   });
+  /* List ya Map view — yaad rakho (per browser) */
+  const [view, setView] = useState(() => {
+    try {
+      return localStorage.getItem("snev:view") === "map" ? "map" : "list";
+    } catch {
+      return "list";
+    }
+  });
+  const [userPos, setUserPos] = useState(null);
+  const [geoBusy, setGeoBusy] = useState(false);
+
+  const changeView = (v) => {
+    setView(v);
+    try {
+      localStorage.setItem("snev:view", v);
+    } catch {
+      /* private mode — ignore */
+    }
+  };
 
   useEffect(() => {
     fetchStations();
@@ -128,7 +150,21 @@ const HomePage = () => {
     }
   };
 
-  const toggleFilter = (key) => setFilters((f) => ({ ...f, [key]: !f[key] }));
+  /* "Nearby" dabane par user ki location lo */
+  const toggleFilter = async (key) => {
+    if (key === "nearby" && !filters.nearby && !userPos) {
+      setGeoBusy(true);
+      try {
+        setUserPos(await getCurrentPosition());
+      } catch (e) {
+        setError(e.message);
+        setGeoBusy(false);
+        return;
+      }
+      setGeoBusy(false);
+    }
+    setFilters((f) => ({ ...f, [key]: !f[key] }));
+  };
 
   const clearAll = () => {
     setSearchTerm("");
@@ -155,12 +191,22 @@ const HomePage = () => {
     if (filters.topRated) {
       list = [...list].sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
     }
-    if (filters.nearby) {
-      // Placeholder until geolocation is wired up
-      list = [...list].sort((a, b) => (a.location || "").localeCompare(b.location || ""));
+    if (filters.nearby && userPos) {
+      // Sabse paas wala pehle; jinka pin nahi wo aakhir me
+      const d = (s) =>
+        hasCoords(s)
+          ? distanceKm(userPos, { lat: Number(s.latitude), lng: Number(s.longitude) })
+          : Infinity;
+      list = [...list].sort((a, b) => d(a) - d(b));
     }
     return list;
-  }, [stations, searchTerm, filters]);
+  }, [stations, searchTerm, filters, userPos]);
+
+  /* Card par "2.3 km away" dikhane ke liye */
+  const distanceFor = (s) =>
+    userPos && hasCoords(s)
+      ? distanceKm(userPos, { lat: Number(s.latitude), lng: Number(s.longitude) })
+      : null;
 
   const availableCount = useMemo(
     () => stations.filter(isStationAvailable).length,
@@ -400,7 +446,7 @@ const HomePage = () => {
                     }
                   >
                     <span>{chip.emoji}</span>
-                    {chip.label}
+                    {chip.key === "nearby" && geoBusy ? "Locating…" : chip.label}
                   </button>
                 ))}
               </div>
@@ -477,6 +523,45 @@ const HomePage = () => {
           </div>
         )}
 
+        {/* ══════════════ VIEW TOGGLE: List / Map ══════════════ */}
+        {stations.length > 0 && (
+          <div className="flex items-center justify-end gap-2 mb-4">
+            {view === "map" && !userPos && (
+              <button
+                onClick={() => toggleFilter("nearby")}
+                disabled={geoBusy}
+                className="mr-auto inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium text-sky-300 bg-sky-500/10 border border-sky-500/20 hover:bg-sky-500/15 disabled:opacity-60"
+              >
+                📍 {geoBusy ? "Locating…" : "Show my location"}
+              </button>
+            )}
+            <div
+              role="tablist"
+              aria-label="Choose view"
+              className="inline-flex p-1 rounded-xl bg-[#0F172A]/80 border border-white/[0.08] backdrop-blur"
+            >
+              {[
+                { key: "list", label: "List", Icon: LayoutGrid },
+                { key: "map", label: "Map", Icon: MapIcon },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  role="tab"
+                  aria-selected={view === tab.key}
+                  onClick={() => changeView(tab.key)}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all ${
+                    view === tab.key ? "text-slate-950" : "text-[#94A3B8] hover:text-[#F8FAFC]"
+                  }`}
+                  style={view === tab.key ? { background: ACCENT } : undefined}
+                >
+                  <tab.Icon className="h-4 w-4" />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* ══════════════ RESULTS ══════════════ */}
         {filteredStations.length === 0 ? (
           <div className="text-center py-14 sm:py-20 px-5 bg-[#0F172A]/70 backdrop-blur rounded-2xl border border-white/[0.08] max-w-2xl mx-auto shadow-xl">
@@ -519,6 +604,14 @@ const HomePage = () => {
               )
             )}
           </div>
+        ) : view === "map" ? (
+          /* ───────── MAP MODE ───────── */
+          <StationsMap
+            stations={filteredStations}
+            userPos={userPos}
+            onViewDetails={handleViewDetails}
+            height={isMobile ? 460 : 560}
+          />
         ) : isSearching ? (
           /* ───────── SEARCH MODE: centered carousel queue ───────── */
           <div>
@@ -588,6 +681,7 @@ const HomePage = () => {
                           onEdit={handleEdit}
                           onDelete={() => setDeleteTarget(station)}
                           onViewDetails={handleViewDetails}
+                          distanceKm={distanceFor(station)}
                         />
                       </div>
                     </div>
@@ -644,6 +738,7 @@ const HomePage = () => {
                   onEdit={handleEdit}
                   onDelete={() => setDeleteTarget(station)}
                   onViewDetails={handleViewDetails}
+                  distanceKm={distanceFor(station)}
                 />
               ))}
             </div>
