@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CheckCircle, Mail, ArrowLeft } from 'lucide-react';
 import authService from '../services/authService';
+import AuthShell, { AuthCard, Alert, PrimaryButton, ACCENT } from '../components/auth/AuthShell';
 
 const OTP_LENGTH = 6;
 
@@ -21,6 +22,17 @@ const VerifyOtpPage = () => {
   const [countdown, setCountdown] = useState(5);
 
   const inputRefs = useRef([]);
+
+  // Verify ke baad login par — email bhara hua, aur jahan se aaye the wahi wapas
+  const fromState = location.state?.from;
+  const goToLogin = useCallback(
+    () =>
+      navigate('/login', {
+        replace: true,
+        state: { email, notice: 'Email verified! Please login.', from: fromState },
+      }),
+    [navigate, email, fromState]
+  );
 
   // Agar email hi nahi mila to signup pe wapas bhej do
   useEffect(() => {
@@ -42,12 +54,12 @@ const VerifyOtpPage = () => {
   useEffect(() => {
     if (!success) return;
     if (countdown === 0) {
-      navigate('/login', { replace: true });
+      goToLogin();
       return;
     }
     const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(t);
-  }, [success, countdown, navigate]);
+  }, [success, countdown, goToLogin]);
 
   const handleChange = (index, value) => {
     const digit = value.replace(/\D/g, '').slice(-1);
@@ -140,95 +152,94 @@ const VerifyOtpPage = () => {
   // ---------------- SUCCESS SCREEN ----------------
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 px-4">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
-            <CheckCircle className="h-10 w-10 text-green-600" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">Email Verified!</h2>
-          <p className="text-gray-600 mb-6">Your account is active. You can log in now.</p>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6">
-            <p className="text-green-800 text-sm">
-              Redirecting to login in <span className="font-bold">{countdown}</span> seconds...
+      <AuthShell showBack={false}>
+        <AuthCard>
+          <div className="text-center">
+            <div
+              className="mx-auto flex items-center justify-center h-16 w-16 rounded-2xl mb-6"
+              style={{ background: `${ACCENT}1A`, border: `1px solid ${ACCENT}40` }}
+            >
+              <CheckCircle className="h-9 w-9" style={{ color: ACCENT }} />
+            </div>
+            <h2 className="text-2xl font-bold text-[#F8FAFC] mb-2">Email verified!</h2>
+            <p className="text-[#94A3B8] mb-6">Your account is active. You can login now.</p>
+            <p className="text-sm text-slate-500 mb-6">
+              Redirecting to login in <span className="font-bold text-[#F8FAFC]">{countdown}</span>s...
             </p>
+            <PrimaryButton onClick={goToLogin}>Go to login now</PrimaryButton>
           </div>
-          <button
-            onClick={() => navigate('/login', { replace: true })}
-            className="w-full py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 font-semibold"
-          >
-            Go to Login Now
-          </button>
-        </div>
-      </div>
+        </AuthCard>
+      </AuthShell>
     );
   }
 
   // ---------------- OTP SCREEN ----------------
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 px-4 py-12">
-      <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full">
+    <AuthShell showBack={false}>
+      <AuthCard>
         <div className="text-center mb-8">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
-            <Mail className="h-8 w-8 text-blue-600" />
+          <div
+            className="mx-auto flex items-center justify-center h-14 w-14 rounded-2xl mb-5"
+            style={{ background: `${ACCENT}1A`, border: `1px solid ${ACCENT}40` }}
+          >
+            <Mail className="h-7 w-7" style={{ color: ACCENT }} />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Verify your email</h2>
-          <p className="text-gray-600 text-sm">
+          <h2 className="text-2xl font-bold text-[#F8FAFC] mb-2">Verify your email</h2>
+          <p className="text-[#94A3B8] text-sm">
             We sent a 6-digit code to
             <br />
-            <span className="font-semibold text-gray-900">{email}</span>
+            <span className="font-semibold text-[#F8FAFC] break-all">{email}</span>
           </p>
         </div>
 
         {/* OTP boxes */}
-        <div className="flex justify-center gap-2 mb-6" onPaste={handlePaste}>
+        <div className="flex justify-center gap-2 sm:gap-3 mb-6" onPaste={handlePaste}>
           {digits.map((digit, i) => (
             <input
               key={i}
               ref={(el) => (inputRefs.current[i] = el)}
               type="text"
               inputMode="numeric"
+              autoComplete={i === 0 ? "one-time-code" : "off"}
+              aria-label={`Digit ${i + 1}`}
               maxLength={1}
               value={digit}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
               disabled={loading}
-              className="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none disabled:bg-gray-100 transition-colors"
+              className={`w-11 h-14 sm:w-12 text-center text-2xl font-bold rounded-xl bg-[#020617]/60 border text-[#F8FAFC] outline-none transition-all focus:border-[#00E5A8]/70 focus:ring-4 focus:ring-[#00E5A8]/10 disabled:opacity-60 ${
+                digit ? "border-[#00E5A8]/50" : "border-white/[0.1]"
+              }`}
             />
           ))}
         </div>
 
-        {error && (
-          <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm mb-4">
-            {error}
-          </div>
-        )}
+        <div className="space-y-3 mb-4">
+          {error && <Alert>{error}</Alert>}
+          {info && <Alert type="info">{info}</Alert>}
+        </div>
 
-        {info && (
-          <div className="p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-sm mb-4">
-            {info}
-          </div>
-        )}
-
-        <button
+        <PrimaryButton
           onClick={handleVerify}
-          disabled={loading || digits.join('').length !== OTP_LENGTH}
-          className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold mb-4"
+          loading={loading}
+          disabled={digits.join('').length !== OTP_LENGTH}
         >
-          {loading ? 'Verifying...' : 'Verify Email'}
-        </button>
+          {loading ? 'Verifying...' : 'Verify email'}
+        </PrimaryButton>
 
         {/* Resend */}
-        <div className="text-center text-sm text-gray-600 mb-4">
+        <div className="text-center text-sm text-[#94A3B8] mt-5">
           {resendIn > 0 ? (
             <span>
               Didn't get the code? Resend in{' '}
-              <span className="font-semibold text-gray-900">{resendIn}s</span>
+              <span className="font-semibold text-[#F8FAFC] tabular-nums">{resendIn}s</span>
             </span>
           ) : (
             <button
               onClick={handleResend}
               disabled={loading}
-              className="text-blue-600 font-semibold hover:underline disabled:opacity-50"
+              className="font-semibold hover:underline disabled:opacity-50"
+              style={{ color: ACCENT }}
             >
               Resend code
             </button>
@@ -237,17 +248,17 @@ const VerifyOtpPage = () => {
 
         <button
           onClick={() => navigate('/login')}
-          className="w-full flex items-center justify-center gap-2 text-gray-500 text-sm hover:text-gray-700"
+          className="mt-5 w-full flex items-center justify-center gap-2 text-slate-500 text-sm hover:text-slate-300 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to login
         </button>
 
-        <p className="text-center text-xs text-gray-400 mt-6">
+        <p className="text-center text-xs text-slate-600 mt-6">
           The code expires in 10 minutes. Check your spam folder if it hasn't arrived.
         </p>
-      </div>
-    </div>
+      </AuthCard>
+    </AuthShell>
   );
 };
 

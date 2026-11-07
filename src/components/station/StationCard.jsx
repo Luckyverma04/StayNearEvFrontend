@@ -4,7 +4,8 @@ import { MapPin, Edit, Trash2, Zap, Star, ImageOff } from 'lucide-react';
 const ACCENT = '#00E5A8';
 
 const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetails }) => {
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+  // Uploads server root par hain (/uploads), /api ke andar nahi — isliye /api hata do
+  const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3002').replace(/\/+$/, '').replace(/\/api$/, '');
 
   /* Image fail hone par state se fallback — pehle DOM ko direct
      chhed rahe the, jo React re-render pe reset ho jata tha aur

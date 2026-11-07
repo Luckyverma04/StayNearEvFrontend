@@ -1,137 +1,103 @@
-import React, { useState } from 'react';
-import { Hotel, Sparkles, MapPin, Star } from 'lucide-react';
-import LoginForm from '../components/auth/LoginForm';
-import SignupForm from '../components/auth/SignupForm';
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import LoginForm from "../components/auth/LoginForm";
+import SignupForm from "../components/auth/SignupForm";
+import AuthShell, { AuthCard, ACCENT } from "../components/auth/AuthShell";
+
+const COPY = {
+  login: { title: "Welcome back", sub: "Login to book charging slots and manage your stations." },
+  signup: { title: "Create your account", sub: "Join StayNearEV — find, book and host EV chargers." },
+};
 
 const LoginPage = () => {
-  const [activeTab, setActiveTab] = useState('login');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+
+  const [mode, setMode] = useState(params.get("mode") === "signup" ? "signup" : "login");
+  const [notice, setNotice] = useState(location.state?.notice || "");
+  const [prefillEmail, setPrefillEmail] = useState(location.state?.email || "");
+
+  // Tab badlo, par redirect wala state (from) mat khona
+  const switchTo = (next) => {
+    setMode(next);
+    if (next === "signup") setNotice("");
+    const q = new URLSearchParams(location.search);
+    if (next === "signup") q.set("mode", "signup");
+    else q.delete("mode");
+    const search = q.toString();
+    navigate({ pathname: "/login", search: search ? `?${search}` : "" }, { replace: true, state: location.state });
+  };
+
+  const handleSignupSuccess = (email) => {
+    setPrefillEmail(email);
+    setNotice("Account created! Please login to continue.");
+    switchTo("login");
+  };
+
+  const reason = location.state?.from ? "Please login to continue." : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl"></div>
+    <AuthShell>
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold tracking-tight text-[#F8FAFC]">{COPY[mode].title}</h2>
+        <p className="mt-2 text-[#94A3B8]">{reason || COPY[mode].sub}</p>
       </div>
 
-      {/* Floating Icons */}
-      <div className="absolute top-20 left-20 text-white opacity-20 animate-bounce">
-        <Hotel className="h-12 w-12" />
-      </div>
-      <div className="absolute top-40 right-32 text-white opacity-20 animate-bounce delay-500">
-        <Star className="h-8 w-8" />
-      </div>
-      <div className="absolute bottom-32 left-1/4 text-white opacity-20 animate-bounce delay-1000">
-        <MapPin className="h-10 w-10" />
-      </div>
-
-      {/* Main Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-12">
-        <div className="w-full max-w-md">
-          {/* Logo & Brand */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-2xl mb-4 transform hover:scale-110 transition-transform duration-300">
-              <Hotel className="h-10 w-10 text-blue-600" />
-            </div>
-            <h1 className="text-5xl font-bold text-white mb-2 flex items-center justify-center gap-2">
-              StayNearEv
-              <Sparkles className="h-8 w-8 text-yellow-300" />
-            </h1>
-            <p className="text-blue-100 text-lg">“Charge closer, drive farther.”</p>
-          </div>
-
-          {/* Card */}
-          <div className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden">
-            {/* Tabs */}
-            <div className="flex border-b border-gray-200">
-              <button
-                onClick={() => setActiveTab('login')}
-                className={`flex-1 py-4 px-6 font-semibold transition-all duration-300 ${
-                  activeTab === 'login'
-                    ? 'text-blue-600 border-b-4 border-blue-600 bg-blue-50'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                Login
-              </button>
-              <button
-                onClick={() => setActiveTab('signup')}
-                className={`flex-1 py-4 px-6 font-semibold transition-all duration-300 ${
-                  activeTab === 'signup'
-                    ? 'text-blue-600 border-b-4 border-blue-600 bg-blue-50'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                Sign Up
-              </button>
-            </div>
-
-            {/* Form Content */}
-            <div className="p-8">
-              {activeTab === 'login' ? (
-                <div className="animate-fadeIn">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                    Welcome Back! 👋
-                  </h2>
-                  <p className="text-gray-600 mb-6">
-                    Sign in to access your account
-                  </p>
-                  <LoginForm onSuccess={() => window.location.reload()} />
-                </div>
-              ) : (
-                <div className="animate-fadeIn">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                    Create Account 🚀
-                  </h2>
-                  <p className="text-gray-600 mb-6">
-                    Join us and start your journey
-                  </p>
-                  <SignupForm onSuccess={() => setActiveTab('login')} />
-                </div>
-              )}
-            </div>
-
-            {/* Footer */}
-            <div className="bg-gray-50 px-8 py-4 text-center text-sm text-gray-600">
-              <p>
-                {activeTab === 'login' 
-                  ? "Don't have an account? " 
-                  : "Already have an account? "}
-                <button
-                  onClick={() => setActiveTab(activeTab === 'login' ? 'signup' : 'login')}
-                  className="text-blue-600 font-semibold hover:text-blue-700 hover:underline"
-                >
-                  {activeTab === 'login' ? 'Sign up now' : 'Login here'}
-                </button>
-              </p>
-            </div>
-          </div>
-
-          {/* Bottom Text */}
-          <p className="text-center text-white/80 text-sm mt-6">
-            © 2025 StayNearBy.Charge closer, drive farther.
-          </p>
+      <AuthCard>
+        {/* Tabs — sliding pill */}
+        <div className="relative grid grid-cols-2 p-1 mb-6 rounded-xl bg-[#020617]/70 border border-white/[0.06]" role="tablist">
+          <span
+            className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-lg transition-transform duration-300 ease-out"
+            style={{
+              transform: mode === "signup" ? "translateX(100%)" : "translateX(0)",
+              background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+            }}
+          />
+          {["login", "signup"].map((m) => (
+            <button
+              key={m}
+              type="button"
+              role="tab"
+              aria-selected={mode === m}
+              onClick={() => switchTo(m)}
+              className={`relative z-10 py-2.5 text-sm font-semibold rounded-lg transition-colors ${
+                mode === m ? "text-slate-950" : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              {m === "login" ? "Login" : "Sign up"}
+            </button>
+          ))}
         </div>
-      </div>
 
-    <style>{`
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  .animate-fadeIn {
-    animation: fadeIn 0.3s ease-in-out;
-  }
-`}</style>
+        <div key={mode} className="animate-[authFade_.25s_ease-out]">
+          {mode === "login" ? (
+            <LoginForm key={prefillEmail} defaultEmail={prefillEmail} notice={notice} />
+          ) : (
+            <SignupForm onSuccess={handleSignupSuccess} />
+          )}
+        </div>
+      </AuthCard>
 
-    </div>
+      <p className="mt-6 text-center text-sm text-[#94A3B8]">
+        {mode === "login" ? "New to StayNearEV? " : "Already have an account? "}
+        <button
+          type="button"
+          onClick={() => switchTo(mode === "login" ? "signup" : "login")}
+          className="font-semibold hover:underline"
+          style={{ color: ACCENT }}
+        >
+          {mode === "login" ? "Create an account" : "Login"}
+        </button>
+      </p>
+
+      <style>{`
+        @keyframes authFade {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </AuthShell>
   );
 };
 

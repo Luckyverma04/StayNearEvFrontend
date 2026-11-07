@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   MapPin, BatteryCharging, ArrowLeft, Star, Zap, Car, Clock,
   MessageSquare, CheckCircle2, AlertTriangle, X, RefreshCw,
@@ -24,8 +24,10 @@ const StationDetailPage = () => {
   const { user } = useAuth();
   const { id: stationId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+  // Uploads server root par hain (/uploads), /api ke andar nahi — isliye /api hata do
+  const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3002').replace(/\/+$/, '').replace(/\/api$/, '');
 
   const [station, setStation] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -222,7 +224,8 @@ const StationDetailPage = () => {
 
   const handleBookNow = () => {
     if (!user) {
-      navigate('/login');
+      // Login ke baad wapas isi station par aa jaye
+      navigate('/login', { state: { from: location } });
       return;
     }
     if (isOwnStation) {
@@ -472,7 +475,7 @@ const StationDetailPage = () => {
 
                 {!user && (
                   <button
-                    onClick={() => navigate('/login')}
+                    onClick={() => navigate('/login', { state: { from: location } })}
                     className="px-4 py-2 bg-white/[0.05] border border-white/[0.08] text-[#94A3B8] rounded-xl hover:bg-white/[0.1] hover:text-[#F8FAFC] transition-colors flex items-center gap-2 text-sm font-medium"
                   >
                     <MessageSquare className="h-4 w-4" />
