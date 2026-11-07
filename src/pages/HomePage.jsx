@@ -186,7 +186,9 @@ const HomePage = () => {
 
   const isAdmin = user?.role === "admin";
   /* Har logged-in user apna station list kar sakta hai */
-  const canAddStation = Boolean(user);
+  /* Button sabko dikhe — guest dabaye to login page khulega
+     (route guard login ke baad wapas yahi le aata hai) */
+  const canAddStation = true;
   const isSearching = searchTerm.trim().length > 0;
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
   const safeIndex = Math.min(activeIndex, Math.max(0, filteredStations.length - 1));

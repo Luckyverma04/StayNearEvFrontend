@@ -13,7 +13,7 @@ const ADD_STATION_PATH = '/stations/create';
 
 /* In pages par navbar bilkul render nahi hoga.
    Apne actual auth routes yahan add/remove kar lena. */
-const AUTH_ROUTES = ['/login', '/signup', '/register', '/forgot-password', '/reset-password'];
+const AUTH_ROUTES = ['/login', '/verify-otp', '/signup', '/register', '/forgot-password', '/reset-password'];
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -76,9 +76,8 @@ const Navbar = () => {
     currentPage === path || currentPage.startsWith(path + '/');
 
   /* Build nav links for the current role */
-  const navLinks = [];
+  const navLinks = [{ path: '/', label: 'Home', icon: Home, active: currentPage === '/' }];
   if (isLoggedIn) {
-    navLinks.push({ path: '/', label: 'Home', icon: Home, active: currentPage === '/' });
 
     if (userRole === 'admin') {
       navLinks.push({
@@ -217,7 +216,7 @@ const Navbar = () => {
           </button>
 
           {/* Desktop: links with SLIDING pill indicator */}
-          {isLoggedIn && (
+          {navLinks.length > 0 && (
             <div
               ref={navRef}
               onMouseLeave={handleNavLeave}
@@ -305,6 +304,15 @@ const Navbar = () => {
                 </div>
               </>
             ) : (
+              <>
+              {/* Guest bhi "Add Station" dabaa sake — route guard login par bhejega */}
+              <button
+                onClick={() => go(ADD_STATION_PATH)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-semibold text-sm text-[#F8FAFC] border border-white/[0.12] hover:bg-white/[0.06] transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                List your station
+              </button>
               <button
                 onClick={() => go('/login')}
                 className="px-5 py-2 text-slate-950 rounded-xl font-semibold text-sm transition-all duration-200 hover:scale-[1.05]"
@@ -312,6 +320,7 @@ const Navbar = () => {
               >
                 Login
               </button>
+              </>
             )}
           </div>
 
