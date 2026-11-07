@@ -44,12 +44,23 @@ api.interceptors.response.use(
     const isLoginRequest =
       error.config?.url?.includes("/users/login");
 
+    // Sirf tab login par bhejo jab user logged-in tha aur token expire/invalid ho gaya.
+    // Guest user ko public pages (dashboard, station detail) par rehne do.
+    const hadToken = Boolean(localStorage.getItem("token"));
+    const isProfileRequest =
+      error.config?.url?.includes("/users/profile");
+
     if (
       error.response?.status === 401 &&
-      !isLoginRequest
+      !isLoginRequest &&
+      hadToken
     ) {
       localStorage.removeItem("token");
-      window.location.href = "/login";
+      // Startup par profile check fail hua to AuthContext khud guest bana deta hai
+      if (!isProfileRequest) {
+        const here = window.location.pathname + window.location.search;
+        window.location.href = `/login?redirect=${encodeURIComponent(here)}`;
+      }
     }
 
     return Promise.reject(error);

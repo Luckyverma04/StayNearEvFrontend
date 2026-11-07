@@ -71,7 +71,7 @@ export const bookingService = {
 
   async getStationBookings() {
     const response = await api.get(
-      "/bookings/host/my-station-bookings"
+      "/bookings/my-station-bookings"
     );
 
     return response.data;

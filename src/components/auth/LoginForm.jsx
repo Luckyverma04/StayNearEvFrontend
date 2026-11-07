@@ -1,10 +1,24 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const LoginForm = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Login ke baad wapas wahi page jahan se user aaya tha
+  // (jaise station detail par "Book" dabaya tha)
+  const fromState = location.state?.from;
+  const fromQuery = new URLSearchParams(location.search).get("redirect");
+  const rawTarget = fromState
+    ? `${fromState.pathname}${fromState.search || ""}`
+    : fromQuery || "/";
+  // Sirf apni site ke andar ka path allow karo (open redirect se bachne ke liye)
+  const redirectTo =
+    rawTarget.startsWith("/") && !rawTarget.startsWith("//") && !rawTarget.startsWith("/login")
+      ? rawTarget
+      : "/";
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -22,7 +36,7 @@ const LoginForm = () => {
       if (result.success) {
         console.log("✅ Login successful, redirecting...");
         // ✅ Use navigate instead of reload
-        navigate("/", { replace: true });
+        navigate(redirectTo, { replace: true });
       } else {
         setError(result.message || "Login failed");
       }
