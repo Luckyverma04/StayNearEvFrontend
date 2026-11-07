@@ -60,9 +60,29 @@ export const AuthProvider = ({ children }) => {
       return response;
     } catch (error) {
       console.error('Login error:', error);
+      // Backend ka poora response aage bhejo (jaise requiresVerification)
       return {
+        ...(error.response?.data || {}),
         success: false,
         message: error.response?.data?.message || 'Login failed. Please try again.'
+      };
+    }
+  };
+
+  const loginWithGoogle = async (credential) => {
+    try {
+      const response = await authService.googleLogin(credential);
+      if (response.success) {
+        const { token, user } = response.data;
+        setToken(token);
+        setUser(user);
+        localStorage.setItem('token', token);
+      }
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Google sign-in failed. Please try again.'
       };
     }
   };
@@ -86,7 +106,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, loginWithGoogle, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );
