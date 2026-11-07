@@ -26,7 +26,8 @@ const StationDetailPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+  // Uploads server root par hain (/uploads), /api ke andar nahi — isliye /api hata do
+  const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3002').replace(/\/+$/, '').replace(/\/api$/, '');
 
   const [station, setStation] = useState(null);
   const [reviews, setReviews] = useState([]);
