@@ -26,7 +26,8 @@ const EditStationPage = () => {
   const [accessDenied, setAccessDenied] = useState(false);
   const [station, setStation] = useState(null);
 
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+  // Uploads server root par hain (/uploads), /api ke andar nahi — isliye /api hata do
+  const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3002').replace(/\/+$/, '').replace(/\/api$/, '');
 
   useEffect(() => {
     if (id) {
