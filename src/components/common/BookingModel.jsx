@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock, Zap, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { X, Calendar, Clock, Zap, AlertCircle, CheckCircle2, Car, Mail } from 'lucide-react';
 import { bookingService } from '../../services/bookingService';
 
-const BookingModal = ({ station, isOpen, onClose, onSuccess }) => {
+const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
+  const navigate = useNavigate();
+  // Booking ho jaane par "confirmed" screen dikhane ke liye
+  const [confirmed, setConfirmed] = useState(null);
+  const onClose = () => {
+    // Booking hui thi to ab parent ko batao (station refresh wagairah) —
+    // pehle batate to page reload me ye success screen gayab ho jaati
+    if (confirmed) onSuccess?.();
+    setConfirmed(null);
+    closeModal();
+  };
   const [bookingData, setBookingData] = useState({
     stationId: '',
     startTime: '',
@@ -161,10 +172,6 @@ const BookingModal = ({ station, isOpen, onClose, onSuccess }) => {
       const localDateTimeString = `${selectedDate}T${selectedStartTime}`;
       const utcDateTime = new Date(localDateTimeString).toISOString();
       
-      console.log('🕒 TIME DEBUGGING:');
-      console.log('Local time selected:', localDateTimeString);
-      console.log('Converted to UTC:', utcDateTime);
-      console.log('Back to local for display:', new Date(utcDateTime).toString());
 
       // Final booking data (matches backend API EXACTLY)
       const finalBookingData = {
@@ -174,18 +181,25 @@ const BookingModal = ({ station, isOpen, onClose, onSuccess }) => {
         vehicleInfo: {
           licensePlate: bookingData.vehicleInfo.licensePlate, // ✅ Required by backend
           vehicleType: bookingData.vehicleInfo.vehicleType,   // ✅ Required by backend
-          vehicleModel: bookingData.vehicleInfo.vehicleModel || '', // Optional
+          model: bookingData.vehicleInfo.vehicleModel || '', // Optional (backend field: model)
           batteryCapacity: batteryCapacity // Must be number, not string
         }
       };
 
-      console.log('📦 Sending booking data to backend:', finalBookingData);
-
       const response = await bookingService.createBooking(finalBookingData);
 
       if (response.success) {
-        onSuccess();
-        onClose();
+        // Modal band mat karo — "Booking ho gayi" screen dikhao
+        const b = response.data || {};
+        setConfirmed({
+          id: b._id,
+          start: b.startTime || utcDateTime,
+          end: b.endTime || new Date(new Date(utcDateTime).getTime() + bookingData.duration * 60000).toISOString(),
+          duration: b.duration || bookingData.duration,
+          cost: b.totalCost,
+          plate: bookingData.vehicleInfo.licensePlate,
+          vehicle: [bookingData.vehicleInfo.vehicleType, bookingData.vehicleInfo.vehicleModel].filter(Boolean).join(' · '),
+        });
         // Reset form
         setSelectedDate(getTodayDate());
         setSelectedStartTime('');
@@ -213,6 +227,70 @@ const BookingModal = ({ station, isOpen, onClose, onSuccess }) => {
   };
 
   if (!isOpen) return null;
+
+  /* ── Booking ho gayi 🎉 ── */
+  if (confirmed) {
+    const fmt = (d, opts) => new Date(d).toLocaleString('en-IN', opts);
+    const dateText = fmt(confirmed.start, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+    const timeText = `${fmt(confirmed.start, { hour: 'numeric', minute: '2-digit' })} – ${fmt(confirmed.end, { hour: 'numeric', minute: '2-digit' })}`;
+    const row = (Icon, label, value) => (
+      <div className="flex items-start gap-3 py-2.5 border-b border-gray-100 last:border-0">
+        <Icon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+        <span className="text-sm text-gray-500 w-24 shrink-0">{label}</span>
+        <span className="text-sm font-semibold text-gray-900">{value}</span>
+      </div>
+    );
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true">
+        <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="px-6 pt-8 pb-5 text-center bg-gradient-to-b from-emerald-50 to-white">
+            <div className="mx-auto h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
+              <CheckCircle2 className="h-9 w-9 text-emerald-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">Booking received! 🎉</h2>
+            <p className="text-sm text-gray-600 mt-1">{station?.name}</p>
+            <span className="inline-block mt-3 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+              Waiting for the station owner to confirm
+            </span>
+          </div>
+
+          <div className="px-6">
+            {confirmed.id && row(Zap, 'Booking ID', `#${String(confirmed.id).slice(-6).toUpperCase()}`)}
+            {row(Calendar, 'Date', dateText)}
+            {row(Clock, 'Time', `${timeText} (${confirmed.duration} min)`)}
+            {(confirmed.vehicle || confirmed.plate) &&
+              row(Car, 'Vehicle', [confirmed.vehicle, confirmed.plate].filter(Boolean).join(' · '))}
+            {typeof confirmed.cost === 'number' && row(Zap, 'Est. cost', `₹${confirmed.cost.toFixed(2)}`)}
+          </div>
+
+          <div className="mx-6 mt-4 p-3 rounded-xl bg-gray-50 flex items-start gap-2.5 text-xs text-gray-600">
+            <Mail className="h-4 w-4 shrink-0 mt-0.5 text-gray-400" />
+            We've emailed you the details. You'll get another email when the owner confirms your slot.
+          </div>
+
+          <div className="p-6 flex flex-col-reverse sm:flex-row gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50"
+            >
+              Done
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                navigate('/my-bookings');
+              }}
+              className="flex-1 px-4 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
+            >
+              View my bookings
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
