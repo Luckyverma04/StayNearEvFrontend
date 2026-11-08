@@ -17,7 +17,29 @@ const gridStyle = {
   backgroundSize: '48px 48px',
 };
 
-const FILTERS = ['all', 'pending', 'confirmed', 'active', 'completed', 'cancelled'];
+const FILTERS = ['upcoming', 'active', 'past', 'cancelled', 'all'];
+
+/* Booking kis tab me jaayegi — status + time dono dekh ke */
+const bookingGroup = (b, now = Date.now()) => {
+  const start = new Date(b.startTime).getTime();
+  const end = new Date(b.endTime || b.startTime).getTime();
+  if (['cancelled', 'no-show'].includes(b.status)) return 'cancelled';
+  if (b.status === 'active' || (b.status === 'confirmed' && start <= now && now < end)) return 'active';
+  if (['pending', 'confirmed'].includes(b.status) && end > now) return 'upcoming';
+  return 'past';
+};
+
+/* "in 2 days", "in 3 h", "in 20 min" */
+const timeUntil = (date) => {
+  const ms = new Date(date).getTime() - Date.now();
+  if (ms <= 0) return 'now';
+  const min = Math.round(ms / 60000);
+  if (min < 60) return `in ${min} min`;
+  const h = Math.round(min / 60);
+  if (h < 24) return `in ${h} h`;
+  const d = Math.round(h / 24);
+  return `in ${d} day${d > 1 ? 's' : ''}`;
+};
 
 /* Response ka shape kuch bhi ho — array dhoond ke nikaal lo.
    axios pura response de sakta hai, ya sirf response.data,
@@ -37,7 +59,7 @@ const extractBookings = (res) => {
 };
 
 /* ── Sliding pill tabs — same interaction as the navbar ── */
-const SlidingTabs = ({ tabs, active, onChange }) => {
+const SlidingTabs = ({ tabs, active, onChange, counts = {} }) => {
   const wrapRef = useRef(null);
   const tabRefs = useRef({});
   const [indicator, setIndicator] = useState({ left: 0, width: 0, opacity: 0 });
@@ -96,6 +118,7 @@ const SlidingTabs = ({ tabs, active, onChange }) => {
             }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {counts[tab] > 0 && <span className="ml-1.5 opacity-70">{counts[tab]}</span>}
           </button>
         );
       })}
@@ -109,7 +132,7 @@ const MyBookingsPage = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('upcoming');
   const [cancellingId, setCancellingId] = useState(null);
   const [cancelTarget, setCancelTarget] = useState(null); // booking pending cancel confirm
   const [reviewingBooking, setReviewingBooking] = useState(null);
@@ -236,7 +259,7 @@ const MyBookingsPage = () => {
         month: 'short',
         day: 'numeric',
       });
-    } catch (error) {
+    } catch {
       return 'Invalid date';
     }
   };
@@ -250,7 +273,7 @@ const MyBookingsPage = () => {
         minute: '2-digit',
         hour12: true,
       });
-    } catch (error) {
+    } catch {
       return 'Invalid time';
     }
   };
@@ -265,15 +288,28 @@ const MyBookingsPage = () => {
         minute: '2-digit',
         hour12: true,
       });
-    } catch (error) {
+    } catch {
       return 'Invalid time';
     }
   };
 
-  const filteredBookings = bookings.filter((booking) => {
-    if (filter === 'all') return true;
-    return booking.status === filter;
-  });
+  const now = Date.now();
+  const byStart = (a, b) => new Date(a.startTime) - new Date(b.startTime);
+  const filteredBookings = bookings
+    .filter((booking) => filter === 'all' || bookingGroup(booking, now) === filter)
+    // Aane wali — sabse paas wali pehle; purani — sabse nayi pehle
+    .sort((a, b) => (['upcoming', 'active'].includes(filter) ? byStart(a, b) : byStart(b, a)));
+
+  const tabCounts = bookings.reduce((acc, b) => {
+    const g = bookingGroup(b, now);
+    acc[g] = (acc[g] || 0) + 1;
+    return acc;
+  }, {});
+
+  // "Your next charge" — sabse paas wali active/upcoming booking
+  const nextBooking = bookings
+    .filter((b) => ['active', 'upcoming'].includes(bookingGroup(b, now)))
+    .sort(byStart)[0];
 
   /* ── Not logged in ── */
   if (!user) {
@@ -356,9 +392,46 @@ const MyBookingsPage = () => {
           </button>
         </div>
 
-        {/* Sliding pill filters — same feel as the navbar */}
-        <div className="mb-8">
-          <SlidingTabs tabs={FILTERS} active={filter} onChange={setFilter} />
+        {/* Your next charge */}
+        {nextBooking && (
+          <div
+            className="mb-6 p-5 rounded-2xl border flex flex-col sm:flex-row sm:items-center gap-4"
+            style={{ borderColor: `${ACCENT}40`, background: `linear-gradient(135deg, ${ACCENT}14, transparent)` }}
+          >
+            <div className="h-12 w-12 shrink-0 rounded-xl flex items-center justify-center" style={{ background: `${ACCENT}22` }}>
+              <Zap className="h-6 w-6" style={{ color: ACCENT }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: ACCENT }}>
+                {bookingGroup(nextBooking, now) === 'active' ? 'Charging now' : `Your next charge · ${timeUntil(nextBooking.startTime)}`}
+              </p>
+              <p className="text-lg font-semibold text-[#F8FAFC] truncate">
+                {nextBooking.station?.name || 'Charging Station'}
+              </p>
+              <p className="text-sm text-[#94A3B8]">
+                {formatDate(nextBooking.startTime)} · {extractTime(nextBooking.startTime)} – {extractTime(nextBooking.endTime)}
+                {nextBooking.status === 'pending' && (
+                  <span className="ml-2 text-amber-300">· waiting for owner to confirm</span>
+                )}
+              </p>
+            </div>
+            {nextBooking.station?.location && (
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(nextBooking.station.location)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-950"
+                style={{ background: ACCENT }}
+              >
+                🧭 Directions
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Upcoming / Active / Past / Cancelled / All */}
+        <div className="mb-8 overflow-x-auto no-scrollbar">
+          <SlidingTabs tabs={FILTERS} active={filter} onChange={setFilter} counts={tabCounts} />
         </div>
 
         {filteredBookings.length === 0 ? (
@@ -370,11 +443,11 @@ const MyBookingsPage = () => {
               {filter === 'all' ? 'No bookings yet' : `No ${filter} bookings`}
             </h2>
             <p className="text-[#94A3B8] mb-6">
-              {filter === 'all'
-                ? 'Start by booking a charging station'
-                : 'No bookings match this filter'}
+              {filter === 'all' || filter === 'upcoming'
+                ? 'Find a charger near you and book a slot.'
+                : 'Nothing here right now.'}
             </p>
-            {filter === 'all' && (
+            {(filter === 'all' || filter === 'upcoming') && (
               <button
                 onClick={() => navigate('/')}
                 className="px-6 py-3 text-slate-950 rounded-xl font-semibold transition-all hover:scale-[1.03]"

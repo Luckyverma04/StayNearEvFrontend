@@ -64,7 +64,8 @@ const MyStationBookingsPage = () => {
       setLoading(true);
       setError('');
       const res = await api.get('/bookings/my-station-bookings');
-      setBookings(res.data?.data || []);
+      const d = res.data?.data;
+      setBookings(Array.isArray(d) ? d : Array.isArray(d?.bookings) ? d.bookings : []);
     } catch (err) {
       console.error('Fetch station bookings error:', err);
       setError(err.response?.data?.message || 'Could not load bookings for your stations.');
@@ -102,8 +103,31 @@ const MyStationBookingsPage = () => {
     }
   };
 
-  const filtered =
-    filter === 'all' ? bookings : bookings.filter((b) => b.status === filter);
+  // Pending (action chahiye) sabse upar, phir aane wali (paas wali pehle), phir baaki (nayi pehle)
+  const PRIORITY = { pending: 0, confirmed: 1, active: 1, completed: 2, cancelled: 3, 'no-show': 3 };
+  const filtered = (filter === 'all' ? bookings : bookings.filter((b) => b.status === filter))
+    .slice()
+    .sort((a, b) => {
+      const pa = PRIORITY[a.status] ?? 2;
+      const pb = PRIORITY[b.status] ?? 2;
+      if (pa !== pb) return pa - pb;
+      const da = new Date(a.startTime) - new Date(b.startTime);
+      return pa <= 1 ? da : -da;
+    });
+
+  /* Owner summary */
+  const nowTs = Date.now();
+  const todayKey = new Date().toDateString();
+  const summary = {
+    pending: bookings.filter((b) => b.status === 'pending').length,
+    today: bookings.filter(
+      (b) => !['cancelled', 'no-show'].includes(b.status) && new Date(b.startTime).toDateString() === todayKey
+    ).length,
+    upcoming: bookings.filter((b) => b.status === 'confirmed' && new Date(b.startTime).getTime() > nowTs).length,
+    earned: bookings
+      .filter((b) => b.status === 'completed')
+      .reduce((sum, b) => sum + (Number(b.finalCost ?? b.totalCost) || 0), 0),
+  };
 
   const counts = {
     all: bookings.length,
@@ -178,6 +202,39 @@ const MyStationBookingsPage = () => {
             <RefreshCw className="h-4 w-4" />
             Refresh
           </button>
+        </div>
+
+        {/* Summary */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {[
+            {
+              key: 'pending',
+              label: 'Needs your action',
+              value: summary.pending,
+              hint: summary.pending ? 'Tap to review' : 'All caught up',
+              tone: summary.pending ? 'text-amber-300 border-amber-500/40 bg-amber-500/10' : 'text-[#94A3B8] border-white/[0.08] bg-white/[0.03]',
+            },
+            { key: 'today', label: 'Today', value: summary.today, hint: 'bookings', tone: 'text-[#F8FAFC] border-white/[0.08] bg-white/[0.03]' },
+            { key: 'confirmed', label: 'Upcoming', value: summary.upcoming, hint: 'confirmed', tone: 'text-sky-300 border-white/[0.08] bg-white/[0.03]' },
+            {
+              key: 'completed',
+              label: 'Earned',
+              value: `₹${Math.round(summary.earned).toLocaleString('en-IN')}`,
+              hint: 'from completed',
+              tone: 'text-emerald-300 border-white/[0.08] bg-white/[0.03]',
+            },
+          ].map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              onClick={() => c.key !== 'today' && setFilter(c.key)}
+              className={`text-left p-4 rounded-2xl border transition-all hover:-translate-y-0.5 ${c.tone}`}
+            >
+              <p className="text-xs font-medium text-[#94A3B8]">{c.label}</p>
+              <p className="text-2xl font-bold mt-1">{c.value}</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">{c.hint}</p>
+            </button>
+          ))}
         </div>
 
         {/* Filter tabs */}
