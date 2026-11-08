@@ -31,12 +31,13 @@ export const userIcon = L.divIcon({
     </div>`,
 });
 
-// Map ka style (CARTO, free — attribution zaroori hai).
-// Rang badalna ho to sirf neeche wala naam badlo:
-//   "rastertiles/voyager"  → normal rangeen map (Google Maps jaisa)  ← abhi ye hai
-//   "light_all"            → halka safed/grey
-//   "dark_all"             → dark (kaala)
-const MAP_STYLE = "rastertiles/voyager";
-export const TILE_URL = `https://{s}.basemaps.cartocdn.com/${MAP_STYLE}/{z}/{x}/{y}{r}.png`;
+// Map tiles — OpenStreetMap (free, koi API key nahi; attribution zaroori hai).
+// Map ka look badalna ho to TILE_URL aur TILE_ATTRIBUTION dono badlo:
+//   OpenStreetMap (abhi ye hai):
+//     https://tile.openstreetmap.org/{z}/{x}/{y}.png
+//   Esri street map (doosra free option):
+//     https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}
+//     attribution: "Tiles &copy; Esri"
+export const TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 export const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';

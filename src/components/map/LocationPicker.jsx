@@ -100,7 +100,7 @@ const LocationPicker = ({ value, onChange, onAddressFound, height = 300 }) => {
           scrollWheelZoom
           style={{ height: "100%", width: "100%", background: "#e8eef3", cursor: "crosshair" }}
         >
-          <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} subdomains="abcd" maxZoom={19} />
+          <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} maxZoom={19} />
           <ClickToPlace onPick={onChange} />
           <FlyTo pos={value} zoom={15} />
           {value && (
