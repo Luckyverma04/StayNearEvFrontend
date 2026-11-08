@@ -9,7 +9,7 @@
 }
 .snev-map .leaflet-popup-content-wrapper,
 .snev-map .leaflet-popup-tip {
-  background: #0F172A;
+  background: #0E1130;
   color: #F8FAFC;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
@@ -18,7 +18,7 @@
 .snev-map .leaflet-popup-content { margin: 12px; width: 220px !important; }
 .snev-map .leaflet-popup-close-button { color: #94A3B8 !important; }
 .snev-map .leaflet-control-zoom a {
-  background: #0F172A;
+  background: #0E1130;
   color: #F8FAFC;
   border-color: rgba(255, 255, 255, 0.08);
 }
@@ -42,4 +42,29 @@ select:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px #0b1222 inset;
   box-shadow: 0 0 0 1000px #0b1222 inset;
   transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ───────── 3D tilt cards + glare ───────── */
+.snev-tilt {
+  transform-style: preserve-3d;
+  will-change: transform;
+  --glare-x: 50%;
+  --glare-y: 50%;
+  --glare-o: 0;
+}
+.snev-glare {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  opacity: var(--glare-o);
+  transition: opacity 300ms ease;
+  background: radial-gradient(
+    420px circle at var(--glare-x) var(--glare-y),
+    rgba(34, 211, 238, 0.14),
+    rgba(139, 92, 246, 0.08) 40%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
 }

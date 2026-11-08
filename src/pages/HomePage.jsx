@@ -5,6 +5,8 @@ import { useAuth } from "../context/AuthContext";
 import StationCard from "../components/station/StationCard";
 import StationsMap from "../components/map/StationsMap";
 import PublicChargerCard from "../components/station/PublicChargerCard";
+import Hero3D from "../components/three/Hero3D";
+import { useTilt } from "../hooks/useTilt";
 import { publicChargerService } from "../services/publicChargerService";
 import { hasCoords, distanceKm, getCurrentPosition, DEFAULT_CITY, SHOW_DEMO } from "../utils/geo";
 import {
@@ -14,10 +16,10 @@ import {
 } from "lucide-react";
 
 /* ─── Design tokens ───────────────────────────────────────────────
-   bg #020617 · cards #0F172A · borders rgba(255,255,255,.08)
-   accent #00E5A8 · hover #06D6A0 · text #F8FAFC · secondary #94A3B8
+   bg #05061A · cards #0E1130 · borders rgba(255,255,255,.08)
+   accent #22D3EE · hover #8B5CF6 · text #F8FAFC · secondary #94A3B8
 ────────────────────────────────────────────────────────────────── */
-const ACCENT = "#00E5A8";
+const ACCENT = "#22D3EE";
 const NAVBAR_CLEARANCE = "pt-24 sm:pt-28";
 
 /* Change this if your router uses a different path */
@@ -303,7 +305,7 @@ const HomePage = () => {
   /* ────────────────────────────── Loading ────────────────────────────── */
   if (loading) {
     return (
-      <div className={`min-h-screen bg-[#020617] ${NAVBAR_CLEARANCE}`} style={gridStyle}>
+      <div className={`min-h-screen bg-[#05061A] ${NAVBAR_CLEARANCE}`} style={gridStyle}>
         <div className="max-w-7xl mx-auto px-4 pb-16">
           <div className="grid lg:grid-cols-2 gap-10 items-center mb-10 sm:mb-14 pt-6">
             <div>
@@ -321,12 +323,12 @@ const HomePage = () => {
           </div>
           <div className="grid grid-cols-3 gap-2.5 sm:gap-4 mb-10 sm:mb-12 max-w-4xl">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-24 sm:h-28 bg-[#0F172A] rounded-2xl border border-white/[0.08] animate-pulse" />
+              <div key={i} className="h-24 sm:h-28 bg-[#0E1130] rounded-2xl border border-white/[0.08] animate-pulse" />
             ))}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-[#0F172A] rounded-2xl border border-white/[0.08] p-5 animate-pulse">
+              <div key={i} className="bg-[#0E1130] rounded-2xl border border-white/[0.08] p-5 animate-pulse">
                 <div className="h-32 w-full bg-slate-800 rounded-xl mb-4" />
                 <div className="h-5 w-2/3 bg-slate-800 rounded mb-3" />
                 <div className="h-4 w-5/6 bg-slate-800/70 rounded mb-4" />
@@ -342,8 +344,8 @@ const HomePage = () => {
   /* ─────────────────────────────── Error ─────────────────────────────── */
   if (error && stations.length === 0) {
     return (
-      <div className={`min-h-screen bg-[#020617] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`} style={gridStyle}>
-        <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl shadow-xl p-8 sm:p-10 text-center max-w-md w-full">
+      <div className={`min-h-screen bg-[#05061A] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`} style={gridStyle}>
+        <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl shadow-xl p-8 sm:p-10 text-center max-w-md w-full">
           <div className="bg-red-500/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="h-8 w-8 text-red-400" />
           </div>
@@ -363,7 +365,7 @@ const HomePage = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#020617] relative">
+    <div className="min-h-screen w-full bg-[#05061A] relative">
       {/* Background layer — apne andar clip hota hai, isliye blobs
           page ki width kabhi nahi badha sakte. Pehle ye root par
           overflow-x-hidden se handle ho raha tha, jo overflow-y
@@ -444,7 +446,7 @@ const HomePage = () => {
                   placeholder="Search station or location…"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 sm:pl-14 pr-12 sm:pr-24 py-3.5 sm:py-4 text-base bg-[#0F172A]/80 backdrop-blur-xl border border-white/[0.08] rounded-2xl outline-none transition-all shadow-xl shadow-black/40 text-[#F8FAFC] placeholder:text-slate-500 focus:border-[#00E5A8]/60 focus:ring-2 focus:ring-[#00E5A8]/30"
+                  className="w-full pl-12 sm:pl-14 pr-12 sm:pr-24 py-3.5 sm:py-4 text-base bg-[#0E1130]/80 backdrop-blur-xl border border-white/[0.08] rounded-2xl outline-none transition-all shadow-xl shadow-black/40 text-[#F8FAFC] placeholder:text-slate-500 focus:border-[#22D3EE]/60 focus:ring-2 focus:ring-[#22D3EE]/30"
                 />
                 {searchTerm ? (
                   <button
@@ -511,15 +513,18 @@ const HomePage = () => {
               style={{ background: `radial-gradient(closest-side, ${ACCENT}, transparent)` }}
               aria-hidden="true"
             />
-            <EvIllustration />
+            <Hero3D
+              fallback={<EvIllustration />}
+              className="w-full h-[280px] sm:h-[360px] lg:h-[460px]"
+            />
           </div>
         </div>
 
         {/* ══════════════ STATS ══════════════ */}
         <div className="grid grid-cols-3 gap-2.5 sm:gap-4 mb-12 sm:mb-14 max-w-5xl">
           <StatCard
-            icon={<Zap className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />}
-            iconBg="bg-blue-500/10"
+            icon={<Zap className="h-5 w-5 sm:h-6 sm:w-6 text-violet-400" />}
+            iconBg="bg-violet-500/10"
             label="Stations"
             fullLabel="Total stations"
             value={stations.length}
@@ -527,7 +532,7 @@ const HomePage = () => {
           />
           <StatCard
             icon={<PlugZap className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: ACCENT }} />}
-            iconBg="bg-[#00E5A8]/10"
+            iconBg="bg-[#22D3EE]/10"
             label="Available"
             fullLabel="Available now"
             value={availableCount}
@@ -574,7 +579,7 @@ const HomePage = () => {
             <div
               role="tablist"
               aria-label="Choose view"
-              className="inline-flex p-1 rounded-xl bg-[#0F172A]/80 border border-white/[0.08] backdrop-blur"
+              className="inline-flex p-1 rounded-xl bg-[#0E1130]/80 border border-white/[0.08] backdrop-blur"
             >
               {[
                 { key: "list", label: "List", Icon: LayoutGrid },
@@ -600,7 +605,7 @@ const HomePage = () => {
 
         {/* ══════════════ RESULTS ══════════════ */}
         {filteredStations.length === 0 && view !== "map" ? (
-          <div className="text-center py-14 sm:py-20 px-5 bg-[#0F172A]/70 backdrop-blur rounded-2xl border border-white/[0.08] max-w-2xl mx-auto shadow-xl">
+          <div className="text-center py-14 sm:py-20 px-5 bg-[#0E1130]/70 backdrop-blur rounded-2xl border border-white/[0.08] max-w-2xl mx-auto shadow-xl">
             <div className="bg-white/[0.04] h-16 w-16 sm:h-20 sm:w-20 rounded-full flex items-center justify-center mx-auto mb-5">
               <Zap className="h-8 w-8 sm:h-10 sm:w-10 text-slate-600" />
             </div>
@@ -673,7 +678,7 @@ const HomePage = () => {
                 onClick={goPrev}
                 disabled={safeIndex === 0}
                 aria-label="Previous station"
-                className="absolute left-0 md:left-8 z-30 p-2.5 sm:p-3 rounded-full bg-[#0F172A]/90 border border-white/[0.08] text-[#F8FAFC] transition-all active:scale-95 sm:hover:scale-110 hover:border-[#00E5A8]/60 disabled:opacity-30 disabled:pointer-events-none backdrop-blur shadow-xl"
+                className="absolute left-0 md:left-8 z-30 p-2.5 sm:p-3 rounded-full bg-[#0E1130]/90 border border-white/[0.08] text-[#F8FAFC] transition-all active:scale-95 sm:hover:scale-110 hover:border-[#22D3EE]/60 disabled:opacity-30 disabled:pointer-events-none backdrop-blur shadow-xl"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
@@ -733,7 +738,7 @@ const HomePage = () => {
                 onClick={goNext}
                 disabled={safeIndex >= filteredStations.length - 1}
                 aria-label="Next station"
-                className="absolute right-0 md:right-8 z-30 p-2.5 sm:p-3 rounded-full bg-[#0F172A]/90 border border-white/[0.08] text-[#F8FAFC] transition-all active:scale-95 sm:hover:scale-110 hover:border-[#00E5A8]/60 disabled:opacity-30 disabled:pointer-events-none backdrop-blur shadow-xl"
+                className="absolute right-0 md:right-8 z-30 p-2.5 sm:p-3 rounded-full bg-[#0E1130]/90 border border-white/[0.08] text-[#F8FAFC] transition-all active:scale-95 sm:hover:scale-110 hover:border-[#22D3EE]/60 disabled:opacity-30 disabled:pointer-events-none backdrop-blur shadow-xl"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
@@ -791,7 +796,7 @@ const HomePage = () => {
             <div className="mb-5 flex items-end justify-between gap-3">
               <div>
                 <h2 className="text-base sm:text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
                   {pcSearch?.city ? `Public charging points in ${pcSearch.city}` : "Public charging points near you"}
                 </h2>
                 <p className="text-xs sm:text-sm text-[#94A3B8] mt-1">
@@ -802,7 +807,7 @@ const HomePage = () => {
                       <button
                         onClick={() => toggleFilter("nearby")}
                         disabled={geoBusy}
-                        className="font-semibold text-blue-300 hover:underline disabled:opacity-60"
+                        className="font-semibold text-amber-300 hover:underline disabled:opacity-60"
                       >
                         📍 {geoBusy ? "Locating…" : "Show chargers near me"}
                       </button>
@@ -820,7 +825,7 @@ const HomePage = () => {
             {pcLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-56 bg-[#0F172A] rounded-2xl border border-white/[0.06] animate-pulse" />
+                  <div key={i} className="h-56 bg-[#0E1130] rounded-2xl border border-white/[0.06] animate-pulse" />
                 ))}
               </div>
             ) : publicChargers.length > 0 ? (
@@ -840,7 +845,7 @@ const HomePage = () => {
                   <div className="text-center mt-6">
                     <button
                       onClick={() => setPcShowAll(true)}
-                      className="px-5 py-2.5 rounded-xl text-sm font-semibold text-blue-300 border border-blue-500/30 hover:bg-blue-500/10"
+                      className="px-5 py-2.5 rounded-xl text-sm font-semibold text-amber-300 border border-amber-500/30 hover:bg-amber-500/10"
                     >
                       Show all {publicChargers.length} chargers
                     </button>
@@ -848,9 +853,9 @@ const HomePage = () => {
                 )}
               </>
             ) : (
-              <div className="flex flex-col sm:flex-row items-center gap-4 p-5 sm:p-6 rounded-2xl border border-dashed border-blue-500/25 bg-blue-500/[0.04]">
-                <span className="h-12 w-12 shrink-0 rounded-2xl flex items-center justify-center bg-blue-500/10">
-                  <PlugZap className="h-6 w-6 text-blue-300" />
+              <div className="flex flex-col sm:flex-row items-center gap-4 p-5 sm:p-6 rounded-2xl border border-dashed border-amber-500/25 bg-amber-500/[0.04]">
+                <span className="h-12 w-12 shrink-0 rounded-2xl flex items-center justify-center bg-amber-500/10">
+                  <PlugZap className="h-6 w-6 text-amber-300" />
                 </span>
                 <div className="flex-1 text-center sm:text-left">
                   <p className="font-semibold text-[#F8FAFC]">
@@ -868,7 +873,7 @@ const HomePage = () => {
                     userPos ? loadPublicChargers({ ...userPos, radiusKm: 15 }) : toggleFilter("nearby")
                   }
                   disabled={geoBusy}
-                  className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-60"
+                  className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 disabled:opacity-60"
                 >
                   📍 {geoBusy ? "Locating…" : userPos ? "Try again" : "Find chargers near me"}
                 </button>
@@ -906,7 +911,7 @@ const HomePage = () => {
           }}
         >
           <div
-            className="bg-[#0F172A] border border-white/[0.08] rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:max-w-sm p-6"
+            className="bg-[#0E1130] border border-white/[0.08] rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:max-w-sm p-6"
             style={{ paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
           >
             <div className="sm:hidden mx-auto mb-5 h-1 w-10 rounded-full bg-white/15" />
@@ -945,12 +950,18 @@ const HomePage = () => {
 };
 
 /* ── Stat card: stacked on mobile, horizontal on desktop ── */
-const StatCard = ({ icon, iconBg, label, fullLabel, value, trend, trendAccent = false, accent = false }) => (
+const StatCard = ({ icon, iconBg, label, fullLabel, value, trend, trendAccent = false, accent = false }) => {
+  const tilt = useTilt({ max: 10 });
+  return (
   <div
-    className={`bg-[#0F172A]/80 backdrop-blur rounded-2xl p-3.5 sm:p-5 border shadow-xl transition-all duration-300 sm:hover:-translate-y-1 sm:hover:shadow-2xl ${
-      accent ? "border-[#00E5A8]/30 hover:border-[#00E5A8]/50" : "border-white/[0.08] hover:border-white/[0.15]"
+    ref={tilt.ref}
+    onPointerMove={tilt.onPointerMove}
+    onPointerLeave={tilt.onPointerLeave}
+    className={`snev-tilt relative overflow-hidden bg-[#0E1130]/80 backdrop-blur rounded-2xl p-3.5 sm:p-5 border shadow-xl transition-[box-shadow,border-color] duration-300 sm:hover:shadow-2xl ${
+      accent ? "border-[#22D3EE]/30 hover:border-[#22D3EE]/50" : "border-white/[0.08] hover:border-white/[0.15]"
     }`}
   >
+    <span className="snev-glare" aria-hidden="true" />
     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
       <div className={`${iconBg} p-2 sm:p-3 rounded-xl w-fit shrink-0`}>{icon}</div>
       <div className="min-w-0">
@@ -981,7 +992,8 @@ const StatCard = ({ icon, iconBg, label, fullLabel, value, trend, trendAccent = 
       </div>
     </div>
   </div>
-);
+  );
+};
 
 /* ── EV + charger illustration in brand colors ── */
 const EvIllustration = () => (
@@ -993,32 +1005,32 @@ const EvIllustration = () => (
     aria-hidden="true"
   >
     <line x1="20" y1="252" x2="440" y2="252" stroke="rgba(255,255,255,0.12)" strokeWidth="2" strokeLinecap="round" />
-    <rect x="330" y="120" width="58" height="130" rx="10" fill="#0F172A" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
-    <rect x="341" y="134" width="36" height="26" rx="5" fill="rgba(0,229,168,0.12)" stroke="#00E5A8" strokeWidth="1.5" />
-    <path d="M361 138l-6 9h5l-4 9 10-11h-6l4-7z" fill="#00E5A8" />
-    <circle cx="359" cy="182" r="4" fill="#00E5A8">
+    <rect x="330" y="120" width="58" height="130" rx="10" fill="#0E1130" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
+    <rect x="341" y="134" width="36" height="26" rx="5" fill="rgba(0,229,168,0.12)" stroke="#22D3EE" strokeWidth="1.5" />
+    <path d="M361 138l-6 9h5l-4 9 10-11h-6l4-7z" fill="#22D3EE" />
+    <circle cx="359" cy="182" r="4" fill="#22D3EE">
       <animate attributeName="opacity" values="1;0.25;1" dur="1.6s" repeatCount="indefinite" />
     </circle>
     <circle cx="359" cy="198" r="4" fill="rgba(255,255,255,0.15)" />
-    <path d="M330 170 C 290 175, 285 205, 258 196" stroke="#00E5A8" strokeWidth="3.5" strokeLinecap="round" fill="none" opacity="0.9" />
+    <path d="M330 170 C 290 175, 285 205, 258 196" stroke="#22D3EE" strokeWidth="3.5" strokeLinecap="round" fill="none" opacity="0.9" />
     <path
       d="M60 250 h190 a12 12 0 0 0 12-12 v-24 c0-10-6-18-16-21 l-30-8 -28-26 a20 20 0 0 0-14-6 h-70 a18 18 0 0 0-15 8 l-22 30 -14 6 a16 16 0 0 0-10 15 v26 a12 12 0 0 0 12 12 z"
-      fill="#0F172A"
+      fill="#0E1130"
       stroke="rgba(255,255,255,0.15)"
       strokeWidth="2.5"
     />
     <path d="M120 158 h50 l24 24 h-84 z" fill="rgba(0,229,168,0.08)" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
-    <circle cx="256" cy="196" r="7" fill="#020617" stroke="#00E5A8" strokeWidth="2.5">
+    <circle cx="256" cy="196" r="7" fill="#05061A" stroke="#22D3EE" strokeWidth="2.5">
       <animate attributeName="stroke-opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
     </circle>
-    <circle cx="105" cy="250" r="24" fill="#020617" stroke="rgba(255,255,255,0.2)" strokeWidth="3" />
-    <circle cx="105" cy="250" r="9" fill="none" stroke="#00E5A8" strokeWidth="2" opacity="0.7" />
-    <circle cx="222" cy="250" r="24" fill="#020617" stroke="rgba(255,255,255,0.2)" strokeWidth="3" />
-    <circle cx="222" cy="250" r="9" fill="none" stroke="#00E5A8" strokeWidth="2" opacity="0.7" />
-    <rect x="118" y="96" width="72" height="26" rx="7" fill="#0F172A" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
+    <circle cx="105" cy="250" r="24" fill="#05061A" stroke="rgba(255,255,255,0.2)" strokeWidth="3" />
+    <circle cx="105" cy="250" r="9" fill="none" stroke="#22D3EE" strokeWidth="2" opacity="0.7" />
+    <circle cx="222" cy="250" r="24" fill="#05061A" stroke="rgba(255,255,255,0.2)" strokeWidth="3" />
+    <circle cx="222" cy="250" r="9" fill="none" stroke="#22D3EE" strokeWidth="2" opacity="0.7" />
+    <rect x="118" y="96" width="72" height="26" rx="7" fill="#0E1130" stroke="rgba(255,255,255,0.12)" strokeWidth="2" />
     <rect x="192" y="103" width="5" height="12" rx="2" fill="rgba(255,255,255,0.2)" />
-    <rect x="124" y="102" width="14" height="14" rx="3" fill="#00E5A8" opacity="0.95" />
-    <rect x="141" y="102" width="14" height="14" rx="3" fill="#00E5A8" opacity="0.6">
+    <rect x="124" y="102" width="14" height="14" rx="3" fill="#22D3EE" opacity="0.95" />
+    <rect x="141" y="102" width="14" height="14" rx="3" fill="#22D3EE" opacity="0.6">
       <animate attributeName="opacity" values="0.6;1;0.6" dur="1.6s" repeatCount="indefinite" />
     </rect>
     <rect x="158" y="102" width="14" height="14" rx="3" fill="rgba(255,255,255,0.08)">

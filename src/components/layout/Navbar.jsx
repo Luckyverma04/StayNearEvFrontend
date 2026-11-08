@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-const ACCENT = '#00E5A8';
+const ACCENT = '#22D3EE';
 
 /* Ek hi jagah se route control — HomePage mein bhi yahi path use hota hai */
 const ADD_STATION_PATH = '/stations/create';
@@ -63,7 +63,7 @@ const Navbar = () => {
       },
       customer: {
         icon: <Battery className="h-3 w-3" />,
-        gradient: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+        gradient: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
         label: 'CUSTOMER',
       },
     };
@@ -185,7 +185,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 bg-[#020617]/85 backdrop-blur-xl border-b border-white/[0.08]">
+    <nav className="fixed top-0 inset-x-0 z-50 bg-[#05061A]/85 backdrop-blur-xl border-b border-white/[0.08]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -193,7 +193,7 @@ const Navbar = () => {
             <div
               className="p-2 rounded-xl transition-shadow"
               style={{
-                background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                 boxShadow: `0 8px 20px -8px ${ACCENT}60`,
               }}
             >
@@ -229,7 +229,7 @@ const Navbar = () => {
                   left: indicator.left,
                   width: indicator.width,
                   opacity: indicator.opacity,
-                  background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                  background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                   boxShadow: `0 6px 18px -6px ${ACCENT}80`,
                   transition:
                     'left 0.35s cubic-bezier(0.22, 1, 0.36, 1), width 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease',
@@ -265,7 +265,7 @@ const Navbar = () => {
                   onClick={() => go(ADD_STATION_PATH)}
                   className="flex items-center gap-1.5 px-4 py-2 text-slate-950 rounded-xl font-semibold text-sm transition-all duration-200 hover:scale-[1.05] hover:shadow-xl"
                   style={{
-                    background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                    background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                     boxShadow: `0 8px 24px -8px ${ACCENT}70`,
                   }}
                 >
@@ -289,12 +289,12 @@ const Navbar = () => {
                       src={user.avatar}
                       alt=""
                       referrerPolicy="no-referrer"
-                      className="w-8 h-8 rounded-full object-cover shrink-0 ring-2 ring-[#00E5A8]/40"
+                      className="w-8 h-8 rounded-full object-cover shrink-0 ring-2 ring-[#22D3EE]/40"
                     />
                   ) : (
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-slate-950 font-bold text-sm shrink-0"
-                    style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+                    style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)` }}
                   >
                     {user.name?.charAt(0).toUpperCase()}
                   </div>
@@ -335,7 +335,7 @@ const Navbar = () => {
               <button
                 onClick={() => go('/login')}
                 className="px-5 py-2 text-slate-950 rounded-xl font-semibold text-sm transition-all duration-200 hover:scale-[1.05]"
-                style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+                style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)` }}
               >
                 Login
               </button>
@@ -351,7 +351,7 @@ const Navbar = () => {
                   onClick={() => go(ADD_STATION_PATH)}
                   aria-label="Add station"
                   className="p-2 rounded-lg text-slate-950 transition-transform active:scale-90"
-                  style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+                  style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)` }}
                 >
                   <Plus className="h-5 w-5" strokeWidth={2.5} />
                 </button>
@@ -368,7 +368,7 @@ const Navbar = () => {
               <button
                 onClick={() => go('/login')}
                 className="px-4 py-2 text-slate-950 rounded-lg font-semibold text-sm transition-transform active:scale-95"
-                style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+                style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)` }}
               >
                 Login
               </button>
@@ -381,7 +381,7 @@ const Navbar = () => {
           Pehle Add Station aur Logout 520px ke neeche clip ho rahe the. */}
       {isLoggedIn && (
         <div
-          className="md:hidden transition-[max-height,opacity] duration-300 ease-out bg-[#020617]/95 backdrop-blur-xl border-t border-white/[0.08]"
+          className="md:hidden transition-[max-height,opacity] duration-300 ease-out bg-[#05061A]/95 backdrop-blur-xl border-t border-white/[0.08]"
           style={{
             maxHeight: showMenu ? 'calc(100vh - 4rem)' : 0,
             opacity: showMenu ? 1 : 0,
@@ -403,7 +403,7 @@ const Navbar = () => {
               ) : (
               <div
                 className="w-11 h-11 rounded-full flex items-center justify-center text-slate-950 font-bold shrink-0"
-                style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+                style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)` }}
               >
                 {user.name?.charAt(0).toUpperCase()}
               </div>
@@ -431,7 +431,7 @@ const Navbar = () => {
                 }`}
                 style={
                   link.active
-                    ? { background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }
+                    ? { background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)` }
                     : undefined
                 }
               >
@@ -445,7 +445,7 @@ const Navbar = () => {
                 onClick={() => go(ADD_STATION_PATH)}
                 className="w-full flex items-center gap-3 px-4 py-3.5 text-slate-950 rounded-xl font-semibold transition-transform active:scale-[0.98]"
                 style={{
-                  background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                  background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                   boxShadow: `0 8px 24px -8px ${ACCENT}70`,
                 }}
               >

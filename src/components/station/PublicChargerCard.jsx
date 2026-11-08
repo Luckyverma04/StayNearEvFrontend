@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTilt } from "../../hooks/useTilt";
 import { MapPin, Navigation, Zap, PlugZap } from "lucide-react";
 import { directionsUrl, formatDistance, listChargerUrl } from "../../utils/geo";
 
@@ -8,11 +9,18 @@ const PublicChargerCard = ({ charger, distanceKm }) => {
   const c = charger;
   const dist = distanceKm; // sirf jab user ki location pata ho
 
+  const tilt = useTilt({ max: 6 });
+
   return (
-    <div className="group flex flex-col bg-[#0F172A]/80 backdrop-blur rounded-2xl border border-blue-500/15 hover:border-blue-400/40 p-4 sm:p-5 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-950/40">
+    <div
+      ref={tilt.ref}
+      onPointerMove={tilt.onPointerMove}
+      onPointerLeave={tilt.onPointerLeave}
+      className="snev-tilt relative group flex flex-col bg-[#0E1130]/80 backdrop-blur rounded-2xl border border-amber-500/15 hover:border-amber-400/40 p-4 sm:p-5 transition-all hover:shadow-xl hover:shadow-amber-950/40">
+      <span className="snev-glare" aria-hidden="true" />
       <div className="flex items-start justify-between gap-3 mb-2">
-        <span className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center bg-blue-500/10 border border-blue-500/20">
-          <PlugZap className="h-5 w-5 text-blue-300" />
+        <span className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center bg-amber-500/10 border border-amber-500/20">
+          <PlugZap className="h-5 w-5 text-amber-300" />
         </span>
         {dist != null && (
           <span className="inline-flex items-center gap-1 text-xs font-semibold text-sky-300 bg-sky-500/10 px-2 py-1 rounded-lg">
@@ -28,7 +36,7 @@ const PublicChargerCard = ({ charger, distanceKm }) => {
       )}
       {c.address && (
         <p className="flex items-start gap-1.5 text-xs text-[#94A3B8] mt-2">
-          <MapPin className="h-3.5 w-3.5 shrink-0 mt-px text-blue-300" />
+          <MapPin className="h-3.5 w-3.5 shrink-0 mt-px text-amber-300" />
           <span className="line-clamp-2">{c.address}</span>
         </p>
       )}
@@ -61,14 +69,14 @@ const PublicChargerCard = ({ charger, distanceKm }) => {
           href={directionsUrl(c.latitude, c.longitude)}
           target="_blank"
           rel="noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 transition-colors"
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 transition-colors"
         >
           <Navigation className="h-4 w-4" />
           Directions
         </a>
         <Link
           to={listChargerUrl(c)}
-          className="mt-2 block text-center text-xs font-medium text-emerald-300/90 hover:text-emerald-300 hover:underline underline-offset-2"
+          className="mt-2 block text-center text-xs font-medium text-cyan-300/90 hover:text-cyan-300 hover:underline underline-offset-2"
         >
           Is this your charger? List it on StayNearEV →
         </Link>

@@ -22,7 +22,7 @@ const STRENGTH = [
   { label: "Weak", color: "#F97316" },
   { label: "Okay", color: "#EAB308" },
   { label: "Good", color: "#22C55E" },
-  { label: "Strong", color: "#00E5A8" },
+  { label: "Strong", color: "#22D3EE" },
 ];
 
 const PasswordMeter = ({ password }) => {

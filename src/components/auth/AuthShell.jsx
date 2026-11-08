@@ -4,8 +4,8 @@ import { Zap, MapPin, CalendarCheck, ShieldCheck, ArrowLeft } from "lucide-react
 
 /* Login / Signup / OTP — sabka common dark layout.
    Same design tokens jo HomePage me hain:
-   bg #020617 · card #0F172A · accent #00E5A8 */
-export const ACCENT = "#00E5A8";
+   bg #05061A · card #0E1130 · accent #22D3EE */
+export const ACCENT = "#22D3EE";
 
 const gridStyle = {
   backgroundImage:
@@ -26,7 +26,7 @@ export const Logo = ({ size = "md" }) => {
     <Link to="/" className="inline-flex items-center gap-2.5 group">
       <span
         className={`${box} rounded-xl flex items-center justify-center text-slate-950 shadow-lg transition-transform group-hover:scale-105`}
-        style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`, boxShadow: `0 8px 28px -8px ${ACCENT}90` }}
+        style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`, boxShadow: `0 8px 28px -8px ${ACCENT}90` }}
       >
         <Zap className={icon} strokeWidth={2.5} fill="currentColor" />
       </span>
@@ -38,7 +38,7 @@ export const Logo = ({ size = "md" }) => {
 };
 
 const AuthShell = ({ children, showBack = true }) => (
-  <div className="min-h-screen bg-[#020617] text-[#F8FAFC] relative overflow-hidden">
+  <div className="min-h-screen bg-[#05061A] text-[#F8FAFC] relative overflow-hidden">
     {/* Background: grid + glow */}
     <div className="absolute inset-0 pointer-events-none" style={gridStyle} />
     <div
@@ -120,7 +120,7 @@ const AuthShell = ({ children, showBack = true }) => (
 
 /* Card jisme form aata hai */
 export const AuthCard = ({ children }) => (
-  <div className="rounded-3xl border border-white/[0.08] bg-[#0F172A]/80 backdrop-blur-xl shadow-2xl shadow-black/40 p-6 sm:p-8">
+  <div className="rounded-3xl border border-white/[0.08] bg-[#0E1130]/80 backdrop-blur-xl shadow-2xl shadow-black/40 p-6 sm:p-8">
     {children}
   </div>
 );
@@ -130,7 +130,7 @@ export const Alert = ({ type = "error", children }) => {
     type === "error"
       ? "bg-red-500/10 border-red-500/30 text-red-300"
       : type === "success"
-      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+      ? "bg-cyan-500/10 border-cyan-500/30 text-cyan-300"
       : "bg-sky-500/10 border-sky-500/30 text-sky-300";
   return (
     <div role="alert" className={`p-3 rounded-xl border text-sm ${styles}`}>
@@ -144,7 +144,7 @@ export const PrimaryButton = ({ children, loading, ...props }) => (
     {...props}
     disabled={loading || props.disabled}
     className="w-full py-3 px-4 rounded-xl font-semibold text-slate-950 transition-all duration-200 hover:brightness-110 hover:shadow-xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100 flex items-center justify-center gap-2"
-    style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`, boxShadow: `0 10px 30px -12px ${ACCENT}90` }}
+    style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`, boxShadow: `0 10px 30px -12px ${ACCENT}90` }}
   >
     {loading && (
       <span className="w-4 h-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />

@@ -6,7 +6,7 @@ import { stationIcon, publicIcon, userIcon, TILE_URL, TILE_ATTRIBUTION } from ".
 import { Link } from "react-router-dom";
 import { hasCoords, distanceKm, formatDistance, directionsUrl, listChargerUrl, DEFAULT_CENTER } from "../../utils/geo";
 
-const ACCENT = "#00E5A8";
+const ACCENT = "#22D3EE";
 
 /* Hamare stations (aur user) screen me fit karo — sirf jab wo badlein */
 const FitBounds = ({ points }) => {
@@ -120,7 +120,7 @@ const StationsMap = ({
               <Marker key={c.id} position={[c.latitude, c.longitude]} icon={publicIcon}>
                 <Popup>
                   <div className="snev-popup">
-                    <span className="inline-block text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 mb-1.5">
+                    <span className="inline-block text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 mb-1.5">
                       Public charger
                     </span>
                     <p className="font-bold text-[15px] text-[#F8FAFC] leading-tight">{c.name}</p>
@@ -129,7 +129,7 @@ const StationsMap = ({
                     )}
                     {c.address && (
                       <p className="flex items-start gap-1 text-xs text-[#94A3B8] mt-1">
-                        <MapPin className="h-3 w-3 shrink-0 mt-0.5 text-blue-300" />
+                        <MapPin className="h-3 w-3 shrink-0 mt-0.5 text-amber-300" />
                         <span className="line-clamp-2">{c.address}</span>
                       </p>
                     )}
@@ -154,13 +154,13 @@ const StationsMap = ({
                       href={directionsUrl(c.latitude, c.longitude)}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-3 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500"
+                      className="mt-3 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300"
                     >
                       <Navigation className="h-3.5 w-3.5" /> Directions
                     </a>
                     <Link
                       to={listChargerUrl(c)}
-                      className="mt-2 block text-center text-[11px] font-medium text-emerald-300 hover:underline"
+                      className="mt-2 block text-center text-[11px] font-medium text-cyan-300 hover:underline"
                     >
                       Is this your charger? List it →
                     </Link>
@@ -263,7 +263,7 @@ const StationsMap = ({
             <span className="h-2.5 w-2.5 rounded-full" style={{ background: ACCENT }} /> StayNearEV · bookable
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-blue-500" /> Public charger
+            <span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Public charger
             {publicChargers.length > 0 && <b className="ml-0.5">({publicChargers.length})</b>}
           </span>
         </div>

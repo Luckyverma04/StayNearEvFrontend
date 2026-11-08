@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { MapPin, Edit, Trash2, Zap, Star, ImageOff, Navigation } from 'lucide-react';
 import { formatDistance } from '../../utils/geo';
+import { useTilt } from '../../hooks/useTilt';
 
-const ACCENT = '#00E5A8';
+const ACCENT = '#22D3EE';
 
 const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetails, distanceKm }) => {
+  const tilt = useTilt();
   // Uploads server root par hain (/uploads), /api ke andar nahi — isliye /api hata do
   const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3002').replace(/\/+$/, '').replace(/\/api$/, '');
 
@@ -56,10 +58,16 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
   };
 
   return (
-    <div className="bg-[#0F172A] rounded-2xl overflow-hidden border border-white/[0.08] shadow-xl transition-all duration-300 sm:hover:-translate-y-1.5 sm:hover:shadow-2xl hover:border-[#00E5A8]/40 hover:shadow-[#00E5A8]/10 group">
+    <div
+      ref={tilt.ref}
+      onPointerMove={tilt.onPointerMove}
+      onPointerLeave={tilt.onPointerLeave}
+      className="snev-tilt relative bg-[#0E1130] rounded-2xl overflow-hidden border border-white/[0.08] shadow-xl transition-[box-shadow,border-color] duration-300 sm:hover:shadow-2xl hover:border-[#22D3EE]/40 hover:shadow-[#22D3EE]/15 group"
+    >
+      <span className="snev-glare" aria-hidden="true" />
       {/* ── Image — full preview, no cut ── */}
       <div
-        className="relative aspect-[16/9] overflow-hidden cursor-pointer bg-[#020617]"
+        className="relative aspect-[16/9] overflow-hidden cursor-pointer bg-[#05061A]"
         onClick={() => onViewDetails && onViewDetails(station._id)}
       >
         {showImage ? (
@@ -87,7 +95,7 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
         {isOwn && (
           <span
             className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold text-slate-950"
-            style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+            style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)` }}
           >
             Your station
           </span>
@@ -98,7 +106,7 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
       <div className="p-4">
         {/* Station name */}
         <h3
-          className="text-base font-bold text-[#F8FAFC] mb-1.5 line-clamp-1 cursor-pointer transition-colors group-hover:text-[#00E5A8]"
+          className="text-base font-bold text-[#F8FAFC] mb-1.5 line-clamp-1 cursor-pointer transition-colors group-hover:text-[#22D3EE]"
           onClick={() => onViewDetails && onViewDetails(station._id)}
         >
           {station.name}
@@ -136,7 +144,7 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
             {station.chargerTypes.slice(0, 2).map((type, idx) => (
               <span
                 key={idx}
-                className="bg-[#00E5A8]/10 text-[11px] px-2 py-0.5 rounded-md font-medium border border-[#00E5A8]/20"
+                className="bg-[#22D3EE]/10 text-[11px] px-2 py-0.5 rounded-md font-medium border border-[#22D3EE]/20"
                 style={{ color: ACCENT }}
               >
                 {type}
@@ -169,7 +177,7 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
             onClick={() => onViewDetails(station._id)}
             className="w-full px-3 py-2.5 text-slate-950 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-[0.98] sm:hover:scale-[1.02]"
             style={{
-              background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+              background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
               boxShadow: `0 8px 20px -8px ${ACCENT}70`,
             }}
           >
@@ -182,7 +190,7 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
               onClick={() => onViewDetails(station._id)}
               className="w-full px-3 py-2.5 text-slate-950 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-[0.98] sm:hover:scale-[1.02]"
               style={{
-                background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                 boxShadow: `0 8px 20px -8px ${ACCENT}70`,
               }}
             >

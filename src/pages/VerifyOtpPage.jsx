@@ -207,8 +207,8 @@ const VerifyOtpPage = () => {
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
               disabled={loading}
-              className={`w-11 h-14 sm:w-12 text-center text-2xl font-bold rounded-xl bg-[#020617]/60 border text-[#F8FAFC] outline-none transition-all focus:border-[#00E5A8]/70 focus:ring-4 focus:ring-[#00E5A8]/10 disabled:opacity-60 ${
-                digit ? "border-[#00E5A8]/50" : "border-white/[0.1]"
+              className={`w-11 h-14 sm:w-12 text-center text-2xl font-bold rounded-xl bg-[#05061A]/60 border text-[#F8FAFC] outline-none transition-all focus:border-[#22D3EE]/70 focus:ring-4 focus:ring-[#22D3EE]/10 disabled:opacity-60 ${
+                digit ? "border-[#22D3EE]/50" : "border-white/[0.1]"
               }`}
             />
           ))}

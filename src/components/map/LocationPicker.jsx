@@ -4,7 +4,7 @@ import { Crosshair, Search, X, MapPin } from "lucide-react";
 import { stationIcon, TILE_URL, TILE_ATTRIBUTION } from "./mapIcons";
 import { getCurrentPosition, DEFAULT_CENTER } from "../../utils/geo";
 
-const ACCENT = "#00E5A8";
+const ACCENT = "#22D3EE";
 
 /* Map par click → pin wahan */
 const ClickToPlace = ({ onPick }) => {
@@ -80,7 +80,7 @@ const LocationPicker = ({ value, onChange, onAddressFound, height = 300 }) => {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && search(e)}
             placeholder="Search area, e.g. Vijay Nagar Indore"
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#020617]/60 border border-white/[0.1] text-sm text-[#F8FAFC] placeholder:text-slate-600 outline-none focus:border-[#00E5A8]/70"
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#05061A]/60 border border-white/[0.1] text-sm text-[#F8FAFC] placeholder:text-slate-600 outline-none focus:border-[#22D3EE]/70"
           />
         </div>
         <button
