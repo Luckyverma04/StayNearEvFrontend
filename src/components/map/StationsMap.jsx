@@ -3,7 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "re
 import L from "leaflet";
 import { MapPin, Navigation, Star, Search, Loader2 } from "lucide-react";
 import { stationIcon, publicIcon, userIcon, TILE_URL, TILE_ATTRIBUTION } from "./mapIcons";
-import { hasCoords, distanceKm, formatDistance, directionsUrl, DEFAULT_CENTER } from "../../utils/geo";
+import { Link } from "react-router-dom";
+import { hasCoords, distanceKm, formatDistance, directionsUrl, listChargerUrl, DEFAULT_CENTER } from "../../utils/geo";
 
 const ACCENT = "#00E5A8";
 
@@ -68,8 +69,12 @@ const StationsMap = ({
   const points = useMemo(() => {
     const pts = pinned.map((s) => [Number(s.latitude), Number(s.longitude)]);
     if (userPos) pts.push([userPos.lat, userPos.lng]);
+    // Na apne stations, na user — to public chargers par fit karo (jaise default Indore)
+    if (pts.length === 0) {
+      return publicChargers.slice(0, 50).map((c) => [c.latitude, c.longitude]);
+    }
     return pts;
-  }, [pinned, userPos]);
+  }, [pinned, userPos, publicChargers]);
 
   // "Search this area" tab dikhao jab zoom theek ho aur map pichli search se kaafi hil gaya ho
   const showSearchBtn =
@@ -153,7 +158,13 @@ const StationsMap = ({
                     >
                       <Navigation className="h-3.5 w-3.5" /> Directions
                     </a>
-                    <p className="text-[10px] text-slate-500 mt-1.5">
+                    <Link
+                      to={listChargerUrl(c)}
+                      className="mt-2 block text-center text-[11px] font-medium text-emerald-300 hover:underline"
+                    >
+                      Is this your charger? List it →
+                    </Link>
+                    <p className="text-[10px] text-slate-500 mt-1">
                       via {(c.sources || [c.source]).join(" + ")} · not bookable on StayNearEV
                     </p>
                   </div>

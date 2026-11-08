@@ -53,3 +53,42 @@ export const directionsUrl = (lat, lng) =>
 
 // India ka center — jab koi pin na ho tab map yahan khule
 export const DEFAULT_CENTER = { lat: 22.9734, lng: 78.6569 };
+
+// Jab user location allow na kare — default shehar
+export const DEFAULT_CITY = { name: "Indore", lat: 22.7196, lng: 75.8577 };
+
+// Public charger ke connector naam → hamare form ke charger types
+const CONNECTOR_MAP = [
+  [/ccs|combo|type\s*2.*combo/i, "CCS2"],
+  [/chademo/i, "CHAdeMO"],
+  [/gb\s*\/?\s*-?t/i, "GB/T"],
+  [/tesla/i, "Tesla Supercharger"],
+  [/bharat.*ac|ac\s*-?001/i, "Bharat AC001"],
+  [/bharat.*dc|dc\s*-?001/i, "Bharat DC001"],
+  [/type\s*2|mennekes|iec\s*62196/i, "Type 2"],
+];
+export const toFormChargerTypes = (connectors = []) => {
+  const out = new Set();
+  for (const c of connectors) {
+    const hit = CONNECTOR_MAP.find(([re]) => re.test(c.type || ""));
+    if (hit) out.add(hit[1]);
+  }
+  return [...out];
+};
+
+// "Ye charger aapka hai?" → Add Station form, pehle se bhara hua (URL me, taaki login ke baad bhi rahe)
+export const listChargerUrl = (c) => {
+  const q = new URLSearchParams({
+    from: "public",
+    name: c.name || "",
+    location: c.address || c.name || "",
+    lat: String(c.latitude),
+    lng: String(c.longitude),
+  });
+  const types = toFormChargerTypes(c.connectors);
+  if (types.length) q.set("types", types.join(","));
+  return `/stations/create?${q.toString()}`;
+};
+
+// Demo stations sirf tab dikhao jab .env me VITE_SHOW_DEMO=true ho (local testing)
+export const SHOW_DEMO = String(import.meta.env.VITE_SHOW_DEMO).toLowerCase() === "true";

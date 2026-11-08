@@ -6,7 +6,7 @@ import StationCard from "../components/station/StationCard";
 import StationsMap from "../components/map/StationsMap";
 import PublicChargerCard from "../components/station/PublicChargerCard";
 import { publicChargerService } from "../services/publicChargerService";
-import { hasCoords, distanceKm, getCurrentPosition } from "../utils/geo";
+import { hasCoords, distanceKm, getCurrentPosition, DEFAULT_CITY, SHOW_DEMO } from "../utils/geo";
 import {
   Zap, MapPin, Search, X, RefreshCw, AlertTriangle, PlugZap,
   ChevronLeft, ChevronRight, TrendingUp, Plus, SlidersHorizontal,
@@ -90,9 +90,14 @@ const HomePage = () => {
     }
   };
 
-  /* Location milte hi aas-paas ke public chargers le aao */
+  /* Shuru me default shehar (Indore) ke public chargers — app kabhi khaali na lage */
   useEffect(() => {
-    if (userPos && !pcSearch) loadPublicChargers({ ...userPos, radiusKm: 15 });
+    loadPublicChargers({ lat: DEFAULT_CITY.lat, lng: DEFAULT_CITY.lng, radiusKm: 15, city: DEFAULT_CITY.name });
+  }, []);
+
+  /* Location milte hi apne aas-paas ke chargers le aao */
+  useEffect(() => {
+    if (userPos && (!pcSearch || pcSearch.city)) loadPublicChargers({ ...userPos, radiusKm: 15 });
   }, [userPos]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const changeView = (v) => {
@@ -150,7 +155,8 @@ const HomePage = () => {
         stationsData = response;
       }
 
-      setStations(stationsData);
+      // Demo stations sirf local testing me (VITE_SHOW_DEMO=true)
+      setStations(SHOW_DEMO ? stationsData : stationsData.filter((s) => !s.isDemo));
     } catch (err) {
       console.error("Error fetching stations:", err);
       setError("We couldn't load charging stations. Check your connection and try again.");
@@ -786,10 +792,22 @@ const HomePage = () => {
               <div>
                 <h2 className="text-base sm:text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
-                  Public charging points near you
+                  {pcSearch?.city ? `Public charging points in ${pcSearch.city}` : "Public charging points near you"}
                 </h2>
                 <p className="text-xs sm:text-sm text-[#94A3B8] mt-1">
-                  Other EV chargers around you (Tata Power, Statiq, ChargeZone…). Not bookable here, but you can get directions.
+                  Other EV chargers (Tata Power, Statiq, ChargeZone…). Not bookable here, but you can get directions.
+                  {pcSearch?.city && !userPos && (
+                    <>
+                      {" "}
+                      <button
+                        onClick={() => toggleFilter("nearby")}
+                        disabled={geoBusy}
+                        className="font-semibold text-blue-300 hover:underline disabled:opacity-60"
+                      >
+                        📍 {geoBusy ? "Locating…" : "Show chargers near me"}
+                      </button>
+                    </>
+                  )}
                 </p>
               </div>
               {publicChargers.length > 0 && (

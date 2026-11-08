@@ -114,6 +114,11 @@ const StationCard = ({ station, canManage, isOwn, onEdit, onDelete, onViewDetail
         </div>
 
         {/* Address */}
+        {station.isDemo && (
+          <span className="inline-block mb-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+            Demo · testing only
+          </span>
+        )}
         <div className="flex items-center text-[#94A3B8] mb-2.5">
           <MapPin className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" style={{ color: ACCENT }} />
           <span className="text-xs line-clamp-1">{station.location}</span>
