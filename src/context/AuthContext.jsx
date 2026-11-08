@@ -21,12 +21,10 @@ export const AuthProvider = ({ children }) => {
   const fetchProfile = async (authToken) => {
     try {
       const response = await authService.getProfile();
-      console.log('Auth Profile Response:', response); // Debug log
       
       if (response.success) {
         // Backend returns { success, data: { user } }
         const userData = response.data.user || response.data;
-        console.log('Setting user data:', userData); // Debug log
         setUser(userData);
       } else {
         // Token is invalid, clear it
@@ -48,7 +46,6 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await authService.login(email, password);
-      console.log('Login Response:', response); // Debug log
       
       if (response.success) {
         // Backend returns { success, data: { token, user } }

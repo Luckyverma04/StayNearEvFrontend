@@ -30,3 +30,16 @@
 .snev-map .leaflet-control-attribution a { color: #94A3B8; }
 /* Leaflet ke z-index (400-1000) map ke andar hi rahein — navbar ke upar na aaye */
 .snev-map { isolation: isolate; position: relative; z-index: 0; }
+
+/* ───────── Browser autofill — dark inputs safed na ho jaayein ───────── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #f8fafc;
+  caret-color: #f8fafc;
+  -webkit-box-shadow: 0 0 0 1000px #0b1222 inset;
+  box-shadow: 0 0 0 1000px #0b1222 inset;
+  transition: background-color 9999s ease-in-out 0s;
+}

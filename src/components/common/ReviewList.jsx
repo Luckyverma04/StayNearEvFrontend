@@ -29,15 +29,6 @@ const ReviewList = ({
       <h3 className="text-xl font-bold text-gray-900 mb-6">Customer Reviews</h3>
 
       {reviews.map((review) => {
-        // Enhanced debugging with correct props
-        console.log('=== REVIEW DEBUG INFO ===');
-        console.log('Review ID:', review._id);
-        console.log('Review User ID:', review.user?._id || review.userId);
-        console.log('Current User ID:', effectiveUserId);
-        console.log('Current User Role:', effectiveUserRole);
-        console.log('Station Host ID:', stationHostId);
-        console.log('Review User Object:', review.user);
-
         // Determine who can manage this review with correct IDs
         const isReviewOwner = effectiveUserId && (effectiveUserId === (review.user?._id || review.userId));
         const isAdmin = effectiveUserRole === 'admin';
@@ -46,9 +37,6 @@ const ReviewList = ({
         const canEdit = isReviewOwner || isAdmin;
         const canDelete = isReviewOwner || isAdmin || isStationHost;
 
-        console.log('Permissions - Owner:', isReviewOwner, 'Admin:', isAdmin, 'Host:', isStationHost);
-        console.log('Can Edit:', canEdit, 'Can Delete:', canDelete);
-        console.log('========================');
 
         return (
           <div
