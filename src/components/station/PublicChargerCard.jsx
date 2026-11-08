@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { MapPin, Navigation, Zap, PlugZap } from "lucide-react";
-import { directionsUrl, formatDistance } from "../../utils/geo";
+import { directionsUrl, formatDistance, listChargerUrl } from "../../utils/geo";
 
 /* Public charger (OpenStreetMap / Open Charge Map) ka card — booking nahi, sirf directions */
 const PublicChargerCard = ({ charger, distanceKm }) => {
@@ -65,7 +66,13 @@ const PublicChargerCard = ({ charger, distanceKm }) => {
           <Navigation className="h-4 w-4" />
           Directions
         </a>
-        <p className="text-[10px] text-slate-500 text-center mt-2">
+        <Link
+          to={listChargerUrl(c)}
+          className="mt-2 block text-center text-xs font-medium text-emerald-300/90 hover:text-emerald-300 hover:underline underline-offset-2"
+        >
+          Is this your charger? List it on StayNearEV →
+        </Link>
+        <p className="text-[10px] text-slate-500 text-center mt-1.5">
           Public charger · via {(c.sources || [c.source]).join(" + ")}
         </p>
       </div>

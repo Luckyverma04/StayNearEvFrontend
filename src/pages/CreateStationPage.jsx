@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { stationService } from "../services/stationService";
 import { useAuth } from "../context/AuthContext";
 import LoadingSpinner from "../components/common/LoadingSpinner";
@@ -23,17 +23,31 @@ const labelClass = "block text-sm font-medium text-slate-300 mb-1.5";
 const CreateStationPage = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    location: "",
+  // "Is this your charger? List it" se aaye to form pehle se bhara ho
+  const fromPublic = params.get("from") === "public";
+  const ALLOWED_TYPES = ["Type 2", "CCS2", "CHAdeMO", "GB/T", "Tesla Supercharger", "Bharat AC001", "Bharat DC001"];
+
+  const [formData, setFormData] = useState(() => ({
+    name: (params.get("name") || "").slice(0, 120),
+    location: (params.get("location") || "").slice(0, 200),
     description: "",
     pricePerUnit: "",
-    chargerTypes: [],
-  });
+    chargerTypes: (params.get("types") || "")
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => ALLOWED_TYPES.includes(t)),
+  }));
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [pin, setPin] = useState(null); // { lat, lng } — map par station ki jagah
+  const [pin, setPin] = useState(() => {
+    const lat = Number(params.get("lat"));
+    const lng = Number(params.get("lng"));
+    return params.get("lat") && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
+      ? { lat, lng }
+      : null;
+  }); // { lat, lng } — map par station ki jagah
 
   // ✅ Handle text input changes
   const handleChange = (e) => {
@@ -168,6 +182,14 @@ const CreateStationPage = () => {
         {/* Form card */}
         <div className="bg-slate-900/80 backdrop-blur border border-slate-800 p-6 md:p-8 rounded-2xl">
           <form onSubmit={handleSubmit} className="space-y-5">
+            {fromPublic && (
+              <div className="mb-6 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-sm text-emerald-100">
+                <p className="font-semibold text-emerald-300 mb-1">⚡ Listing your charger</p>
+                We've filled in the name, address, map pin and charger types we found. Please check them, add your
+                price and a short description, then save. Once listed, drivers can book it on StayNearEV.
+              </div>
+            )}
+
             <div>
               <label className={labelClass}>
                 Station name <span className="text-emerald-400">*</span>
