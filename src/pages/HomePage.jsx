@@ -4,6 +4,8 @@ import { stationService } from "../services/stationService";
 import { useAuth } from "../context/AuthContext";
 import StationCard from "../components/station/StationCard";
 import StationsMap from "../components/map/StationsMap";
+import PublicChargerCard from "../components/station/PublicChargerCard";
+import { publicChargerService } from "../services/publicChargerService";
 import { hasCoords, distanceKm, getCurrentPosition } from "../utils/geo";
 import {
   Zap, MapPin, Search, X, RefreshCw, AlertTriangle, PlugZap,
@@ -64,6 +66,34 @@ const HomePage = () => {
   });
   const [userPos, setUserPos] = useState(null);
   const [geoBusy, setGeoBusy] = useState(false);
+
+  /* Public chargers (OpenStreetMap + Open Charge Map) */
+  const [publicChargers, setPublicChargers] = useState([]);
+  const [pcSearch, setPcSearch] = useState(null); // {lat,lng,radiusKm} — pichli search
+  const [pcLoading, setPcLoading] = useState(false);
+  const [pcError, setPcError] = useState("");
+  const [pcShowAll, setPcShowAll] = useState(false);
+
+  const loadPublicChargers = async (area) => {
+    setPcLoading(true);
+    setPcError("");
+    try {
+      const data = await publicChargerService.getNearby(area);
+      setPublicChargers(data.chargers || []);
+      setPcSearch(area);
+      setPcShowAll(false);
+    } catch (err) {
+      console.error("Public chargers error:", err);
+      setPcError("Couldn't load public chargers right now. Please try again.");
+    } finally {
+      setPcLoading(false);
+    }
+  };
+
+  /* Location milte hi aas-paas ke public chargers le aao */
+  useEffect(() => {
+    if (userPos && !pcSearch) loadPublicChargers({ ...userPos, radiusKm: 15 });
+  }, [userPos]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const changeView = (v) => {
     setView(v);
@@ -524,7 +554,7 @@ const HomePage = () => {
         )}
 
         {/* ══════════════ VIEW TOGGLE: List / Map ══════════════ */}
-        {stations.length > 0 && (
+        {(
           <div className="flex items-center justify-end gap-2 mb-4">
             {view === "map" && !userPos && (
               <button
@@ -563,7 +593,7 @@ const HomePage = () => {
         )}
 
         {/* ══════════════ RESULTS ══════════════ */}
-        {filteredStations.length === 0 ? (
+        {filteredStations.length === 0 && view !== "map" ? (
           <div className="text-center py-14 sm:py-20 px-5 bg-[#0F172A]/70 backdrop-blur rounded-2xl border border-white/[0.08] max-w-2xl mx-auto shadow-xl">
             <div className="bg-white/[0.04] h-16 w-16 sm:h-20 sm:w-20 rounded-full flex items-center justify-center mx-auto mb-5">
               <Zap className="h-8 w-8 sm:h-10 sm:w-10 text-slate-600" />
@@ -608,9 +638,13 @@ const HomePage = () => {
           /* ───────── MAP MODE ───────── */
           <StationsMap
             stations={filteredStations}
+            publicChargers={publicChargers}
             userPos={userPos}
             onViewDetails={handleViewDetails}
-            height={isMobile ? 460 : 560}
+            onSearchArea={loadPublicChargers}
+            lastSearch={pcSearch}
+            searching={pcLoading}
+            height={isMobile ? 480 : 600}
           />
         ) : isSearching ? (
           /* ───────── SEARCH MODE: centered carousel queue ───────── */
@@ -743,6 +777,86 @@ const HomePage = () => {
               ))}
             </div>
           </>
+        )}
+
+        {/* ══════════════ PUBLIC CHARGERS (list view) ══════════════ */}
+        {view === "list" && (
+          <section className="mt-12 sm:mt-14">
+            <div className="mb-5 flex items-end justify-between gap-3">
+              <div>
+                <h2 className="text-base sm:text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+                  Public charging points near you
+                </h2>
+                <p className="text-xs sm:text-sm text-[#94A3B8] mt-1">
+                  Other EV chargers around you (Tata Power, Statiq, ChargeZone…). Not bookable here, but you can get directions.
+                </p>
+              </div>
+              {publicChargers.length > 0 && (
+                <p className="text-[#94A3B8] text-xs sm:text-sm shrink-0">
+                  <span className="font-semibold text-[#F8FAFC]">{publicChargers.length}</span> found
+                </p>
+              )}
+            </div>
+
+            {pcLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-56 bg-[#0F172A] rounded-2xl border border-white/[0.06] animate-pulse" />
+                ))}
+              </div>
+            ) : publicChargers.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                  {(pcShowAll ? publicChargers : publicChargers.slice(0, 8)).map((c) => (
+                    <PublicChargerCard
+                      key={c.id}
+                      charger={c}
+                      distanceKm={
+                        userPos ? distanceKm(userPos, { lat: c.latitude, lng: c.longitude }) : null
+                      }
+                    />
+                  ))}
+                </div>
+                {!pcShowAll && publicChargers.length > 8 && (
+                  <div className="text-center mt-6">
+                    <button
+                      onClick={() => setPcShowAll(true)}
+                      className="px-5 py-2.5 rounded-xl text-sm font-semibold text-blue-300 border border-blue-500/30 hover:bg-blue-500/10"
+                    >
+                      Show all {publicChargers.length} chargers
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex flex-col sm:flex-row items-center gap-4 p-5 sm:p-6 rounded-2xl border border-dashed border-blue-500/25 bg-blue-500/[0.04]">
+                <span className="h-12 w-12 shrink-0 rounded-2xl flex items-center justify-center bg-blue-500/10">
+                  <PlugZap className="h-6 w-6 text-blue-300" />
+                </span>
+                <div className="flex-1 text-center sm:text-left">
+                  <p className="font-semibold text-[#F8FAFC]">
+                    {pcSearch ? "No public chargers found in this area" : "See every EV charger around you"}
+                  </p>
+                  <p className="text-sm text-[#94A3B8]">
+                    {pcError ||
+                      (pcSearch
+                        ? "Try the map and search a bigger area."
+                        : "Allow location and we'll show public charging points within 15 km.")}
+                  </p>
+                </div>
+                <button
+                  onClick={() =>
+                    userPos ? loadPublicChargers({ ...userPos, radiusKm: 15 }) : toggleFilter("nearby")
+                  }
+                  disabled={geoBusy}
+                  className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-60"
+                >
+                  📍 {geoBusy ? "Locating…" : userPos ? "Try again" : "Find chargers near me"}
+                </button>
+              </div>
+            )}
+          </section>
         )}
       </div>
 
