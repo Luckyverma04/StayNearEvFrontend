@@ -13,6 +13,7 @@ import MyStationBookingsPage from './pages/MyStationBookingsPage';
 import VerifyOtpPage from './pages/VerifyOtpPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminBookingsPage from './pages/admin/AdminBookingsPage';
+import ProfilePage from './pages/ProfilePage';
 
 /* Login chahiye wale pages ke liye guard.
    Guest aaya to login par bhejo, aur login ke baad wapas yahi page khule. */
@@ -57,6 +58,7 @@ const AppContent = () => {
         <Route path="/stations/edit/:id" element={<RequireAuth><EditStationPage /></RequireAuth>} />
         <Route path="/my-bookings" element={<RequireAuth><MyBookingsPage /></RequireAuth>} />
         <Route path="/my-station-bookings" element={<RequireAuth><MyStationBookingsPage /></RequireAuth>} />
+        <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
 
         {/* 👑 ADMIN */}
         <Route path="/admin/dashboard" element={<RequireAuth role="admin"><AdminDashboard /></RequireAuth>} />

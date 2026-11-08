@@ -96,6 +96,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Profile badalne ke baad user ko turant update karo
+  const updateUser = (changes) => setUser((u) => (u ? { ...u, ...changes } : u));
+
   const logout = () => {
     authService.logout();
     setUser(null);
@@ -103,7 +106,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, loginWithGoogle, signup, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, loginWithGoogle, signup, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
