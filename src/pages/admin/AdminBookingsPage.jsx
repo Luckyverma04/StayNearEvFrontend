@@ -179,23 +179,12 @@ const AdminBookingsPage = () => {
         setLoading(true);
         setError("");
 
-        console.log(
-          "📦 Fetching admin bookings..."
-        );
 
-        console.log(
-          "🌐 API Base URL:",
-          import.meta.env.VITE_API_URL
-        );
 
         const response = await api.get(
           "/bookings/admin/bookings"
         );
 
-        console.log(
-          "📦 Admin bookings response:",
-          response.data
-        );
 
         const data = response.data;
 

@@ -27,6 +27,16 @@ export const authService = {
     return response.data;
   },
 
+  async updateProfile(data) {
+    const response = await api.patch('/users/me', data);
+    return response.data;
+  },
+
+  async deleteMyAccount() {
+    const response = await api.delete('/users/me');
+    return response.data;
+  },
+
   async getProfile() {
     const response = await api.get('/users/profile');
     return response.data;

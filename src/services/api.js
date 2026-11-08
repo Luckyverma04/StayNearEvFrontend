@@ -5,7 +5,6 @@ const API_BASE_URL = (
   "http://localhost:3002/api"
 ).replace(/\/+$/, "");
 
-console.log("🌐 API BASE URL:", API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,

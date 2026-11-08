@@ -274,13 +274,31 @@ const Navbar = () => {
                   <span className="lg:hidden">Add</span>
                 </button>
 
-                <div className="flex items-center gap-2.5 pl-3 pr-2 py-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04]">
+                <div className="flex items-center gap-2.5 pl-1.5 pr-2 py-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04]">
+                  {/* Naam / photo par click → Profile */}
+                  <button
+                    type="button"
+                    onClick={() => go('/profile')}
+                    title="My profile"
+                    className={`flex items-center gap-2.5 pl-1.5 pr-1 py-0.5 rounded-lg transition-colors hover:bg-white/[0.06] ${
+                      isActiveRoute('/profile') ? 'bg-white/[0.06]' : ''
+                    }`}
+                  >
+                  {user.avatar ? (
+                    <img
+                      src={user.avatar}
+                      alt=""
+                      referrerPolicy="no-referrer"
+                      className="w-8 h-8 rounded-full object-cover shrink-0 ring-2 ring-[#00E5A8]/40"
+                    />
+                  ) : (
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-slate-950 font-bold text-sm shrink-0"
                     style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
                   >
                     {user.name?.charAt(0).toUpperCase()}
                   </div>
+                  )}
                   <div className="hidden lg:flex flex-col items-start">
                     <span className="text-sm font-semibold text-[#F8FAFC] leading-tight max-w-[140px] truncate">
                       {user.name}
@@ -293,6 +311,7 @@ const Navbar = () => {
                       {badge.label}
                     </span>
                   </div>
+                  </button>
                   <button
                     onClick={logout}
                     aria-label="Logout"
@@ -374,13 +393,21 @@ const Navbar = () => {
             className="px-4 py-4 space-y-2"
             style={{ paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom))' }}
           >
-            <div className="flex items-center gap-3 p-3 bg-white/[0.04] rounded-xl border border-white/[0.08] mb-3">
+            <button
+              type="button"
+              onClick={() => go('/profile')}
+              className="w-full text-left flex items-center gap-3 p-3 bg-white/[0.04] rounded-xl border border-white/[0.08] mb-3 active:scale-[0.99] transition-transform"
+            >
+              {user.avatar ? (
+                <img src={user.avatar} alt="" referrerPolicy="no-referrer" className="w-11 h-11 rounded-full object-cover shrink-0" />
+              ) : (
               <div
                 className="w-11 h-11 rounded-full flex items-center justify-center text-slate-950 font-bold shrink-0"
                 style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
               >
                 {user.name?.charAt(0).toUpperCase()}
               </div>
+              )}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-[#F8FAFC] truncate">{user.name}</p>
                 <p className="text-xs text-[#94A3B8] truncate">{user.email}</p>
@@ -392,7 +419,8 @@ const Navbar = () => {
                   {badge.label}
                 </span>
               </div>
-            </div>
+              <span className="text-xs font-semibold shrink-0" style={{ color: ACCENT }}>Profile ›</span>
+            </button>
 
             {navLinks.map((link) => (
               <button

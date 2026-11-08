@@ -161,7 +161,6 @@ const MyBookingsPage = () => {
       setError('');
       const response = await bookingService.getUserBookings();
 
-      console.log('📦 My bookings response:', response);
 
       const bookingsData = extractBookings(response);
       setBookings(bookingsData);
