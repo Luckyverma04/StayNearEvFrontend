@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 
-const ACCENT = '#00E5A8';
+const ACCENT = '#22D3EE';
 const NAVBAR_CLEARANCE = 'pt-28';
 
 const gridStyle = {
@@ -17,7 +17,7 @@ const gridStyle = {
 const STATUS_STYLES = {
   pending: { bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', text: 'text-yellow-300', label: 'Pending' },
   confirmed: { bg: 'bg-blue-500/10', border: 'border-blue-500/30', text: 'text-blue-300', label: 'Confirmed' },
-  active: { bg: 'bg-[#00E5A8]/10', border: 'border-[#00E5A8]/30', text: 'text-[#00E5A8]', label: 'Active' },
+  active: { bg: 'bg-[#22D3EE]/10', border: 'border-[#22D3EE]/30', text: 'text-[#22D3EE]', label: 'Active' },
   completed: { bg: 'bg-slate-500/10', border: 'border-slate-500/30', text: 'text-slate-300', label: 'Completed' },
   cancelled: { bg: 'bg-red-500/10', border: 'border-red-500/30', text: 'text-red-300', label: 'Cancelled' },
   'no-show': { bg: 'bg-orange-500/10', border: 'border-orange-500/30', text: 'text-orange-300', label: 'No show' },
@@ -153,12 +153,12 @@ const MyStationBookingsPage = () => {
   /* ── Loading ── */
   if (loading) {
     return (
-      <div className={`min-h-screen bg-[#020617] ${NAVBAR_CLEARANCE}`} style={gridStyle}>
+      <div className={`min-h-screen bg-[#05061A] ${NAVBAR_CLEARANCE}`} style={gridStyle}>
         <div className="max-w-5xl mx-auto px-4 py-8">
           <div className="h-10 w-80 bg-slate-800 rounded-lg animate-pulse mb-3" />
           <div className="h-5 w-64 bg-slate-800/70 rounded animate-pulse mb-8" />
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-40 bg-[#0F172A] border border-white/[0.08] rounded-2xl animate-pulse mb-4" />
+            <div key={i} className="h-40 bg-[#0E1130] border border-white/[0.08] rounded-2xl animate-pulse mb-4" />
           ))}
         </div>
       </div>
@@ -166,7 +166,7 @@ const MyStationBookingsPage = () => {
   }
 
   return (
-    <div className={`min-h-screen bg-[#020617] relative ${NAVBAR_CLEARANCE}`}>
+    <div className={`min-h-screen bg-[#05061A] relative ${NAVBAR_CLEARANCE}`}>
       <div className="absolute inset-0" style={gridStyle} aria-hidden="true" />
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 h-[320px] w-[640px] rounded-full opacity-[0.12] blur-[100px] pointer-events-none"
@@ -182,7 +182,7 @@ const MyStationBookingsPage = () => {
               <span
                 className="p-2.5 rounded-xl inline-flex"
                 style={{
-                  background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                  background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                   boxShadow: `0 8px 20px -8px ${ACCENT}60`,
                 }}
               >
@@ -221,7 +221,7 @@ const MyStationBookingsPage = () => {
               label: 'Earned',
               value: `₹${Math.round(summary.earned).toLocaleString('en-IN')}`,
               hint: 'from completed',
-              tone: 'text-emerald-300 border-white/[0.08] bg-white/[0.03]',
+              tone: 'text-cyan-300 border-white/[0.08] bg-white/[0.03]',
             },
           ].map((c) => (
             <button
@@ -274,7 +274,7 @@ const MyStationBookingsPage = () => {
 
         {/* Empty */}
         {filtered.length === 0 ? (
-          <div className="text-center py-20 bg-[#0F172A]/70 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl">
+          <div className="text-center py-20 bg-[#0E1130]/70 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl">
             <div className="bg-white/[0.04] h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-5">
               <Calendar className="h-10 w-10 text-slate-600" />
             </div>
@@ -297,13 +297,13 @@ const MyStationBookingsPage = () => {
               return (
                 <div
                   key={b._id}
-                  className="bg-[#0F172A]/80 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl p-5 transition-colors hover:border-white/[0.15]"
+                  className="bg-[#0E1130]/80 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl p-5 transition-colors hover:border-white/[0.15]"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
                     <div className="flex items-center gap-3 min-w-0">
                       <div
                         className="h-11 w-11 rounded-full flex items-center justify-center text-slate-950 font-bold shrink-0"
-                        style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+                        style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)` }}
                       >
                         {b.user?.name?.charAt(0).toUpperCase() || '?'}
                       </div>
@@ -372,7 +372,7 @@ const MyStationBookingsPage = () => {
                           style={
                             a.tone === 'accent'
                               ? {
-                                  background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                                  background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                                   boxShadow: `0 8px 20px -8px ${ACCENT}70`,
                                 }
                               : undefined
@@ -411,10 +411,10 @@ const MyStationBookingsPage = () => {
             if (e.target === e.currentTarget) setConfirmAction(null);
           }}
         >
-          <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 shadow-2xl">
+          <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 shadow-2xl">
             <div
               className={`h-12 w-12 rounded-full flex items-center justify-center mb-4 ${
-                confirmAction.status === 'cancelled' ? 'bg-red-500/10' : 'bg-[#00E5A8]/10'
+                confirmAction.status === 'cancelled' ? 'bg-red-500/10' : 'bg-[#22D3EE]/10'
               }`}
             >
               {confirmAction.status === 'cancelled' ? (
@@ -449,7 +449,7 @@ const MyStationBookingsPage = () => {
                 style={
                   confirmAction.status !== 'cancelled'
                     ? {
-                        background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                        background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                         boxShadow: `0 8px 20px -8px ${ACCENT}70`,
                       }
                     : undefined
@@ -468,7 +468,7 @@ const MyStationBookingsPage = () => {
           <div
             className={`flex items-start gap-3 p-4 rounded-xl border backdrop-blur-xl shadow-2xl ${
               toast.type === 'success'
-                ? 'bg-[#00E5A8]/10 border-[#00E5A8]/30'
+                ? 'bg-[#22D3EE]/10 border-[#22D3EE]/30'
                 : 'bg-red-500/10 border-red-500/30 text-red-200'
             }`}
             style={toast.type === 'success' ? { color: ACCENT } : undefined}

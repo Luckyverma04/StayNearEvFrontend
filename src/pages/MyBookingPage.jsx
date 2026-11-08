@@ -8,7 +8,7 @@ import { bookingService } from '../services/bookingService';
 import { useAuth } from '../context/AuthContext';
 
 /* ─── Design tokens (same as the rest of the site) ─── */
-const ACCENT = '#00E5A8';
+const ACCENT = '#22D3EE';
 const NAVBAR_CLEARANCE = 'pt-28'; // fixed navbar — content must clear it
 
 const gridStyle = {
@@ -99,7 +99,7 @@ const SlidingTabs = ({ tabs, active, onChange, counts = {} }) => {
           left: indicator.left,
           width: indicator.width,
           opacity: indicator.opacity,
-          background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+          background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
           boxShadow: `0 6px 18px -6px ${ACCENT}80`,
           transition:
             'left 0.35s cubic-bezier(0.22, 1, 0.36, 1), width 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease',
@@ -215,12 +215,12 @@ const MyBookingsPage = () => {
         icon: CheckCircle,
       },
       active: {
-        classes: 'bg-[#00E5A8]/10 border-[#00E5A8]/30',
+        classes: 'bg-[#22D3EE]/10 border-[#22D3EE]/30',
         style: { color: ACCENT },
         icon: Zap,
       },
       completed: {
-        classes: 'bg-[#00E5A8]/10 border-[#00E5A8]/30',
+        classes: 'bg-[#22D3EE]/10 border-[#22D3EE]/30',
         style: { color: ACCENT },
         icon: CheckCircle,
       },
@@ -313,8 +313,8 @@ const MyBookingsPage = () => {
   /* ── Not logged in ── */
   if (!user) {
     return (
-      <div className={`min-h-screen bg-[#020617] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`} style={gridStyle}>
-        <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
+      <div className={`min-h-screen bg-[#05061A] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`} style={gridStyle}>
+        <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
           <p className="text-[#94A3B8] mb-6">Please login to view your bookings</p>
           <button
             onClick={() => navigate('/login')}
@@ -331,13 +331,13 @@ const MyBookingsPage = () => {
   /* ── Loading skeleton ── */
   if (loading) {
     return (
-      <div className={`min-h-screen bg-[#020617] ${NAVBAR_CLEARANCE}`} style={gridStyle}>
+      <div className={`min-h-screen bg-[#05061A] ${NAVBAR_CLEARANCE}`} style={gridStyle}>
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="h-10 w-60 bg-slate-800 rounded-lg animate-pulse mb-6" />
           <div className="h-11 w-96 max-w-full bg-slate-800/70 rounded-full animate-pulse mb-8" />
           <div className="space-y-6">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-64 bg-[#0F172A] border border-white/[0.08] rounded-2xl animate-pulse" />
+              <div key={i} className="h-64 bg-[#0E1130] border border-white/[0.08] rounded-2xl animate-pulse" />
             ))}
           </div>
         </div>
@@ -348,8 +348,8 @@ const MyBookingsPage = () => {
   /* ── Error ── */
   if (error) {
     return (
-      <div className={`min-h-screen bg-[#020617] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`} style={gridStyle}>
-        <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
+      <div className={`min-h-screen bg-[#05061A] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`} style={gridStyle}>
+        <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
           <div className="bg-red-500/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="h-8 w-8 text-red-400" />
           </div>
@@ -369,7 +369,7 @@ const MyBookingsPage = () => {
   }
 
   return (
-    <div className={`min-h-screen bg-[#020617] relative ${NAVBAR_CLEARANCE}`}>
+    <div className={`min-h-screen bg-[#05061A] relative ${NAVBAR_CLEARANCE}`}>
       <div className="absolute inset-0" style={gridStyle} aria-hidden="true" />
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 h-[320px] w-[640px] rounded-full opacity-[0.12] blur-[100px] pointer-events-none"
@@ -434,7 +434,7 @@ const MyBookingsPage = () => {
         </div>
 
         {filteredBookings.length === 0 ? (
-          <div className="bg-[#0F172A]/70 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl p-12 text-center">
+          <div className="bg-[#0E1130]/70 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl p-12 text-center">
             <div className="bg-white/[0.04] h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <Zap className="h-8 w-8 text-slate-600" />
             </div>
@@ -451,7 +451,7 @@ const MyBookingsPage = () => {
                 onClick={() => navigate('/')}
                 className="px-6 py-3 text-slate-950 rounded-xl font-semibold transition-all hover:scale-[1.03]"
                 style={{
-                  background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                  background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                   boxShadow: `0 10px 28px -10px ${ACCENT}80`,
                 }}
               >
@@ -464,7 +464,7 @@ const MyBookingsPage = () => {
             {filteredBookings.map((booking) => (
               <div
                 key={booking._id}
-                className="bg-[#0F172A]/80 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.15] hover:shadow-2xl"
+                className="bg-[#0E1130]/80 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.15] hover:shadow-2xl"
               >
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4 gap-3 flex-wrap">
@@ -584,7 +584,7 @@ const MyBookingsPage = () => {
                         onClick={() => setReviewingBooking(booking)}
                         className="px-4 py-2 text-slate-950 rounded-xl transition-all hover:scale-[1.03] text-sm font-semibold"
                         style={{
-                          background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                          background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                           boxShadow: `0 8px 20px -8px ${ACCENT}70`,
                         }}
                       >
@@ -609,7 +609,7 @@ const MyBookingsPage = () => {
             if (e.target === e.currentTarget) setCancelTarget(null);
           }}
         >
-          <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 shadow-2xl">
+          <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 shadow-2xl">
             <div className="bg-red-500/10 h-12 w-12 rounded-full flex items-center justify-center mb-4">
               <AlertTriangle className="h-6 w-6 text-red-400" />
             </div>
@@ -650,7 +650,7 @@ const MyBookingsPage = () => {
             }
           }}
         >
-          <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl max-w-md w-full p-6 shadow-2xl">
+          <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <h2 className="text-xl font-bold text-[#F8FAFC] mb-1">Write a review</h2>
             <p className="text-[#94A3B8] mb-5">{reviewingBooking.station?.name}</p>
 
@@ -684,7 +684,7 @@ const MyBookingsPage = () => {
                   onChange={(e) => setReviewData({ ...reviewData, comment: e.target.value })}
                   rows="4"
                   required
-                  className="w-full bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 px-3 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00E5A8]/40 focus:border-[#00E5A8]/60 resize-none"
+                  className="w-full bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 px-3 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/40 focus:border-[#22D3EE]/60 resize-none"
                   placeholder="Share your experience…"
                 />
               </div>
@@ -704,7 +704,7 @@ const MyBookingsPage = () => {
                   type="submit"
                   className="flex-1 px-4 py-2.5 text-slate-950 rounded-xl font-semibold transition-all hover:scale-[1.02]"
                   style={{
-                    background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                    background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                     boxShadow: `0 8px 20px -8px ${ACCENT}70`,
                   }}
                 >
@@ -722,7 +722,7 @@ const MyBookingsPage = () => {
           <div
             className={`flex items-start gap-3 p-4 rounded-xl border backdrop-blur-xl shadow-2xl ${
               toast.type === 'success'
-                ? 'bg-[#00E5A8]/10 border-[#00E5A8]/30'
+                ? 'bg-[#22D3EE]/10 border-[#22D3EE]/30'
                 : 'bg-red-500/10 border-red-500/30 text-red-200'
             }`}
             style={toast.type === 'success' ? { color: ACCENT } : undefined}

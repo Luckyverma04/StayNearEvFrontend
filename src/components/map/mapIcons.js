@@ -1,6 +1,6 @@
 import L from "leaflet";
 
-const ACCENT = "#00E5A8";
+const ACCENT = "#22D3EE";
 
 // Station pin — hara bolt wala marker (image file ki zaroorat nahi)
 export const stationIcon = (active = false) =>
@@ -13,8 +13,8 @@ export const stationIcon = (active = false) =>
       <div style="position:relative;width:36px;height:44px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));">
         <svg width="36" height="44" viewBox="0 0 36 44" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 43s15-14.2 15-25.5C33 8.4 26.3 2 18 2S3 8.4 3 17.5C3 28.8 18 43 18 43z"
-                fill="${active ? "#F8FAFC" : ACCENT}" stroke="#020617" stroke-width="2"/>
-          <path d="M19.5 9 12 20h5l-1.5 9L23 18h-5l1.5-9z" fill="#020617"/>
+                fill="${active ? "#F8FAFC" : ACCENT}" stroke="#05061A" stroke-width="2"/>
+          <path d="M19.5 9 12 20h5l-1.5 9L23 18h-5l1.5-9z" fill="#05061A"/>
         </svg>
       </div>`,
   });
@@ -29,7 +29,7 @@ export const publicIcon = L.divIcon({
     <div style="width:30px;height:38px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));">
       <svg width="30" height="38" viewBox="0 0 36 44" xmlns="http://www.w3.org/2000/svg">
         <path d="M18 43s15-14.2 15-25.5C33 8.4 26.3 2 18 2S3 8.4 3 17.5C3 28.8 18 43 18 43z"
-              fill="#3B82F6" stroke="#ffffff" stroke-width="2.5"/>
+              fill="#F59E0B" stroke="#ffffff" stroke-width="2.5"/>
         <path d="M14 9v5M22 9v5M11 14h14v3a7 7 0 0 1-14 0v-3zM18 24v4" stroke="#ffffff" stroke-width="2.4"
               stroke-linecap="round" stroke-linejoin="round" fill="none"/>
       </svg>

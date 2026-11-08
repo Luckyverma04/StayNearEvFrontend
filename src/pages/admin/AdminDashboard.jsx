@@ -7,7 +7,7 @@ import authService from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
 
 /* ─── Design tokens (same as the rest of the site) ─── */
-const ACCENT = '#00E5A8';
+const ACCENT = '#22D3EE';
 const NAVBAR_CLEARANCE = 'pt-28'; // fixed navbar — content must clear it
 
 const gridStyle = {
@@ -57,7 +57,7 @@ const SlidingTabs = ({ tabs, active, onChange }) => {
           left: indicator.left,
           width: indicator.width,
           opacity: indicator.opacity,
-          background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+          background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
           boxShadow: `0 6px 18px -6px ${ACCENT}80`,
           transition:
             'left 0.35s cubic-bezier(0.22, 1, 0.36, 1), width 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease',
@@ -195,8 +195,8 @@ const AdminDashboard = () => {
   /* ── Access denied ── */
   if (user?.role?.toLowerCase() !== 'admin') {
     return (
-      <div className={`min-h-screen bg-[#020617] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`} style={gridStyle}>
-        <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
+      <div className={`min-h-screen bg-[#05061A] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`} style={gridStyle}>
+        <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
           <div className="bg-red-500/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="h-8 w-8 text-red-400" />
           </div>
@@ -210,24 +210,24 @@ const AdminDashboard = () => {
   /* ── Loading skeleton ── */
   if (loading) {
     return (
-      <div className={`min-h-screen bg-[#020617] ${NAVBAR_CLEARANCE}`} style={gridStyle}>
+      <div className={`min-h-screen bg-[#05061A] ${NAVBAR_CLEARANCE}`} style={gridStyle}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="h-10 w-72 bg-slate-800 rounded-lg animate-pulse mb-2" />
           <div className="h-5 w-52 bg-slate-800/70 rounded animate-pulse mb-8" />
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-28 bg-[#0F172A] border border-white/[0.08] rounded-2xl animate-pulse" />
+              <div key={i} className="h-28 bg-[#0E1130] border border-white/[0.08] rounded-2xl animate-pulse" />
             ))}
           </div>
-          <div className="h-16 bg-[#0F172A] border border-white/[0.08] rounded-2xl animate-pulse mb-6" />
-          <div className="h-96 bg-[#0F172A] border border-white/[0.08] rounded-2xl animate-pulse" />
+          <div className="h-16 bg-[#0E1130] border border-white/[0.08] rounded-2xl animate-pulse mb-6" />
+          <div className="h-96 bg-[#0E1130] border border-white/[0.08] rounded-2xl animate-pulse" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen bg-[#020617] relative ${NAVBAR_CLEARANCE}`}>
+    <div className={`min-h-screen bg-[#05061A] relative ${NAVBAR_CLEARANCE}`}>
       <div className="absolute inset-0" style={gridStyle} aria-hidden="true" />
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 h-[320px] w-[640px] rounded-full opacity-[0.12] blur-[100px] pointer-events-none"
@@ -243,7 +243,7 @@ const AdminDashboard = () => {
               <span
                 className="p-2.5 rounded-xl inline-flex"
                 style={{
-                  background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                  background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                   boxShadow: `0 8px 20px -8px ${ACCENT}60`,
                 }}
               >
@@ -270,7 +270,7 @@ const AdminDashboard = () => {
             label="Email verified"
             value={stats.verified}
             icon={<CheckCircle className="h-6 w-6" style={{ color: ACCENT }} />}
-            iconBg="bg-[#00E5A8]/10"
+            iconBg="bg-[#22D3EE]/10"
             accent
           />
           <StatCard label="Pending verification" value={stats.unverified} icon={<Clock className="h-6 w-6 text-yellow-400" />} iconBg="bg-yellow-500/10" />
@@ -278,7 +278,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Search + sliding pill filters */}
-        <div className="bg-[#0F172A]/80 backdrop-blur p-4 rounded-2xl shadow-xl border border-white/[0.08] mb-6">
+        <div className="bg-[#0E1130]/80 backdrop-blur p-4 rounded-2xl shadow-xl border border-white/[0.08] mb-6">
           <div className="flex flex-col md:flex-row gap-4 md:items-center">
             <div className="flex-1">
               <div className="relative">
@@ -288,7 +288,7 @@ const AdminDashboard = () => {
                   placeholder="Search by name or email…"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-10 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-[#F8FAFC] placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#00E5A8]/30 focus:border-[#00E5A8]/60 transition-all"
+                  className="w-full pl-11 pr-10 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-[#F8FAFC] placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/30 focus:border-[#22D3EE]/60 transition-all"
                 />
                 {searchQuery && (
                   <button
@@ -324,7 +324,7 @@ const AdminDashboard = () => {
         )}
 
         {/* Users Table */}
-        <div className="bg-[#0F172A]/80 backdrop-blur rounded-2xl shadow-xl border border-white/[0.08] overflow-hidden">
+        <div className="bg-[#0E1130]/80 backdrop-blur rounded-2xl shadow-xl border border-white/[0.08] overflow-hidden">
           {filteredUsers.length === 0 ? (
             <div className="text-center py-14">
               <div className="bg-white/[0.04] h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -357,7 +357,7 @@ const AdminDashboard = () => {
                         <div className="flex items-center">
                           <div
                             className="h-10 w-10 rounded-full flex items-center justify-center text-slate-950 font-bold"
-                            style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+                            style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)` }}
                           >
                             {u.name?.charAt(0).toUpperCase()}
                           </div>
@@ -413,7 +413,7 @@ const AdminDashboard = () => {
                             disabled={verifyingId === u._id}
                             className="inline-flex items-center gap-2 px-4 py-2 text-slate-950 text-sm font-semibold rounded-xl transition-all hover:scale-[1.03] disabled:opacity-50 disabled:cursor-not-allowed"
                             style={{
-                              background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                              background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                               boxShadow: `0 8px 20px -8px ${ACCENT}70`,
                             }}
                           >
@@ -458,8 +458,8 @@ const AdminDashboard = () => {
             if (e.target === e.currentTarget) setVerifyTarget(null);
           }}
         >
-          <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 shadow-2xl">
-            <div className="bg-[#00E5A8]/10 h-12 w-12 rounded-full flex items-center justify-center mb-4">
+          <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 shadow-2xl">
+            <div className="bg-[#22D3EE]/10 h-12 w-12 rounded-full flex items-center justify-center mb-4">
               <Mail className="h-6 w-6" style={{ color: ACCENT }} />
             </div>
             <h2 className="text-lg font-bold text-[#F8FAFC] mb-1">Verify this user?</h2>
@@ -478,7 +478,7 @@ const AdminDashboard = () => {
                 onClick={confirmVerifyUser}
                 className="flex-1 px-4 py-2.5 rounded-xl text-slate-950 font-semibold transition-all hover:scale-[1.02]"
                 style={{
-                  background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                  background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                   boxShadow: `0 8px 20px -8px ${ACCENT}70`,
                 }}
               >
@@ -495,7 +495,7 @@ const AdminDashboard = () => {
           <div
             className={`flex items-start gap-3 p-4 rounded-xl border backdrop-blur-xl shadow-2xl ${
               toast.type === 'success'
-                ? 'bg-[#00E5A8]/10 border-[#00E5A8]/30'
+                ? 'bg-[#22D3EE]/10 border-[#22D3EE]/30'
                 : 'bg-red-500/10 border-red-500/30 text-red-200'
             }`}
             style={toast.type === 'success' ? { color: ACCENT } : undefined}
@@ -523,8 +523,8 @@ const AdminDashboard = () => {
 /* ── Dark glass stat card ── */
 const StatCard = ({ label, value, icon, iconBg, accent = false }) => (
   <div
-    className={`bg-[#0F172A]/80 backdrop-blur p-5 rounded-2xl shadow-xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${
-      accent ? 'border-[#00E5A8]/30 hover:border-[#00E5A8]/50' : 'border-white/[0.08] hover:border-white/[0.15]'
+    className={`bg-[#0E1130]/80 backdrop-blur p-5 rounded-2xl shadow-xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${
+      accent ? 'border-[#22D3EE]/30 hover:border-[#22D3EE]/50' : 'border-white/[0.08] hover:border-white/[0.15]'
     }`}
   >
     <div className="flex items-center justify-between">
@@ -546,7 +546,7 @@ const StatusPill = ({ icon, label, tone, accent = false }) => {
   return (
     <span
       className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full border ${
-        accent ? 'bg-[#00E5A8]/10 border-[#00E5A8]/30' : tones[tone]
+        accent ? 'bg-[#22D3EE]/10 border-[#22D3EE]/30' : tones[tone]
       }`}
       style={accent ? { color: ACCENT } : undefined}
     >

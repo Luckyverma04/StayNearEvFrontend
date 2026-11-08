@@ -244,7 +244,7 @@ const EditStationPage = () => {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Pin on map
           </label>
-          <div className="rounded-xl bg-[#0F172A] p-3">
+          <div className="rounded-xl bg-[#0E1130] p-3">
             <LocationPicker value={pin} onChange={setPin} height={280} />
           </div>
         </div>

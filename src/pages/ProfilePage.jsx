@@ -9,7 +9,7 @@ import { authService } from "../services/authService";
 import { bookingService } from "../services/bookingService";
 import { stationService } from "../services/stationService";
 
-const ACCENT = "#00E5A8";
+const ACCENT = "#22D3EE";
 const gridStyle = {
   backgroundImage:
     "linear-gradient(rgba(148,163,184,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.025) 1px, transparent 1px)",
@@ -26,7 +26,7 @@ const toArray = (res, key) => {
 };
 
 const Card = ({ children, className = "" }) => (
-  <div className={`bg-[#0F172A]/80 backdrop-blur border border-white/[0.08] rounded-2xl ${className}`}>{children}</div>
+  <div className={`bg-[#0E1130]/80 backdrop-blur border border-white/[0.08] rounded-2xl ${className}`}>{children}</div>
 );
 
 const ProfilePage = () => {
@@ -139,19 +139,19 @@ const ProfilePage = () => {
       src={info.avatar}
       alt=""
       referrerPolicy="no-referrer"
-      className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl object-cover ring-2 ring-[#00E5A8]/40"
+      className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl object-cover ring-2 ring-[#22D3EE]/40"
     />
   ) : (
     <div
       className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl flex items-center justify-center text-slate-950 text-3xl sm:text-4xl font-bold"
-      style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+      style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)` }}
     >
       {info.name?.charAt(0).toUpperCase()}
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#020617] relative pt-24 sm:pt-28">
+    <div className="min-h-screen bg-[#05061A] relative pt-24 sm:pt-28">
       <div className="absolute inset-0 pointer-events-none" style={gridStyle} aria-hidden="true" />
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 h-[320px] w-[640px] max-w-full rounded-full opacity-[0.12] blur-[100px] pointer-events-none"
@@ -177,7 +177,7 @@ const ProfilePage = () => {
                     }}
                     maxLength={50}
                     aria-label="Your name"
-                    className="flex-1 min-w-[180px] px-3 py-2 rounded-xl bg-[#020617]/60 border border-[#00E5A8]/50 text-xl font-bold text-[#F8FAFC] outline-none focus:ring-4 focus:ring-[#00E5A8]/10"
+                    className="flex-1 min-w-[180px] px-3 py-2 rounded-xl bg-[#05061A]/60 border border-[#22D3EE]/50 text-xl font-bold text-[#F8FAFC] outline-none focus:ring-4 focus:ring-[#22D3EE]/10"
                   />
                   <button
                     onClick={saveName}
@@ -206,7 +206,7 @@ const ProfilePage = () => {
                       setName(info.name || "");
                       setEditing(true);
                     }}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-[#00E5A8] hover:bg-white/[0.06]"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-[#22D3EE] hover:bg-white/[0.06]"
                     aria-label="Edit name"
                     title="Edit name"
                   >
@@ -238,7 +238,7 @@ const ProfilePage = () => {
                   )}
                 </span>
                 {info.isEmailVerified && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-cyan-500/10 border border-cyan-500/30 text-cyan-300">
                     <ShieldCheck className="h-3.5 w-3.5" /> Verified
                   </span>
                 )}
@@ -267,7 +267,7 @@ const ProfilePage = () => {
                   ? document.getElementById("stations")?.scrollIntoView({ behavior: "smooth" })
                   : navigate(s.to)
               }
-              className="text-left p-4 rounded-2xl border border-white/[0.08] bg-[#0F172A]/80 hover:border-[#00E5A8]/40 transition-colors"
+              className="text-left p-4 rounded-2xl border border-white/[0.08] bg-[#0E1130]/80 hover:border-[#22D3EE]/40 transition-colors"
             >
               <p className="text-xs text-[#94A3B8]">{s.label}</p>
               <p className="text-2xl font-bold text-[#F8FAFC] mt-1">
@@ -314,7 +314,7 @@ const ProfilePage = () => {
           </div>
 
           {loading ? (
-            <div className="h-20 rounded-2xl bg-[#0F172A] border border-white/[0.06] animate-pulse" />
+            <div className="h-20 rounded-2xl bg-[#0E1130] border border-white/[0.06] animate-pulse" />
           ) : stations.length === 0 ? (
             <Card className="p-6 text-center">
               <Zap className="h-8 w-8 mx-auto text-slate-600 mb-2" />
@@ -386,7 +386,7 @@ const ProfilePage = () => {
           aria-modal="true"
           onClick={(e) => e.target === e.currentTarget && !deleting && setShowDelete(false)}
         >
-          <div className="bg-[#0F172A] border border-white/[0.08] rounded-t-3xl sm:rounded-2xl w-full sm:max-w-sm p-6">
+          <div className="bg-[#0E1130] border border-white/[0.08] rounded-t-3xl sm:rounded-2xl w-full sm:max-w-sm p-6">
             <div className="bg-red-500/10 h-12 w-12 rounded-full flex items-center justify-center mb-4">
               <Trash2 className="h-6 w-6 text-red-400" />
             </div>
@@ -400,7 +400,7 @@ const ProfilePage = () => {
               onChange={(e) => setConfirmText(e.target.value)}
               placeholder="DELETE"
               aria-label="Type DELETE to confirm"
-              className="mt-4 w-full px-3 py-2.5 rounded-xl bg-[#020617]/60 border border-white/[0.1] text-[#F8FAFC] outline-none focus:border-red-400/60"
+              className="mt-4 w-full px-3 py-2.5 rounded-xl bg-[#05061A]/60 border border-white/[0.1] text-[#F8FAFC] outline-none focus:border-red-400/60"
             />
             {deleteError && <p className="text-sm text-red-300 mt-2">{deleteError}</p>}
             <div className="flex flex-col-reverse sm:flex-row gap-3 mt-5">

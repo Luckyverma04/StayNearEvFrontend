@@ -13,7 +13,7 @@ import StationsMap from '../components/map/StationsMap';
 import { hasCoords, directionsUrl } from '../utils/geo';
 
 /* ─── Design tokens ─── */
-const ACCENT = '#00E5A8';
+const ACCENT = '#22D3EE';
 const NAVBAR_CLEARANCE = 'pt-28';
 
 const gridStyle = {
@@ -254,18 +254,18 @@ const StationDetailPage = () => {
   /* ────────────────────────────── Loading ────────────────────────────── */
   if (loading) {
     return (
-      <div className={`min-h-screen bg-[#020617] ${NAVBAR_CLEARANCE}`} style={gridStyle}>
+      <div className={`min-h-screen bg-[#05061A] ${NAVBAR_CLEARANCE}`} style={gridStyle}>
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="h-5 w-36 bg-slate-800 rounded animate-pulse mb-8" />
           <div className="h-10 w-72 bg-slate-800 rounded-lg animate-pulse mb-4" />
           <div className="h-5 w-52 bg-slate-800/70 rounded animate-pulse mb-10" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
-              <div className="h-32 bg-[#0F172A] border border-white/[0.08] rounded-2xl animate-pulse" />
-              <div className="h-24 bg-[#0F172A] border border-white/[0.08] rounded-2xl animate-pulse" />
-              <div className="h-48 bg-[#0F172A] border border-white/[0.08] rounded-2xl animate-pulse" />
+              <div className="h-32 bg-[#0E1130] border border-white/[0.08] rounded-2xl animate-pulse" />
+              <div className="h-24 bg-[#0E1130] border border-white/[0.08] rounded-2xl animate-pulse" />
+              <div className="h-48 bg-[#0E1130] border border-white/[0.08] rounded-2xl animate-pulse" />
             </div>
-            <div className="h-80 bg-[#0F172A] border border-white/[0.08] rounded-2xl animate-pulse" />
+            <div className="h-80 bg-[#0E1130] border border-white/[0.08] rounded-2xl animate-pulse" />
           </div>
         </div>
       </div>
@@ -275,8 +275,8 @@ const StationDetailPage = () => {
   /* ─────────────────────────────── Error ─────────────────────────────── */
   if (error || !station) {
     return (
-      <div className={`min-h-screen bg-[#020617] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`} style={gridStyle}>
-        <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
+      <div className={`min-h-screen bg-[#05061A] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`} style={gridStyle}>
+        <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
           <div className="bg-red-500/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="h-8 w-8 text-red-400" />
           </div>
@@ -304,7 +304,7 @@ const StationDetailPage = () => {
   const ownerDisplayName = getOwnerDisplayName();
 
   return (
-    <div className={`min-h-screen bg-[#020617] relative ${NAVBAR_CLEARANCE}`}>
+    <div className={`min-h-screen bg-[#05061A] relative ${NAVBAR_CLEARANCE}`}>
       <style>{`
         @keyframes heroBgIn {
           from { opacity: 0; transform: scale(1.15); }
@@ -329,7 +329,7 @@ const StationDetailPage = () => {
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(180deg, rgba(2,6,23,0.85) 0%, rgba(15,23,42,0.65) 40%, rgba(2,6,23,0.92) 80%, #020617 100%)',
+                'linear-gradient(180deg, rgba(2,6,23,0.85) 0%, rgba(15,23,42,0.65) 40%, rgba(2,6,23,0.92) 80%, #05061A 100%)',
               backdropFilter: 'blur(4px)',
             }}
           />
@@ -366,7 +366,7 @@ const StationDetailPage = () => {
               {isOwnStation && (
                 <span
                   className="px-3 py-1 rounded-full text-xs font-bold text-slate-950"
-                  style={{ background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)` }}
+                  style={{ background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)` }}
                 >
                   Your station
                 </span>
@@ -424,7 +424,7 @@ const StationDetailPage = () => {
           <div className="lg:col-span-2">
             {/* Description */}
             {station.description && (
-              <div className="mb-8 bg-[#0F172A]/70 backdrop-blur border border-white/[0.08] rounded-2xl p-6 shadow-xl">
+              <div className="mb-8 bg-[#0E1130]/70 backdrop-blur border border-white/[0.08] rounded-2xl p-6 shadow-xl">
                 <h2 className="text-xl font-semibold text-[#F8FAFC] mb-3">
                   About this charging station
                 </h2>
@@ -442,13 +442,13 @@ const StationDetailPage = () => {
 
             {/* Charger Types */}
             {station.chargerTypes?.length > 0 && (
-              <div className="mb-8 bg-[#0F172A]/70 backdrop-blur border border-white/[0.08] rounded-2xl p-6 shadow-xl">
+              <div className="mb-8 bg-[#0E1130]/70 backdrop-blur border border-white/[0.08] rounded-2xl p-6 shadow-xl">
                 <h2 className="text-xl font-semibold text-[#F8FAFC] mb-3">Available charger types</h2>
                 <div className="flex flex-wrap gap-2">
                   {station.chargerTypes.map((type, idx) => (
                     <span
                       key={idx}
-                      className="bg-[#00E5A8]/10 border border-[#00E5A8]/20 px-3 py-2 rounded-lg font-medium flex items-center gap-2 text-sm"
+                      className="bg-[#22D3EE]/10 border border-[#22D3EE]/20 px-3 py-2 rounded-lg font-medium flex items-center gap-2 text-sm"
                       style={{ color: ACCENT }}
                     >
                       <Zap className="h-4 w-4" />
@@ -461,7 +461,7 @@ const StationDetailPage = () => {
 
             {/* Owner */}
             {ownerDisplayName && (
-              <div className="mb-10 p-5 bg-[#0F172A]/70 backdrop-blur border border-white/[0.08] rounded-2xl shadow-xl">
+              <div className="mb-10 p-5 bg-[#0E1130]/70 backdrop-blur border border-white/[0.08] rounded-2xl shadow-xl">
                 <h2 className="text-sm font-medium text-[#94A3B8] mb-1">Managed by</h2>
                 <p className="text-[#F8FAFC] font-semibold">{ownerDisplayName}</p>
               </div>
@@ -480,7 +480,7 @@ const StationDetailPage = () => {
                     }
                     className="px-4 py-2 text-slate-950 rounded-xl transition-all hover:scale-[1.03] flex items-center gap-2 text-sm font-semibold"
                     style={{
-                      background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                      background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                       boxShadow: `0 8px 20px -8px ${ACCENT}70`,
                     }}
                   >
@@ -532,7 +532,7 @@ const StationDetailPage = () => {
 
           {/* Booking Card */}
           <div className="lg:col-span-1">
-            <div className="sticky top-28 bg-[#0F172A]/80 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-2xl">
+            <div className="sticky top-28 bg-[#0E1130]/80 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 shadow-2xl">
               <div className="flex items-baseline gap-2 mb-6">
                 <BatteryCharging className="h-6 w-6" style={{ color: ACCENT }} />
                 <span className="text-3xl font-bold text-[#F8FAFC]">{getPrice()}</span>
@@ -566,7 +566,7 @@ const StationDetailPage = () => {
                     onClick={handleBookNow}
                     className="w-full text-slate-950 py-3 rounded-xl font-semibold transition-all hover:scale-[1.02] mb-4 flex items-center justify-center gap-2"
                     style={{
-                      background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                      background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                       boxShadow: `0 10px 28px -10px ${ACCENT}80`,
                     }}
                   >
@@ -613,7 +613,7 @@ const StationDetailPage = () => {
             if (e.target === e.currentTarget) setShowEditForm(false);
           }}
         >
-          <div className="bg-[#0F172A] border border-white/[0.08] p-6 rounded-2xl w-full max-w-md shadow-2xl">
+          <div className="bg-[#0E1130] border border-white/[0.08] p-6 rounded-2xl w-full max-w-md shadow-2xl">
             <h2 className="text-xl font-bold text-[#F8FAFC] mb-5">Edit charging station</h2>
             <form onSubmit={handleUpdateStation}>
               <input
@@ -621,35 +621,35 @@ const StationDetailPage = () => {
                 placeholder="Station name"
                 value={editFormData.name}
                 onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                className="w-full mb-3 bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 p-3 rounded-xl focus:ring-2 focus:ring-[#00E5A8]/40 focus:border-[#00E5A8]/60 outline-none"
+                className="w-full mb-3 bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 p-3 rounded-xl focus:ring-2 focus:ring-[#22D3EE]/40 focus:border-[#22D3EE]/60 outline-none"
               />
               <input
                 type="text"
                 placeholder="Location"
                 value={editFormData.location}
                 onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
-                className="w-full mb-3 bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 p-3 rounded-xl focus:ring-2 focus:ring-[#00E5A8]/40 focus:border-[#00E5A8]/60 outline-none"
+                className="w-full mb-3 bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 p-3 rounded-xl focus:ring-2 focus:ring-[#22D3EE]/40 focus:border-[#22D3EE]/60 outline-none"
               />
               <textarea
                 placeholder="Description"
                 rows={3}
                 value={editFormData.description}
                 onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
-                className="w-full mb-3 bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 p-3 rounded-xl focus:ring-2 focus:ring-[#00E5A8]/40 focus:border-[#00E5A8]/60 outline-none resize-none"
+                className="w-full mb-3 bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 p-3 rounded-xl focus:ring-2 focus:ring-[#22D3EE]/40 focus:border-[#22D3EE]/60 outline-none resize-none"
               />
               <input
                 type="number"
                 placeholder="Price per kWh"
                 value={editFormData.pricePerUnit}
                 onChange={(e) => setEditFormData({ ...editFormData, pricePerUnit: e.target.value })}
-                className="w-full mb-3 bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 p-3 rounded-xl focus:ring-2 focus:ring-[#00E5A8]/40 focus:border-[#00E5A8]/60 outline-none"
+                className="w-full mb-3 bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 p-3 rounded-xl focus:ring-2 focus:ring-[#22D3EE]/40 focus:border-[#22D3EE]/60 outline-none"
               />
               <input
                 type="text"
                 placeholder="Charger types (comma separated)"
                 value={editFormData.chargerTypes}
                 onChange={(e) => setEditFormData({ ...editFormData, chargerTypes: e.target.value })}
-                className="w-full mb-5 bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 p-3 rounded-xl focus:ring-2 focus:ring-[#00E5A8]/40 focus:border-[#00E5A8]/60 outline-none"
+                className="w-full mb-5 bg-white/[0.04] border border-white/[0.08] text-[#F8FAFC] placeholder:text-slate-500 p-3 rounded-xl focus:ring-2 focus:ring-[#22D3EE]/40 focus:border-[#22D3EE]/60 outline-none"
               />
               <div className="flex justify-end gap-2">
                 <button
@@ -663,7 +663,7 @@ const StationDetailPage = () => {
                   type="submit"
                   className="px-4 py-2.5 text-slate-950 rounded-xl font-semibold transition-all hover:scale-[1.02]"
                   style={{
-                    background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+                    background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
                     boxShadow: `0 8px 20px -8px ${ACCENT}70`,
                   }}
                 >
@@ -685,7 +685,7 @@ const StationDetailPage = () => {
             if (e.target === e.currentTarget && !deletingReview) setReviewToDelete(null);
           }}
         >
-          <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 shadow-2xl">
+          <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 shadow-2xl">
             <div className="bg-red-500/10 h-12 w-12 rounded-full flex items-center justify-center mb-4">
               <AlertTriangle className="h-6 w-6 text-red-400" />
             </div>
@@ -718,7 +718,7 @@ const StationDetailPage = () => {
           <div
             className={`flex items-start gap-3 p-4 rounded-xl border backdrop-blur-xl shadow-2xl ${
               toast.type === 'success'
-                ? 'bg-[#00E5A8]/10 border-[#00E5A8]/30'
+                ? 'bg-[#22D3EE]/10 border-[#22D3EE]/30'
                 : 'bg-red-500/10 border-red-500/30 text-red-200'
             }`}
             style={toast.type === 'success' ? { color: ACCENT } : undefined}

@@ -24,7 +24,7 @@ import api from "../../services/api";
 
 // ─── Design tokens ─────────────────────────────────────
 
-const ACCENT = "#00E5A8";
+const ACCENT = "#22D3EE";
 const NAVBAR_CLEARANCE = "pt-28";
 
 const gridStyle = {
@@ -116,7 +116,7 @@ const SlidingTabs = ({
           left: indicator.left,
           width: indicator.width,
           opacity: indicator.opacity,
-          background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+          background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
           boxShadow: `0 6px 18px -6px ${ACCENT}80`,
           transition:
             "left 0.35s cubic-bezier(0.22, 1, 0.36, 1), width 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease",
@@ -310,7 +310,7 @@ const AdminBookingsPage = () => {
 
       completed: {
         classes:
-          "bg-[#00E5A8]/10 border-[#00E5A8]/30",
+          "bg-[#22D3EE]/10 border-[#22D3EE]/30",
         style: {
           color: ACCENT,
         },
@@ -432,10 +432,10 @@ const AdminBookingsPage = () => {
   ) {
     return (
       <div
-        className={`min-h-screen bg-[#020617] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`}
+        className={`min-h-screen bg-[#05061A] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`}
         style={gridStyle}
       >
-        <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
+        <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
           <div className="bg-red-500/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock className="h-8 w-8 text-red-400" />
           </div>
@@ -474,13 +474,13 @@ const AdminBookingsPage = () => {
   if (loading) {
     return (
       <div
-        className={`min-h-screen bg-[#020617] ${NAVBAR_CLEARANCE}`}
+        className={`min-h-screen bg-[#05061A] ${NAVBAR_CLEARANCE}`}
         style={gridStyle}
       >
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="h-10 w-72 bg-slate-800 rounded-lg animate-pulse mb-8" />
 
-          <div className="h-16 bg-[#0F172A] border border-white/[0.08] rounded-2xl animate-pulse mb-6" />
+          <div className="h-16 bg-[#0E1130] border border-white/[0.08] rounded-2xl animate-pulse mb-6" />
 
           <div className="h-11 w-96 max-w-full bg-slate-800/70 rounded-full animate-pulse mb-6" />
 
@@ -490,7 +490,7 @@ const AdminBookingsPage = () => {
             }).map((_, i) => (
               <div
                 key={i}
-                className="h-52 bg-[#0F172A] border border-white/[0.08] rounded-2xl animate-pulse"
+                className="h-52 bg-[#0E1130] border border-white/[0.08] rounded-2xl animate-pulse"
               />
             ))}
           </div>
@@ -506,10 +506,10 @@ const AdminBookingsPage = () => {
   if (error) {
     return (
       <div
-        className={`min-h-screen bg-[#020617] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`}
+        className={`min-h-screen bg-[#05061A] flex items-center justify-center px-4 ${NAVBAR_CLEARANCE}`}
         style={gridStyle}
       >
-        <div className="bg-[#0F172A] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
+        <div className="bg-[#0E1130] border border-white/[0.08] rounded-2xl p-10 text-center max-w-md w-full shadow-xl">
           <div className="bg-red-500/10 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="h-8 w-8 text-red-400" />
           </div>
@@ -547,7 +547,7 @@ const AdminBookingsPage = () => {
 
   return (
     <div
-      className={`min-h-screen bg-[#020617] relative ${NAVBAR_CLEARANCE}`}
+      className={`min-h-screen bg-[#05061A] relative ${NAVBAR_CLEARANCE}`}
     >
       <div
         className="absolute inset-0"
@@ -590,7 +590,7 @@ const AdminBookingsPage = () => {
         </div>
 
         {/* Stats */}
-        <div className="bg-[#0F172A]/80 backdrop-blur rounded-2xl shadow-xl p-5 border border-white/[0.08] mb-6">
+        <div className="bg-[#0E1130]/80 backdrop-blur rounded-2xl shadow-xl p-5 border border-white/[0.08] mb-6">
           <p className="text-[#94A3B8]">
             Showing{" "}
             <span
@@ -622,7 +622,7 @@ const AdminBookingsPage = () => {
         {/* Bookings */}
         {filteredBookings.length ===
         0 ? (
-          <div className="bg-[#0F172A]/70 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl p-12 text-center">
+          <div className="bg-[#0E1130]/70 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl p-12 text-center">
             <div className="bg-white/[0.04] h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <Zap className="h-8 w-8 text-slate-600" />
             </div>
@@ -644,7 +644,7 @@ const AdminBookingsPage = () => {
               (booking) => (
                 <div
                   key={booking._id}
-                  className="bg-[#0F172A]/80 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.15] hover:shadow-2xl"
+                  className="bg-[#0E1130]/80 backdrop-blur rounded-2xl border border-white/[0.08] shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.15] hover:shadow-2xl"
                 >
                   <div className="p-6">
                     {/* Station Header */}

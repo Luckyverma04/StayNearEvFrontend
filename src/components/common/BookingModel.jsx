@@ -243,9 +243,9 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true">
         <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-          <div className="px-6 pt-8 pb-5 text-center bg-gradient-to-b from-emerald-50 to-white">
-            <div className="mx-auto h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
-              <CheckCircle2 className="h-9 w-9 text-emerald-600" />
+          <div className="px-6 pt-8 pb-5 text-center bg-gradient-to-b from-cyan-50 to-white">
+            <div className="mx-auto h-16 w-16 rounded-full bg-cyan-100 flex items-center justify-center mb-4">
+              <CheckCircle2 className="h-9 w-9 text-cyan-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900">Booking received! 🎉</h2>
             <p className="text-sm text-gray-600 mt-1">{station?.name}</p>
@@ -282,7 +282,7 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
                 onClose();
                 navigate('/my-bookings');
               }}
-              className="flex-1 px-4 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
+              className="flex-1 px-4 py-3 rounded-xl bg-cyan-600 text-white font-semibold hover:bg-cyan-700"
             >
               View my bookings
             </button>

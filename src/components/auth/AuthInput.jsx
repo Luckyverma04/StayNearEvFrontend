@@ -20,7 +20,7 @@ const AuthInput = ({ label, icon: Icon, type = "text", id, hint, ...props }) => 
           id={id}
           type={inputType}
           {...props}
-          className={`w-full ${Icon ? "pl-10" : "pl-4"} ${isPassword ? "pr-11" : "pr-4"} py-3 rounded-xl bg-[#020617]/60 border border-white/[0.1] text-[#F8FAFC] placeholder:text-slate-600 outline-none transition-all focus:border-[#00E5A8]/70 focus:ring-4 focus:ring-[#00E5A8]/10 disabled:opacity-60`}
+          className={`w-full ${Icon ? "pl-10" : "pl-4"} ${isPassword ? "pr-11" : "pr-4"} py-3 rounded-xl bg-[#05061A]/60 border border-white/[0.1] text-[#F8FAFC] placeholder:text-slate-600 outline-none transition-all focus:border-[#22D3EE]/70 focus:ring-4 focus:ring-[#22D3EE]/10 disabled:opacity-60`}
         />
         {isPassword && (
           <button

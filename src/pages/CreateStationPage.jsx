@@ -16,7 +16,7 @@ const gridStyle = {
 };
 
 const inputClass =
-  "w-full bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all";
+  "w-full bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all";
 
 const labelClass = "block text-sm font-medium text-slate-300 mb-1.5";
 
@@ -139,7 +139,7 @@ const CreateStationPage = () => {
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => navigate("/login")}
-              className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-xl transition-colors"
+              className="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold rounded-xl transition-colors"
             >
               Login
             </button>
@@ -167,7 +167,7 @@ const CreateStationPage = () => {
       <div className="relative max-w-3xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
-          <span className="inline-flex items-center gap-2 bg-white/5 border border-white/10 text-emerald-300 text-sm font-medium px-4 py-1.5 rounded-full mb-5 backdrop-blur-sm">
+          <span className="inline-flex items-center gap-2 bg-white/5 border border-white/10 text-cyan-300 text-sm font-medium px-4 py-1.5 rounded-full mb-5 backdrop-blur-sm">
             <Zap className="h-4 w-4" />
             New station
           </span>
@@ -183,8 +183,8 @@ const CreateStationPage = () => {
         <div className="bg-slate-900/80 backdrop-blur border border-slate-800 p-6 md:p-8 rounded-2xl">
           <form onSubmit={handleSubmit} className="space-y-5">
             {fromPublic && (
-              <div className="mb-6 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-sm text-emerald-100">
-                <p className="font-semibold text-emerald-300 mb-1">⚡ Listing your charger</p>
+              <div className="mb-6 p-4 rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-sm text-cyan-100">
+                <p className="font-semibold text-cyan-300 mb-1">⚡ Listing your charger</p>
                 We've filled in the name, address, map pin and charger types we found. Please check them, add your
                 price and a short description, then save. Once listed, drivers can book it on StayNearEV.
               </div>
@@ -192,7 +192,7 @@ const CreateStationPage = () => {
 
             <div>
               <label className={labelClass}>
-                Station name <span className="text-emerald-400">*</span>
+                Station name <span className="text-cyan-400">*</span>
               </label>
               <input
                 type="text"
@@ -207,7 +207,7 @@ const CreateStationPage = () => {
 
             <div>
               <label className={labelClass}>
-                Location <span className="text-emerald-400">*</span>
+                Location <span className="text-cyan-400">*</span>
               </label>
               <div className="relative">
                 <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
@@ -242,7 +242,7 @@ const CreateStationPage = () => {
 
             <div>
               <label className={labelClass}>
-                Description <span className="text-emerald-400">*</span>
+                Description <span className="text-cyan-400">*</span>
               </label>
               <textarea
                 name="description"
@@ -257,7 +257,7 @@ const CreateStationPage = () => {
 
             <div>
               <label className={labelClass}>
-                Price per unit (₹ per kWh) <span className="text-emerald-400">*</span>
+                Price per unit (₹ per kWh) <span className="text-cyan-400">*</span>
               </label>
               <div className="relative">
                 <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
@@ -277,7 +277,7 @@ const CreateStationPage = () => {
 
             <div>
               <label className={`${labelClass} mb-2`}>
-                Charger types <span className="text-emerald-400">*</span>
+                Charger types <span className="text-cyan-400">*</span>
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-slate-700 bg-slate-800/50 rounded-xl p-4">
                 {[
@@ -293,7 +293,7 @@ const CreateStationPage = () => {
                     key={charger.value}
                     className={`flex items-center space-x-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
                       formData.chargerTypes.includes(charger.value)
-                        ? "bg-emerald-500/10 border border-emerald-500/30"
+                        ? "bg-cyan-500/10 border border-cyan-500/30"
                         : "border border-transparent hover:bg-slate-800"
                     }`}
                   >
@@ -314,12 +314,12 @@ const CreateStationPage = () => {
                           chargerTypes: updatedTypes,
                         });
                       }}
-                      className="rounded border-slate-600 bg-slate-700 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900"
+                      className="rounded border-slate-600 bg-slate-700 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-900"
                     />
                     <span
                       className={`text-sm ${
                         formData.chargerTypes.includes(charger.value)
-                          ? "text-emerald-300 font-medium"
+                          ? "text-cyan-300 font-medium"
                           : "text-slate-300"
                       }`}
                     >
@@ -335,7 +335,7 @@ const CreateStationPage = () => {
 
             <div>
               <label className={labelClass}>Station images</label>
-              <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-700 hover:border-emerald-500/50 bg-slate-800/40 rounded-xl px-4 py-8 cursor-pointer transition-colors">
+              <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-700 hover:border-cyan-500/50 bg-slate-800/40 rounded-xl px-4 py-8 cursor-pointer transition-colors">
                 <ImagePlus className="h-8 w-8 text-slate-500" />
                 <span className="text-sm text-slate-400">
                   {images.length > 0
@@ -352,7 +352,7 @@ const CreateStationPage = () => {
                 />
               </label>
               {images.length > 0 && (
-                <p className="text-xs text-emerald-400 mt-1.5">
+                <p className="text-xs text-cyan-400 mt-1.5">
                   {images.map((img) => img.name).join(", ")}
                 </p>
               )}
@@ -361,7 +361,7 @@ const CreateStationPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 py-3.5 rounded-xl disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors font-semibold text-base inline-flex items-center justify-center gap-2"
+              className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 py-3.5 rounded-xl disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors font-semibold text-base inline-flex items-center justify-center gap-2"
             >
               <Zap className="h-5 w-5" />
               {loading ? "Creating station…" : "Create charging station"}

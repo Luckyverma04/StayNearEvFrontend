@@ -46,12 +46,12 @@ const LoginPage = () => {
 
       <AuthCard>
         {/* Tabs — sliding pill */}
-        <div className="relative grid grid-cols-2 p-1 mb-6 rounded-xl bg-[#020617]/70 border border-white/[0.06]" role="tablist">
+        <div className="relative grid grid-cols-2 p-1 mb-6 rounded-xl bg-[#05061A]/70 border border-white/[0.06]" role="tablist">
           <span
             className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-lg transition-transform duration-300 ease-out"
             style={{
               transform: mode === "signup" ? "translateX(100%)" : "translateX(0)",
-              background: `linear-gradient(135deg, ${ACCENT}, #06D6A0)`,
+              background: `linear-gradient(135deg, ${ACCENT}, #8B5CF6)`,
             }}
           />
           {["login", "signup"].map((m) => (
