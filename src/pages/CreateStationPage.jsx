@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { stationService } from "../services/stationService";
 import { useAuth } from "../context/AuthContext";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import LocationPicker from "../components/map/LocationPicker";
 import { Zap, MapPin, IndianRupee, ImagePlus, Lock } from "lucide-react";
 
 /* Same clearance as the other pages — your navbar is fixed */
@@ -32,6 +33,7 @@ const CreateStationPage = () => {
   });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pin, setPin] = useState(null); // { lat, lng } — map par station ki jagah
 
   // ✅ Handle text input changes
   const handleChange = (e) => {
@@ -70,6 +72,12 @@ const CreateStationPage = () => {
           form.append(key, value);
         }
       });
+
+      // Map pin
+      if (pin) {
+        form.append("latitude", String(pin.lat));
+        form.append("longitude", String(pin.lng));
+      }
 
       // Append images
       images.forEach((img) => form.append("images", img));
@@ -191,6 +199,23 @@ const CreateStationPage = () => {
                   className={`${inputClass} pl-11`}
                 />
               </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>
+                Pin on map <span className="text-slate-500 font-normal">(recommended)</span>
+              </label>
+              <p className="text-xs text-slate-500 mb-2">
+                Drivers use this to find your station and see how far it is.
+              </p>
+              <LocationPicker
+                value={pin}
+                onChange={setPin}
+                onAddressFound={(addr) =>
+                  !formData.location &&
+                  setFormData((f) => ({ ...f, location: addr.split(",").slice(0, 3).join(",").trim() }))
+                }
+              />
             </div>
 
             <div>
