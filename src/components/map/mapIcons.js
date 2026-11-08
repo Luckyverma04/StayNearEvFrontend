@@ -19,6 +19,23 @@ export const stationIcon = (active = false) =>
       </div>`,
   });
 
+// Public charger pin (hamare app ka nahi) — neela, plug wala
+export const publicIcon = L.divIcon({
+  className: "",
+  iconSize: [30, 38],
+  iconAnchor: [15, 36],
+  popupAnchor: [0, -32],
+  html: `
+    <div style="width:30px;height:38px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));">
+      <svg width="30" height="38" viewBox="0 0 36 44" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 43s15-14.2 15-25.5C33 8.4 26.3 2 18 2S3 8.4 3 17.5C3 28.8 18 43 18 43z"
+              fill="#3B82F6" stroke="#ffffff" stroke-width="2.5"/>
+        <path d="M14 9v5M22 9v5M11 14h14v3a7 7 0 0 1-14 0v-3zM18 24v4" stroke="#ffffff" stroke-width="2.4"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>`,
+});
+
 // User ki location — neela pulse dot
 export const userIcon = L.divIcon({
   className: "",
