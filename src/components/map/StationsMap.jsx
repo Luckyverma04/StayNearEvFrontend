@@ -41,7 +41,7 @@ const StationsMap = ({ stations, userPos, onViewDetails, height = 520 }) => {
           center={[DEFAULT_CENTER.lat, DEFAULT_CENTER.lng]}
           zoom={5}
           scrollWheelZoom
-          style={{ height: "100%", width: "100%", background: "#0b1220" }}
+          style={{ height: "100%", width: "100%", background: "#e8eef3" }}
         >
           <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} subdomains="abcd" maxZoom={19} />
           <FitBounds points={points} />

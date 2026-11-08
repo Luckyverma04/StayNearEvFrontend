@@ -98,7 +98,7 @@ const LocationPicker = ({ value, onChange, onAddressFound, height = 300 }) => {
           center={[start.lat, start.lng]}
           zoom={value ? 15 : 5}
           scrollWheelZoom
-          style={{ height: "100%", width: "100%", background: "#0b1220", cursor: "crosshair" }}
+          style={{ height: "100%", width: "100%", background: "#e8eef3", cursor: "crosshair" }}
         >
           <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} subdomains="abcd" maxZoom={19} />
           <ClickToPlace onPick={onChange} />

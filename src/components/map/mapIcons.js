@@ -31,7 +31,12 @@ export const userIcon = L.divIcon({
     </div>`,
 });
 
-// Dark map tiles (CARTO, free — attribution zaroori hai)
-export const TILE_URL = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+// Map ka style (CARTO, free — attribution zaroori hai).
+// Rang badalna ho to sirf neeche wala naam badlo:
+//   "rastertiles/voyager"  → normal rangeen map (Google Maps jaisa)  ← abhi ye hai
+//   "light_all"            → halka safed/grey
+//   "dark_all"             → dark (kaala)
+const MAP_STYLE = "rastertiles/voyager";
+export const TILE_URL = `https://{s}.basemaps.cartocdn.com/${MAP_STYLE}/{z}/{x}/{y}{r}.png`;
 export const TILE_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
