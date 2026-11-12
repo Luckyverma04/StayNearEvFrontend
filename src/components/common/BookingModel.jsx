@@ -234,22 +234,22 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
     const dateText = fmt(confirmed.start, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
     const timeText = `${fmt(confirmed.start, { hour: 'numeric', minute: '2-digit' })} – ${fmt(confirmed.end, { hour: 'numeric', minute: '2-digit' })}`;
     const row = (Icon, label, value) => (
-      <div className="flex items-start gap-3 py-2.5 border-b border-gray-100 last:border-0">
-        <Icon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-        <span className="text-sm text-gray-500 w-24 shrink-0">{label}</span>
-        <span className="text-sm font-semibold text-gray-900">{value}</span>
+      <div className="flex items-start gap-3 py-2.5 border-b border-white/[0.06] last:border-0">
+        <Icon className="h-4 w-4 text-slate-500 mt-0.5 shrink-0" />
+        <span className="text-sm text-slate-400 w-24 shrink-0">{label}</span>
+        <span className="text-sm font-semibold text-[#F8FAFC]">{value}</span>
       </div>
     );
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true">
-        <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-          <div className="px-6 pt-8 pb-5 text-center bg-gradient-to-b from-cyan-50 to-white">
-            <div className="mx-auto h-16 w-16 rounded-full bg-cyan-100 flex items-center justify-center mb-4">
-              <CheckCircle2 className="h-9 w-9 text-cyan-600" />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true">
+        <div className="bg-[#0E1130] rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="px-6 pt-8 pb-5 text-center bg-gradient-to-b from-[#22D3EE]/10 to-transparent">
+            <div className="mx-auto h-16 w-16 rounded-full bg-[#22D3EE]/15 flex items-center justify-center mb-4">
+              <CheckCircle2 className="h-9 w-9 text-[#22D3EE]" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Booking received! 🎉</h2>
-            <p className="text-sm text-gray-600 mt-1">{station?.name}</p>
-            <span className="inline-block mt-3 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+            <h2 className="text-2xl font-bold text-[#F8FAFC]">Booking received! 🎉</h2>
+            <p className="text-sm text-[#94A3B8] mt-1">{station?.name}</p>
+            <span className="inline-block mt-3 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300">
               Waiting for the station owner to confirm
             </span>
           </div>
@@ -263,8 +263,8 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
             {typeof confirmed.cost === 'number' && row(Zap, 'Est. cost', `₹${confirmed.cost.toFixed(2)}`)}
           </div>
 
-          <div className="mx-6 mt-4 p-3 rounded-xl bg-gray-50 flex items-start gap-2.5 text-xs text-gray-600">
-            <Mail className="h-4 w-4 shrink-0 mt-0.5 text-gray-400" />
+          <div className="mx-6 mt-4 p-3 rounded-xl bg-white/[0.04] flex items-start gap-2.5 text-xs text-[#94A3B8]">
+            <Mail className="h-4 w-4 shrink-0 mt-0.5 text-slate-500" />
             We've emailed you the details. You'll get another email when the owner confirms your slot.
           </div>
 
@@ -272,7 +272,7 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50"
+              className="flex-1 px-4 py-3 rounded-xl border border-white/[0.12] text-slate-300 font-medium hover:bg-white/[0.06]"
             >
               Done
             </button>
@@ -282,7 +282,7 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
                 onClose();
                 navigate('/my-bookings');
               }}
-              className="flex-1 px-4 py-3 rounded-xl bg-cyan-600 text-white font-semibold hover:bg-cyan-700"
+              className="flex-1 px-4 py-3 rounded-xl bg-[#22D3EE] text-slate-950 font-semibold font-semibold hover:bg-[#67E8F9]"
             >
               View my bookings
             </button>
@@ -293,17 +293,17 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-[#0E1130] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-[#0E1130] border-b border-white/[0.08] px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Book Charging Slot</h2>
-            <p className="text-sm text-gray-600 mt-1">{station?.name}</p>
+            <h2 className="text-2xl font-bold text-[#F8FAFC]">Book Charging Slot</h2>
+            <p className="text-sm text-[#94A3B8] mt-1">{station?.name}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-slate-500 hover:text-slate-200 transition-colors"
           >
             <X className="h-6 w-6" />
           </button>
@@ -313,15 +313,15 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <p className="text-red-800 text-sm">{error}</p>
+            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-red-300 text-sm">{error}</p>
             </div>
           )}
 
           {/* Date Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               <Calendar className="h-4 w-4 inline mr-2" />
               Select Date *
             </label>
@@ -331,14 +331,14 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
               onChange={(e) => setSelectedDate(e.target.value)}
               min={getTodayDate()}
               required
-              className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-white/[0.12] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
             />
           </div>
 
           {/* Time Selection */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 <Clock className="h-4 w-4 inline mr-2" />
                 Start Time *
               </label>
@@ -347,11 +347,11 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
                 value={selectedStartTime || ''}
                 onChange={(e) => handleTimeChange('startTime', e.target.value)}
                 required
-                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-white/[0.12] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 <Clock className="h-4 w-4 inline mr-2" />
                 End Time *
               </label>
@@ -360,14 +360,14 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
                 value={selectedEndTime || ''}
                 onChange={(e) => handleTimeChange('endTime', e.target.value)}
                 required
-                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-white/[0.12] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
               />
             </div>
           </div>
 
           {/* Duration Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Duration
             </label>
             <div className="flex gap-2">
@@ -378,8 +378,8 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
                   onClick={() => handleDurationChange(minutes)}
                   className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${
                     bookingData.duration === minutes
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                      ? 'bg-[#8B5CF6] text-white border-[#22D3EE]'
+                      : 'bg-[#0E1130] text-slate-300 border-white/[0.12] hover:bg-white/[0.06]'
                   }`}
                 >
                   {minutes} min
@@ -390,33 +390,33 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
 
           {/* Available Slots Info */}
           {loadingSlots ? (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-blue-800 text-sm">Loading available slots...</p>
+            <div className="bg-sky-500/10 border border-sky-500/30 rounded-lg p-4">
+              <p className="text-sky-300 text-sm">Loading available slots...</p>
             </div>
           ) : availableSlots.length > 0 ? (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <p className="text-green-800 text-sm font-medium mb-2">Available Time Slots:</p>
+            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
+              <p className="text-emerald-300 text-sm font-medium mb-2">Available Time Slots:</p>
               <div className="flex flex-wrap gap-2">
                 {availableSlots.map((slot, idx) => (
-                  <span key={idx} className="bg-white text-green-700 px-3 py-1 rounded-md text-sm border border-green-300">
+                  <span key={idx} className="bg-[#0E1130] text-emerald-300 px-3 py-1 rounded-md text-sm border border-emerald-500/30">
                     {slot}
                   </span>
                 ))}
               </div>
             </div>
           ) : selectedDate ? (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <p className="text-gray-600 text-sm">No slots information available</p>
+            <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4">
+              <p className="text-[#94A3B8] text-sm">No slots information available</p>
             </div>
           ) : null}
 
           {/* Vehicle Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Vehicle Information</h3>
+            <h3 className="text-lg font-semibold text-[#F8FAFC]">Vehicle Information</h3>
             
             {/* License Plate (Required by Backend) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 License Plate Number *
               </label>
               <input
@@ -426,13 +426,13 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
                 onChange={handleVehicleInfoChange}
                 placeholder="e.g., DL01AB1234"
                 required
-                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-white/[0.12] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
               />
             </div>
 
             {/* Vehicle Type (Required by Backend) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Vehicle Type *
               </label>
               <select
@@ -440,7 +440,7 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
                 value={bookingData.vehicleInfo.vehicleType || ''}
                 onChange={handleVehicleInfoChange}
                 required
-                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-white/[0.12] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
               >
                 <option value="">Select vehicle type</option>
                 <option value="Electric Car">Electric Car</option>
@@ -452,7 +452,7 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
 
             {/* Vehicle Model (Optional) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Vehicle Model (Optional)
               </label>
               <input
@@ -461,13 +461,13 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
                 value={bookingData.vehicleInfo.vehicleModel || ''}
                 onChange={handleVehicleInfoChange}
                 placeholder="e.g., Tesla Model 3, Ola Electric"
-                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-white/[0.12] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
               />
             </div>
 
             {/* Battery Capacity (Numbers only) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Battery Capacity (kWh) - Numbers only
               </label>
               <input
@@ -478,19 +478,19 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
                 placeholder="e.g., 30.2"
                 step="0.1"
                 min="0"
-                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-white/[0.12] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
               />
-              <p className="text-xs text-gray-500 mt-1">Enter only numbers (e.g., 30.2 not 30.2kWh)</p>
+              <p className="text-xs text-slate-400 mt-1">Enter only numbers (e.g., 30.2 not 30.2kWh)</p>
             </div>
           </div>
 
           {/* Pricing Info */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <p className="text-sm text-gray-600 mb-1">Estimated Cost</p>
-            <p className="text-2xl font-bold text-gray-900">
-              ₹{station?.pricePerUnit || '16'} <span className="text-sm font-normal text-gray-600">per kWh</span>
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4">
+            <p className="text-sm text-[#94A3B8] mb-1">Estimated Cost</p>
+            <p className="text-2xl font-bold text-[#F8FAFC]">
+              ₹{station?.pricePerUnit || '16'} <span className="text-sm font-normal text-[#94A3B8]">per kWh</span>
             </p>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-slate-400 mt-2">
               Final cost will be calculated based on actual energy consumed
             </p>
           </div>
@@ -500,14 +500,14 @@ const BookingModal = ({ station, isOpen, onClose: closeModal, onSuccess }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              className="flex-1 px-4 py-3 border border-white/[0.12] text-slate-300 rounded-lg hover:bg-white/[0.06] transition-colors font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-3 bg-[#22D3EE] text-slate-950 font-semibold rounded-lg hover:bg-[#67E8F9] transition-colors font-medium disabled:bg-slate-700 disabled:cursor-not-allowed"
             >
               {loading ? 'Booking...' : 'Confirm Booking'}
             </button>
