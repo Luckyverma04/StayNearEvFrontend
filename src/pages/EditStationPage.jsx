@@ -26,7 +26,7 @@ const EditStationPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [accessDenied, setAccessDenied] = useState(false);
-  const [station, setStation] = useState(null);
+  const [, setStation] = useState(null);
   const [pin, setPin] = useState(null); // { lat, lng }
   const [hadPin, setHadPin] = useState(false);
 
@@ -177,43 +177,46 @@ const EditStationPage = () => {
   };
 
   if (loading) return <LoadingSpinner message="Loading station details..." />;
-  if (error) return <div className="text-center text-red-600 py-8">{error}</div>;
+  if (error) return <div className="text-center text-red-400 py-8">{error}</div>;
 
   if (accessDenied) {
     return (
-      <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md mt-8 text-center">
-        <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
-        <p className="text-gray-600 mb-6">
+      <div className="min-h-screen bg-[#05061A] pt-28 pb-16 px-4">
+      <div className="max-w-3xl mx-auto bg-[#0E1130] border border-white/[0.08] p-6 rounded-2xl shadow-xl text-center">
+        <h1 className="text-2xl font-bold text-red-400 mb-4">Access Denied</h1>
+        <p className="text-[#94A3B8] mb-6">
           You can only edit stations that you created.
         </p>
 
         <div className="flex gap-2 justify-center">
           <button
             onClick={() => navigate("/")}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-[#8B5CF6] text-white rounded-lg hover:bg-[#7C3AED]"
           >
             Back to Home
           </button>
           <button
             onClick={() => navigate("/stations/create")}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            className="px-4 py-2 bg-[#22D3EE] text-slate-950 font-semibold rounded-lg hover:bg-[#67E8F9]"
           >
             Create New Station
           </button>
         </div>
       </div>
+      </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md mt-8">
-      <h1 className="text-2xl font-bold mb-6 text-center">
+    <div className="min-h-screen bg-[#05061A] pt-28 pb-16 px-4">
+    <div className="max-w-3xl mx-auto bg-[#0E1130] border border-white/[0.08] p-6 rounded-2xl shadow-xl">
+      <h1 className="text-2xl font-bold mb-6 text-center text-[#F8FAFC]">
         Edit Charging Station ⚡
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-300 mb-1">
             Station Name *
           </label>
           <input
@@ -222,12 +225,12 @@ const EditStationPage = () => {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full border border-white/[0.12] px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-300 mb-1">
             Location *
           </label>
           <input
@@ -236,12 +239,12 @@ const EditStationPage = () => {
             value={formData.location}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full border border-white/[0.12] px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-300 mb-1">
             Pin on map
           </label>
           <div className="rounded-xl bg-[#0E1130] p-3">
@@ -250,7 +253,7 @@ const EditStationPage = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-300 mb-1">
             Description *
           </label>
           <textarea
@@ -259,12 +262,12 @@ const EditStationPage = () => {
             onChange={handleChange}
             rows="3"
             required
-            className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full border border-white/[0.12] px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-300 mb-1">
             Price per Unit (₹ per kWh) *
           </label>
           <input
@@ -275,12 +278,12 @@ const EditStationPage = () => {
             required
             min="0"
             step="0.01"
-            className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full border border-white/[0.12] px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-slate-300 mb-1">
             Charger Types
           </label>
           <input
@@ -289,14 +292,14 @@ const EditStationPage = () => {
             value={formData.chargerTypes}
             onChange={handleChange}
             placeholder="e.g., Type2, CCS, CHAdeMO"
-            className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full border border-white/[0.12] px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] placeholder:text-slate-500 [color-scheme:dark]"
           />
         </div>
 
         {/* Existing Images Display with Delete Option */}
         {existingImages.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Current Images ({existingImages.length})
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
@@ -305,7 +308,7 @@ const EditStationPage = () => {
                   <img
                     src={getImageUrl(image)}
                     alt={`Station ${index + 1}`}
-                    className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                    className="w-full h-24 object-cover rounded-lg border border-white/[0.08]"
                   />
                   <button
                     type="button"
@@ -322,7 +325,7 @@ const EditStationPage = () => {
 
         {/* New Images Upload */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-slate-300 mb-2">
             Add New Images
           </label>
           <input
@@ -330,10 +333,10 @@ const EditStationPage = () => {
             multiple
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full border border-white/[0.12] px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22D3EE]/60 focus:border-[#22D3EE]/60 bg-[#05061A]/60 text-[#F8FAFC] [color-scheme:dark] file:mr-3 file:rounded-md file:border-0 file:bg-[#22D3EE]/15 file:px-3 file:py-1 file:text-[#22D3EE] file:font-medium"
           />
           {images.length > 0 && (
-            <p className="text-sm text-green-600 mt-1">
+            <p className="text-sm text-emerald-400 mt-1">
               {images.length} new image(s) selected
             </p>
           )}
@@ -342,11 +345,12 @@ const EditStationPage = () => {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-semibold"
+          className="w-full bg-[#22D3EE] text-slate-950 font-semibold py-3 rounded-lg hover:bg-[#67E8F9] disabled:bg-slate-700 disabled:cursor-not-allowed transition-colors"
         >
           {submitting ? "Updating Station..." : "Update Station"}
         </button>
       </form>
+    </div>
     </div>
   );
 };
